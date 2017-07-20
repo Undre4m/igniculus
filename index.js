@@ -41,6 +41,8 @@ module.exports = (opts) => {
 
     const defaults = {
         constants:              { mode: 'bright', fg: 'red' },
+        numbers:                { mode: 'bright', fg: 'cyan' },
+        operators:              { mode: 'bright', fg: 'magenta' },
         delimitedIdentifiers:   { mode: 'bright', fg: 'yellow' },
         dataTypes:              { mode: 'dim', fg: 'green' },
         keywords:               { mode: 'bright', fg: 'black' },
@@ -76,6 +78,22 @@ module.exports = (opts) => {
             options.constants.sequence = forgeANSISequence(options.constants);
         }
 
+        if (options.numbers) {
+            options.numbers.sequence = forgeANSISequence(options.numbers);
+        }
+
+        if (options.operators) {
+            options.operators.sequence = forgeANSISequence(options.operators);
+        }
+
+        if (options.dataTypes) {
+            options.dataTypes.sequence = forgeANSISequence(options.dataTypes);
+        }
+
+        if (options.keywords) {
+            options.keywords.sequence = forgeANSISequence(options.keywords);
+        }
+
         if (options.prefix) {
             options.prefix.sequence = forgeANSISequence(options.prefix);
 
@@ -88,43 +106,62 @@ module.exports = (opts) => {
             }
         }
 
-        if (options.dataTypes) {
-            options.dataTypes.sequence = forgeANSISequence(options.dataTypes);
-        }
-
-        if (options.keywords) {
-            options.keywords.sequence = forgeANSISequence(options.keywords);
-        }
-
     })(options);
 
     return function SqlSyntaxHighlighter(text) {
+        // Coerce entry to string primitive capable of being altered.
+        let output = text.toString();
+
+        // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
+        let prefixMatched;
+        if (options.prefix && options.prefix.replace) {
+            let match = options.prefix.replace.exec(output);
+            if (match) {
+                prefixMatched = match[0];
+                output = output.substr(prefixMatched.length);
+            }
+        }
+
         if (options.delimitedIdentifiers && options.delimitedIdentifiers.sequence) {
-            text = text.replace(/(\[.*?\]|['].*?['])/g, options.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
-        }
-
-        if (options.constants && options.constants.sequence) {
-            text = text.replace(/(['].*?['])/g, options.constants.sequence + '$1' + ANSIModes.reset);
-        }
-
-        if (options.prefix) {
-            text = text.replace(options.prefix.replace, options.prefix.sequence + options.prefix.text + ANSIModes.reset);
+            output = output.replace(/(\[.*?\]|'.*?'|".*?")/g, options.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
         }
 
         if (options.dataTypes && options.dataTypes.sequence) {
             for (let i = 0; i < dataTypes.length; i++) {
                 let regex = new RegExp('\\b' + dataTypes[i] + '\\b', 'gi');
-                text = text.replace(regex, options.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
+                output = output.replace(regex, options.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
             }
         }
 
         if (options.keywords && options.keywords.sequence) {
             for (let i = 0; i < keywords.length; i++) {
                 let regex = new RegExp('\\b' + keywords[i] + '\\b', 'gi');
-                text = text.replace(regex, options.keywords.sequence + keywords[i] + ANSIModes.reset);
+                output = output.replace(regex, options.keywords.sequence + keywords[i] + ANSIModes.reset);
             }
         }
 
-        console.log(text);
+        if (options.constants && options.constants.sequence) {
+            output = output.replace(/(['].*?['])/g, options.constants.sequence + '$1' + ANSIModes.reset);
+        }
+
+        if (options.numbers && options.numbers.sequence) {
+            output = output.replace(/((\d+)(?![a-z\x1b]))(?!\d)/gi, options.numbers.sequence + '$1' + ANSIModes.reset);
+        }
+
+        if (options.operators && options.operators.sequence) {
+            output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, options.operators.sequence + '$1' + ANSIModes.reset);
+        }
+
+        // If the given prefix was found and a replacement pattern was provided, substitute it.
+        if (prefixMatched && options.prefix.text) {
+            output = prefixMatched + output;
+            output = output.replace(prefixMatched, options.prefix.sequence + options.prefix.text + ANSIModes.reset);
+        }
+        // If only the prefix text was provided, append it.
+        else if (options.prefix && options.prefix.text && !options.prefix.replace) {
+            output = options.prefix.sequence + options.prefix.text + ANSIModes.reset + output;
+        }
+
+        console.log(output);
     };
 };
