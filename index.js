@@ -1,15 +1,6 @@
 'use strict';
 
 module.exports = (opts) => {
-    const defaults = {
-        constants:              { mode: 'bright', fg: 'red' },
-        delimitedIdentifiers:   { mode: 'bright', fg: 'yellow' },
-        dataTypes:              { mode: 'dim', fg: 'green' },
-        keywords:               { mode: 'bright', fg: 'black' },
-        prefix:                 { mode: 'bright', fg: 'yellow', bg: 'red', replace: 'Executing (default):', text: '[SQL]' }
-    };
-
-    const options = opts || defaults;
 
     const dataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
 
@@ -48,6 +39,16 @@ module.exports = (opts) => {
         }
     };
 
+    const defaults = {
+        constants:              { mode: 'bright', fg: 'red' },
+        delimitedIdentifiers:   { mode: 'bright', fg: 'yellow' },
+        dataTypes:              { mode: 'dim', fg: 'green' },
+        keywords:               { mode: 'bright', fg: 'black' },
+        prefix:                 { mode: 'bright', fg: 'yellow', bg: 'red', replace: 'Executing (default):', text: '[SQL]' }
+    };
+
+    const options = opts || defaults;
+
     /**
      * Forge ANSI escape code sequence for text formatting.
      * @param {Object} rule - Object that defines the colors to use for formatting a particular rule.
@@ -64,38 +65,63 @@ module.exports = (opts) => {
         return ANSISequence;
     }
 
-    return function SqlSyntaxHighlighter(text) {
+    ((opts) => {
         let sequence;
 
         if (options.delimitedIdentifiers) {
-            sequence = forgeANSISequence(options.delimitedIdentifiers);
-            text = text.replace(/(\[.*?\]|['].*?['])/g, sequence + '$1' + ANSIModes.reset);
+            options.delimitedIdentifiers.sequence = forgeANSISequence(options.delimitedIdentifiers);
         }
 
         if (options.constants) {
-            sequence = forgeANSISequence(options.constants);
-            text = text.replace(/(['].*?['])/g, sequence + '$1' + ANSIModes.reset);
+            options.constants.sequence = forgeANSISequence(options.constants);
         }
 
         if (options.prefix) {
-            sequence = forgeANSISequence(options.prefix);
-            let regex = new RegExp('^' + options.prefix.replace, 'i');
-            text = text.replace(regex, sequence + options.prefix.text + ANSIModes.reset);
-        }
+            options.prefix.sequence = forgeANSISequence(options.prefix);
 
-        if (options.dataTypes) {
-            sequence = forgeANSISequence(options.dataTypes);
-            for (let i = 0; i < dataTypes.length; i++) {
-                let regex = new RegExp('\\b' + dataTypes[i] + '\\b', 'gi');
-                text = text.replace(regex, sequence + dataTypes[i] + ANSIModes.reset);
+            /* If prefix should replace a given pattern and that pattern is a string,
+             * escape it so it can be passed to the RegExp constructor.
+             */
+            if (options.prefix.replace && typeof options.prefix.replace === 'string') {
+                options.prefix.replace = options.prefix.replace.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                options.prefix.replace = new RegExp('^' + options.prefix.replace, 'i');
             }
         }
 
+        if (options.dataTypes) {
+            options.dataTypes.sequence = forgeANSISequence(options.dataTypes);
+        }
+
         if (options.keywords) {
-            sequence = forgeANSISequence(options.keywords);
+            options.keywords.sequence = forgeANSISequence(options.keywords);
+        }
+
+    })(options);
+
+    return function SqlSyntaxHighlighter(text) {
+        if (options.delimitedIdentifiers && options.delimitedIdentifiers.sequence) {
+            text = text.replace(/(\[.*?\]|['].*?['])/g, options.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
+        }
+
+        if (options.constants && options.constants.sequence) {
+            text = text.replace(/(['].*?['])/g, options.constants.sequence + '$1' + ANSIModes.reset);
+        }
+
+        if (options.prefix) {
+            text = text.replace(options.prefix.replace, options.prefix.sequence + options.prefix.text + ANSIModes.reset);
+        }
+
+        if (options.dataTypes && options.dataTypes.sequence) {
+            for (let i = 0; i < dataTypes.length; i++) {
+                let regex = new RegExp('\\b' + dataTypes[i] + '\\b', 'gi');
+                text = text.replace(regex, options.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
+            }
+        }
+
+        if (options.keywords && options.keywords.sequence) {
             for (let i = 0; i < keywords.length; i++) {
                 let regex = new RegExp('\\b' + keywords[i] + '\\b', 'gi');
-                text = text.replace(regex, sequence + keywords[i] + ANSIModes.reset);
+                text = text.replace(regex, options.keywords.sequence + keywords[i] + ANSIModes.reset);
             }
         }
 
