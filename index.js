@@ -56,7 +56,7 @@ module.exports = (opts) => {
      * @param {Object} rule - Object that defines the colors to use for formatting a particular rule.
      * @returns {string}
      */
-    function forgeANSISequence (rule) {
+    function forgeANSISequence(rule) {
         let mode, fg, bg;
 
         mode = (rule.mode && ANSIModes[rule.mode]) ? ANSIModes[rule.mode] : '';
@@ -67,15 +67,24 @@ module.exports = (opts) => {
         return ANSISequence;
     }
 
+    /**
+     * Remove all ANSI escape code sequences from text.
+     * @param {string} text - Text piece from which to void all formatting.
+     * @returns {string}
+     */
+    function voidFormmating(text) {
+        return text.replace(/\x1b\[\d{1,2}m/g, '');
+    }
+
     ((opts) => {
         let sequence;
 
-        if (options.delimitedIdentifiers) {
-            options.delimitedIdentifiers.sequence = forgeANSISequence(options.delimitedIdentifiers);
-        }
-
         if (options.constants) {
             options.constants.sequence = forgeANSISequence(options.constants);
+        }
+
+        if (options.delimitedIdentifiers) {
+            options.delimitedIdentifiers.sequence = forgeANSISequence(options.delimitedIdentifiers);
         }
 
         if (options.numbers) {
@@ -123,7 +132,7 @@ module.exports = (opts) => {
         }
 
         if (options.delimitedIdentifiers && options.delimitedIdentifiers.sequence) {
-            output = output.replace(/(\[.*?\]|'.*?'|".*?")/g, options.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
+            output = output.replace(/(\[.*?\]|".*?")/g, options.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
         }
 
         if (options.dataTypes && options.dataTypes.sequence) {
@@ -140,16 +149,18 @@ module.exports = (opts) => {
             }
         }
 
-        if (options.constants && options.constants.sequence) {
-            output = output.replace(/(['].*?['])/g, options.constants.sequence + '$1' + ANSIModes.reset);
-        }
-
         if (options.numbers && options.numbers.sequence) {
-            output = output.replace(/((\d+)(?![a-z\x1b]))(?!\d)/gi, options.numbers.sequence + '$1' + ANSIModes.reset);
+            output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, options.numbers.sequence + '$1' + ANSIModes.reset);
         }
 
         if (options.operators && options.operators.sequence) {
             output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, options.operators.sequence + '$1' + ANSIModes.reset);
+        }
+
+        if (options.constants && options.constants.sequence) {
+            output = output.replace(/('.*?')/g, (match) => {
+                return options.constants.sequence + voidFormmating(match) + ANSIModes.reset;
+            });
         }
 
         // If the given prefix was found and a replacement pattern was provided, substitute it.
