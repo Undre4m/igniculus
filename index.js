@@ -4,7 +4,9 @@ module.exports = (opts) => {
 
     const dataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
 
-    const keywords = ['ALL', 'AND', 'ANY', 'BETWEEN', 'RIGHT', 'IN', 'INNER', 'IS', 'JOIN', 'SOME', 'LEFT', 'LIKE', 'CROSS', 'NOT', 'NULL', 'OR', 'OUTER', 'PIVOT', 'EXISTS', 'UNPIVOT'];
+    const standardKeywords = ['ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
+
+    const lesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
 
     const ANSIModes = {
         reset: '\x1b[0m',
@@ -40,13 +42,12 @@ module.exports = (opts) => {
     };
 
     const defaults = {
-        constants:              { mode: 'bright', fg: 'red' },
-        numbers:                { mode: 'bright', fg: 'cyan' },
-        operators:              { mode: 'bright', fg: 'magenta' },
-        delimitedIdentifiers:   { mode: 'bright', fg: 'yellow' },
+        constants:              { mode: 'dim', fg: 'red' },
+        delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
         dataTypes:              { mode: 'dim', fg: 'green' },
-        keywords:               { mode: 'bright', fg: 'black' },
-        prefix:                 { mode: 'bright', fg: 'yellow', bg: 'red', replace: 'Executing (default):', text: '[SQL]' }
+        standardKeywords:       { mode: 'dim', fg: 'cyan' },
+        lesserKeywords:         { mode: 'bright', fg: 'black' },
+        prefix:                 { replace: /.*?: / }
     };
 
     const options = opts || defaults;
@@ -99,8 +100,12 @@ module.exports = (opts) => {
             options.dataTypes.sequence = forgeANSISequence(options.dataTypes);
         }
 
-        if (options.keywords) {
-            options.keywords.sequence = forgeANSISequence(options.keywords);
+        if (options.standardKeywords) {
+            options.standardKeywords.sequence = forgeANSISequence(options.standardKeywords);
+        }
+
+        if (options.lesserKeywords) {
+            options.lesserKeywords.sequence = forgeANSISequence(options.lesserKeywords);
         }
 
         if (options.prefix) {
@@ -142,10 +147,17 @@ module.exports = (opts) => {
             }
         }
 
-        if (options.keywords && options.keywords.sequence) {
-            for (let i = 0; i < keywords.length; i++) {
-                let regex = new RegExp('\\b' + keywords[i] + '\\b', 'gi');
-                output = output.replace(regex, options.keywords.sequence + keywords[i] + ANSIModes.reset);
+        if (options.standardKeywords && options.standardKeywords.sequence) {
+            for (let i = 0; i < standardKeywords.length; i++) {
+                let regex = new RegExp('\\b' + standardKeywords[i] + '\\b', 'gi');
+                output = output.replace(regex, options.standardKeywords.sequence + standardKeywords[i] + ANSIModes.reset);
+            }
+        }
+
+        if (options.lesserKeywords && options.lesserKeywords.sequence) {
+            for (let i = 0; i < lesserKeywords.length; i++) {
+                let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b', 'gi');
+                output = output.replace(regex, options.lesserKeywords.sequence + lesserKeywords[i] + ANSIModes.reset);
             }
         }
 
