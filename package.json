@@ -18,5 +18,8 @@
   "homepage": "https://github.com/Undre4m/igniculus#readme",
   "engines": {
     "node": ">=4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.3.0"
   }
 }

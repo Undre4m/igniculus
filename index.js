@@ -115,7 +115,7 @@ module.exports = (opts) => {
              * escape it so it can be passed to the RegExp constructor.
              */
             if (options.prefix.replace && typeof options.prefix.replace === 'string') {
-                options.prefix.replace = options.prefix.replace.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                options.prefix.replace = options.prefix.replace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
                 options.prefix.replace = new RegExp('^' + options.prefix.replace, 'i');
             }
         }

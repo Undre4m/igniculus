@@ -1,0 +1,9 @@
+# ESLint
+.eslint*
+
+# IDE Specific
+.vscode
+
+# Windows
+Thumbs.db
+Desktop.ini

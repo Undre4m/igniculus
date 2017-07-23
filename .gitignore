@@ -1,0 +1,12 @@
+# Dependencies
+**/node_modules/
+
+# IDE Specific
+.vscode
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
