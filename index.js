@@ -2,18 +2,20 @@
 
 const dataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
 
-const standardKeywords = ['ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
+const standardKeywords = ['ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
 
 const lesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
 
 const ANSIModes = {
     reset: '\x1b[0m',
-    bright: '\x1b[1m',
+    bold: '\x1b[1m',
     dim: '\x1b[2m',
-    underscore: '\x1b[4m',
+    italic: '\x1b[3m',
+    underline: '\x1b[4m',
     blink: '\x1b[5m',
-    reverse: '\x1b[7m',
-    hidden: '\x1b[8m'
+    inverse: '\x1b[7m',
+    hidden: '\x1b[8m',
+    strikethrough: '\x1b[9m'
 };
 
 const ANSIColours = {
@@ -44,7 +46,7 @@ const defaults = {
     delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
     dataTypes:              { mode: 'dim', fg: 'green' },
     standardKeywords:       { mode: 'dim', fg: 'cyan' },
-    lesserKeywords:         { mode: 'bright', fg: 'black' },
+    lesserKeywords:         { mode: 'bold', fg: 'black' },
     prefix:                 { replace: /.*?: / }
 };
 
@@ -79,7 +81,7 @@ function voidFormmating(text) {
  * Highlight syntax of SQL-statments and log to terminal.
  * @param {string|Object} text - String of SQL-statements to highlight.
  */
-function illuminate(text) {
+function illumine(text) {
     // Coerce entry to string primitive capable of being altered.
     let output = text.toString();
 
@@ -99,21 +101,21 @@ function illuminate(text) {
 
     if (runestone.dataTypes && runestone.dataTypes.sequence) {
         for (let i = 0; i < dataTypes.length; i++) {
-            let regex = new RegExp('\\b' + dataTypes[i] + '\\b', 'gi');
+            let regex = new RegExp('\\b' + dataTypes[i] + '\\b' + '(?!["\\]])', 'gi');
             output = output.replace(regex, runestone.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
         }
     }
 
     if (runestone.standardKeywords && runestone.standardKeywords.sequence) {
         for (let i = 0; i < standardKeywords.length; i++) {
-            let regex = new RegExp('\\b' + standardKeywords[i] + '\\b', 'gi');
+            let regex = new RegExp('\\b' + standardKeywords[i] + '\\b' + '(?!["\\]])', 'gi');
             output = output.replace(regex, runestone.standardKeywords.sequence + standardKeywords[i] + ANSIModes.reset);
         }
     }
 
     if (runestone.lesserKeywords && runestone.lesserKeywords.sequence) {
         for (let i = 0; i < lesserKeywords.length; i++) {
-            let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b', 'gi');
+            let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b' + '(?!["\\]])', 'gi');
             output = output.replace(regex, runestone.lesserKeywords.sequence + lesserKeywords[i] + ANSIModes.reset);
         }
     }
@@ -197,7 +199,7 @@ function igniculus(options) {
         }
     }
 
-    return illuminate;
+    return illumine;
 }
 
 module.exports = igniculus;
