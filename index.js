@@ -82,8 +82,14 @@ function voidFormmating(text) {
  * @param {string|Object} text - String of SQL-statements to highlight.
  */
 function illumine(text) {
-    // Coerce entry to string primitive capable of being altered.
-    let output = text.toString();
+    let output,
+        type = typeof text;
+
+    // Coerce entry to string primitive capable of being altered or exit.
+    if (text && (type === 'string' || type === 'object'))
+        output = type === 'string' ? text : text.toString();
+    else
+        return;
 
     // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
     let prefixMatched;
