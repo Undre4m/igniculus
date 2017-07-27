@@ -1,7 +1,20 @@
 {
   "name": "igniculus",
   "version": "0.2.0",
-  "description": "",
+  "description": "SQL Syntax Highlighter and Logger. Unadorned and customizable.",
+  "keywords": [
+    "ansi",
+    "color",
+    "console",
+    "format",
+    "highlight",
+    "log",
+    "sql",
+    "sequel",
+    "style",
+    "syntax",
+    "terminal"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

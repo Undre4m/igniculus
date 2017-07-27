@@ -188,6 +188,12 @@ sequelize.sync({ logging: igniculus});
 #### After
 ![After](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/sequelize-with.png)
 
+## Future Upgrades
+
+- Custom keywords
+- Custom rules
+- Postfix support
+
 ## Maintainers
 
 - [Lucas Astrada](https://github.com/undre4m)
