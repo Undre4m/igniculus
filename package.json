@@ -1,6 +1,6 @@
 {
   "name": "igniculus",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "SQL Syntax Highlighter and Logger. Unadorned and customizable.",
   "keywords": [
     "ansi",
