@@ -150,6 +150,10 @@ function illumine(text) {
         output = runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset + output;
     }
 
+    if (runestone.postfix && runestone.postfix.text) {
+        output = output + runestone.postfix.sequence + runestone.postfix.text + ANSIModes.reset;
+    }
+
     console.log(output);
 }
 
@@ -203,6 +207,10 @@ function igniculus(options) {
             runestone.prefix.replace = runestone.prefix.replace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
             runestone.prefix.replace = new RegExp('^' + runestone.prefix.replace, 'i');
         }
+    }
+
+    if (runestone.postfix) {
+        runestone.postfix.sequence = forgeANSISequence(runestone.postfix);
     }
 
     return illumine;

@@ -1,6 +1,11 @@
 # Igniculus
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
+[![version](https://img.shields.io/npm/v/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
+[![node](https://img.shields.io/node/v/igniculus.svg?style=flat-square)](https://nodejs.org/en/download/releases)
+[![downloads](https://img.shields.io/npm/dt/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
+[![license](https://img.shields.io/npm/l/igniculus.svg?style=flat-square)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
+
 ## Install
 
 ```console
@@ -54,6 +59,8 @@ The _options_ argument is optional and each property should be one of the follow
 - options.**prefix**
   - prefix.**text** - A prefix can be appended to every log through this option. This prefix can be styled like any previous options.
   - prefix.**replace** - Also, a _string_ or _regular expression_ can be provided and it will replace (if a prefix.**text** was given) or remove a prefix that matches such parameter. _E.g:_ [Sequelize](https://www.npmjs.com/package/sequelize) prefixes every _SQL statement_ with `Executing (default):` This is removed by **default** by the option `prefix: { replace: /.*?: / }`
+- options.**postfix**
+  - postfix.**text** - A postfix can be appended to every log through this option. This postfix can be styled like any previous options.
 
 If defined, the _options_ argument takes precedence over _default_ options. If a rule or it´s style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](https://www.npmjs.com/package/igniculus#examples)_
 
@@ -169,7 +176,8 @@ const igniculus = require('igniculus')(
                                    fg: 'white',
                                    replace: /.*?:/,
                                    text: '(Sequelize)'
-                               }
+                               },
+        postfix:               { text:'\r\n' }
     }
 );
 const sequelize = new Sequelize('database', 'username', 'password',
@@ -192,7 +200,7 @@ sequelize.sync({ logging: igniculus});
 
 - Custom keywords
 - Custom rules
-- Postfix support
+- Selecting log stream _E.g:_ `process.stdout`
 
 ## Maintainers
 
