@@ -1,10 +1,14 @@
 'use strict';
 
-let dataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
+const defaultDataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
 
-let standardKeywords = ['ACTION', 'ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'NO', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
+const defaultStandardKeywords = ['ACTION', 'ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'NO', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
 
-let lesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
+const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
+
+let dataTypes = defaultDataTypes.slice();
+let standardKeywords = defaultStandardKeywords.slice();
+let lesserKeywords = defaultLesserKeywords.slice();
 
 const ANSIModes = {
     reset: '\x1b[0m',
@@ -73,7 +77,7 @@ function forgeANSISequence(rule) {
  * @param {string} text - Text piece from which to void all formatting.
  * @returns {string}
  */
-function voidFormmating(text) {
+function voidFormatting(text) {
     return text.replace(/\x1b\[\d{1,2}m/g, '');
 }
 
@@ -92,36 +96,38 @@ function illumine(text) {
         return;
 
     // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
-    let prefixMatched;
+    let __prefix;
     if (runestone.prefix && runestone.prefix.replace) {
         let match = runestone.prefix.replace.exec(output);
         if (match) {
-            prefixMatched = match[0];
-            output = output.substr(prefixMatched.length);
+            __prefix = match[0];
+            output = output.substr(__prefix.length);
         }
     }
 
-    if (runestone.delimitedIdentifiers && runestone.delimitedIdentifiers.sequence) {
-        output = output.replace(/(\[.*?\]|".*?")/g, runestone.delimitedIdentifiers.sequence + '$1' + ANSIModes.reset);
+    // Extract delimited identifiers so no subsequent operations alter them. Mark their positions for reinsertion.
+    let __identifiers = output.match(/(\[.*?\]|".*?")/g);
+    if (__identifiers && __identifiers.length) {
+        output = output.replace(/(\[.*?\]|".*?")/g, '⇁※↼');
     }
 
     if (runestone.dataTypes && runestone.dataTypes.sequence) {
         for (let i = 0; i < dataTypes.length; i++) {
-            let regex = new RegExp('\\b' + dataTypes[i] + '\\b' + '(?!["\\]])', 'gi');
+            let regex = new RegExp('\\b' + dataTypes[i] + '\\b' + '(?![\'"\\]])', 'gi');
             output = output.replace(regex, runestone.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
         }
     }
 
     if (runestone.standardKeywords && runestone.standardKeywords.sequence) {
         for (let i = 0; i < standardKeywords.length; i++) {
-            let regex = new RegExp('\\b' + standardKeywords[i] + '\\b' + '(?!["\\]])', 'gi');
+            let regex = new RegExp('\\b' + standardKeywords[i] + '\\b' + '(?![\'"\\]])', 'gi');
             output = output.replace(regex, runestone.standardKeywords.sequence + standardKeywords[i] + ANSIModes.reset);
         }
     }
 
     if (runestone.lesserKeywords && runestone.lesserKeywords.sequence) {
         for (let i = 0; i < lesserKeywords.length; i++) {
-            let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b' + '(?!["\\]])', 'gi');
+            let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b' + '(?![\'"\\]])', 'gi');
             output = output.replace(regex, runestone.lesserKeywords.sequence + lesserKeywords[i] + ANSIModes.reset);
         }
     }
@@ -131,19 +137,36 @@ function illumine(text) {
     }
 
     if (runestone.operators && runestone.operators.sequence) {
-        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$1' + ANSIModes.reset);
+        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$&' + ANSIModes.reset);
+    }
+
+    // If delimited identifiers were found and extracted, reinsert them on the marked positions.
+    if (__identifiers && __identifiers.length) {
+        for (let i of __identifiers) {
+            // If delimited identifiers were to be formatted, apply the provided style.
+            if (runestone.delimitedIdentifiers && runestone.delimitedIdentifiers.sequence)
+                output = output.replace('⇁※↼', runestone.delimitedIdentifiers.sequence + i + ANSIModes.reset);
+            else
+                output = output.replace('⇁※↼', i);
+        }
     }
 
     if (runestone.constants && runestone.constants.sequence) {
         output = output.replace(/('.*?')/g, (match) => {
-            return runestone.constants.sequence + voidFormmating(match) + ANSIModes.reset;
+            return runestone.constants.sequence + voidFormatting(match) + ANSIModes.reset;
+        });
+    }
+    // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
+    else {
+        output = output.replace(/('.*?')/g, (match) => {
+            return voidFormatting(match);
         });
     }
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
-    if (prefixMatched && runestone.prefix.text) {
-        output = prefixMatched + output;
-        output = output.replace(prefixMatched, runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset);
+    if (__prefix && runestone.prefix.text) {
+        output = __prefix + output;
+        output = output.replace(__prefix, runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset);
     }
     // If only the prefix text was provided, append it.
     else if (runestone.prefix && runestone.prefix.text && !runestone.prefix.replace) {
@@ -154,7 +177,7 @@ function illumine(text) {
         output = output + runestone.postfix.sequence + runestone.postfix.text + ANSIModes.reset;
     }
 
-    console.log(output);
+    return runestone.output(output);
 }
 
 /**
@@ -186,23 +209,29 @@ function igniculus(options) {
     }
 
     if (runestone.dataTypes) {
-        if (Array.isArray(runestone.dataTypes.types)) {
+        if (Array.isArray(runestone.dataTypes.types))
             dataTypes = runestone.dataTypes.types;
-        }
+        else
+            dataTypes = defaultDataTypes.slice();
+
         runestone.dataTypes.sequence = forgeANSISequence(runestone.dataTypes);
     }
 
     if (runestone.standardKeywords) {
-        if (Array.isArray(runestone.standardKeywords.keywords)) {
+        if (Array.isArray(runestone.standardKeywords.keywords))
             standardKeywords = runestone.standardKeywords.keywords;
-        }
+        else
+            standardKeywords = defaultStandardKeywords.slice();
+
         runestone.standardKeywords.sequence = forgeANSISequence(runestone.standardKeywords);
     }
 
     if (runestone.lesserKeywords) {
-        if (Array.isArray(runestone.lesserKeywords.keywords)) {
+        if (Array.isArray(runestone.lesserKeywords.keywords))
             lesserKeywords = runestone.lesserKeywords.keywords;
-        }
+        else
+            lesserKeywords = defaultLesserKeywords.slice();
+
         runestone.lesserKeywords.sequence = forgeANSISequence(runestone.lesserKeywords);
     }
 
@@ -220,6 +249,10 @@ function igniculus(options) {
 
     if (runestone.postfix) {
         runestone.postfix.sequence = forgeANSISequence(runestone.postfix);
+    }
+
+    if (typeof runestone.output !== 'function') {
+        runestone.output = console.log;
     }
 
     return illumine;

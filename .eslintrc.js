@@ -11,23 +11,6 @@ module.exports = {
     "rules": {
         "no-console": 0,
         "no-control-regex": 0,
-        "valid-jsdoc": [2, {
-            "preferType": {
-                "Function": "function",
-                "Boolean":  "boolean",
-                "Number":   "number",
-                "String":   "string",
-                "array":    "Array",
-                "object":   "Object",
-                "date":     "Date",
-                "error":    "Error",
-                "promise":  "Promise"
-            },
-            "requireReturn": false,
-            "requireReturnType": true,
-            "requireParamDescription": false,
-            "requireReturnDescription": false
-        }],
         "block-scoped-var": 2,
         "eqeqeq": 2,
         "no-alert": 2,
@@ -49,7 +32,6 @@ module.exports = {
         "comma-style": [2, "last"],
         "indent": [2, 4, { "SwitchCase": 1 }],
         "keyword-spacing": [1, { "before": true, "after": true }],
-        "linebreak-style": [process.env.SGH_ENV === 'testing' ? 2 : 0, "unix"],
         "lines-around-comment": [1, { "beforeBlockComment": true }],
         "no-trailing-spaces": [2, { "ignoreComments": false }],
         "no-whitespace-before-property": 2,

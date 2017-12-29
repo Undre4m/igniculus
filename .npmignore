@@ -1,6 +1,9 @@
 # Media
 **/media
 
+# Tests
+**/test
+
 # ESLint
 .eslint*
 
