@@ -2,6 +2,7 @@
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
 [![version](https://img.shields.io/npm/v/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
+[![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?style=flat-square)](https://travis-ci.org/Undre4m/igniculus)
 [![node](https://img.shields.io/node/v/igniculus.svg?style=flat-square)](https://nodejs.org/en/download/releases)
 [![downloads](https://img.shields.io/npm/dt/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
 [![license](https://img.shields.io/npm/l/igniculus.svg?style=flat-square)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
@@ -24,9 +25,18 @@ igniculus('SELECT [port] AS Printer, \'on fire\' AS Status ' +
 
 ![Simple Query Default](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/simple-query.png)
 
+## Table of Contents
+- [Logger](#logger)
+- [Options](#options)
+    - [Rules](#rules)
+    - [Styles](#styles)
+- [Examples](#examples)
+- [Integration](#integration)
+    - [Sequelize](#sequelize)
+
 ## Logger
 
-A reference to the log function is returned on initialization but can be accesed anywhere through `.log`
+A reference to the log function is returned on initialization but can be accessed anywhere through `.log`
 
 ```js
 // config.js
@@ -88,11 +98,12 @@ The _options_ argument is optional and each property should be one of the follow
   - lesserKeywords.**keywords** - Array of custom lesser keywords. Replaces the ones by default. _E.g:_ `['VOLATILE', 'ASYMMETRIC']`
 - options.**prefix**
   - prefix.**text** - A prefix can be appended to every log through this option. This prefix can be styled like any previous options.
-  - prefix.**replace** - Also, a _string_ or _regular expression_ can be provided and it will replace (if a prefix.**text** was given) or remove a prefix that matches such parameter. _E.g:_ [Sequelize](https://www.npmjs.com/package/sequelize) prefixes every _SQL statement_ with `Executing (default):` This is removed by **default** by the option `prefix: { replace: /.*?: / }`
+  - prefix.**replace** - Also, a _string_ or _regular expression_ can be provided and it will replace (if a prefix.**text** was given) or remove a prefix that matches such parameter. _E.g:_ [Sequelize](https://www.npmjs.com/package/sequelize) prefixes every _SQL statement_ with `Executing (default|transaction_id):` This is removed by **default** by the option `prefix: { replace: /.*?: / }`
 - options.**postfix**
   - postfix.**text** - A postfix can be appended to every log through this option. This postfix can be styled like any previous options.
+- options.**output** - Output function for the highlighted statements, `console.log` by default. _E.g:_ `process.stdout`, `st => st`
 
-If defined, the _options_ argument takes precedence over _default_ options. If a rule or it´s style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](https://www.npmjs.com/package/igniculus#examples)_
+If defined, the _options_ argument takes precedence over _default_ options. If a rule or it´s style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](#examples)_
 
 >#### A word on types and keywords
 >Most often, highlighting every reserved keyword can make syntax difficult to read, defeating the purpose altogether. Therefore, three distinct rules are provided: _dataTypes_, _standardKeywords_ and _lesserKeywords_.
@@ -125,7 +136,7 @@ Each style having an optional:
 
 These can be one of the following.
 
-### Modifiers
+#### Modifiers
 
 - `reset`
 - `bold`
@@ -137,7 +148,7 @@ These can be one of the following.
 - `hidden`
 - `strikethrough`
 
-### Colors (Foreground and Background)
+#### Colors (Foreground and Background)
 
 - `black`
 - `red`
@@ -214,11 +225,11 @@ igniculus.log('CREATE TABLE User (' +
 
 ![Custom Create](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/simple-create-custom.png)
 
-### Integration
+## Integration
 
 Igniculus' logger is a _drop in_ replacement on any tool that passes the log function either a `string` or `Object` paramater. In the latest case the `toString()` method will be called to obtain a `string` primitive.
 
-#### Sequelize
+### Sequelize
 
 Using igniculus with sequelize is straightforward.
 
@@ -265,15 +276,18 @@ sequelize.sync({ logging: igniculus});
 #### After
 ![After](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/sequelize-with.png)
 
-## Future Upgrades
+## Notes
 
-- Custom rules
-- Selecting log stream _E.g:_ `process.stdout`
+### Changes
+For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
+
+### Future Upgrades
+Planned support for custom rules.
 
 ## Maintainers
 
-- [Lucas Astrada](https://github.com/undre4m)
+[Lucas Astrada](https://github.com/undre4m)
 
 ## License
 
-MIT
+[MIT](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
