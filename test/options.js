@@ -103,6 +103,13 @@ const statement_e = dedent`DECLARE @name VARCHAR(50)
                            CLOSE db_cursor
                            DEALLOCATE db_cursor`;
 
+const statement_f = dedent`cReAtE fUnCtIoN get_child_schemas (@schema_id iNtEgEr)
+                           ReTuRnS tAbLe As ReTuRn
+
+                           SeLeCt name, schema_id As 'id'
+                           FrOm sys.schemas
+                           WhErE schema_id <> principal_id aNd principal_id = @schema_id`;
+
 test('custom output', t => {
     const options = {
         output: out => out.split('').reduce((a, c) => a += c.charCodeAt(0), 0)
@@ -330,7 +337,7 @@ test('postfix', t => {
 
     t.is(output, expected);
 });
-/*
+
 test('data types and keywords', t => {
     const options = {
         dataTypes:            { mode: 'dim', fg: 'green' },
@@ -340,7 +347,7 @@ test('data types and keywords', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_d);
+    const output = print(statement_c);
     const expected =
         dedent`${m.dim}${c.fg.cyan}SELECT${m.reset} 'Feature' ${m.bold}${c.fg.black}as${m.reset} type, 'Point' ${m.bold}${c.fg.black}as${m.reset} [geometry.type],
                    JSON_QUERY(FORMATMESSAGE('[%s,%s]',
@@ -356,8 +363,8 @@ test('data types and keywords', t => {
 
     t.is(output, expected);
 });
-*/
-test('data types and keywords', t => {
+
+test('data types and keywords without case', t => {
     const options = {
         dataTypes:            { mode: 'dim', fg: 'green' },
         standardKeywords:     { mode: 'dim', fg: 'cyan' },
@@ -366,23 +373,60 @@ test('data types and keywords', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_c);
+    const output = print(statement_f);
     const expected =
-        dedent`${m.dim}${c.fg.cyan}SELECT${m.reset} 'Feature' ${m.bold}${c.fg.black}AS${m.reset} type, 'Point' ${m.bold}${c.fg.black}AS${m.reset} [geometry.type],
-                   JSON_QUERY(FORMATMESSAGE('[%s,%s]',
-                       FORMAT(L.position.STY, N'0.##################################################'),
-                       FORMAT(L.position.STX, N'0.##################################################')
-                   )) ${m.bold}${c.fg.black}AS${m.reset} [geometry.coordinates],
-                   L.descriptor ${m.bold}${c.fg.black}AS${m.reset} [properties.descriptor],
-                   C.name ${m.bold}${c.fg.black}AS${m.reset} [properties.class]
-               ${m.dim}${c.fg.cyan}FROM${m.reset} Locators L
-               ${m.dim}${c.fg.cyan}INNER${m.reset} ${m.dim}${c.fg.cyan}JOIN${m.reset} Locator_Classes C ${m.dim}${c.fg.cyan}ON${m.reset} L.lcid = C.lcid
-               ${m.dim}${c.fg.cyan}WHERE${m.reset} L.lid = 20295
-               FOR JSON PATH`;
+        dedent`${m.dim}${c.fg.cyan}cReAtE${m.reset} ${m.dim}${c.fg.cyan}fUnCtIoN${m.reset} get_child_schemas (@schema_id ${m.dim}${c.fg.green}iNtEgEr${m.reset})
+               ${m.dim}${c.fg.cyan}ReTuRnS${m.reset} ${m.dim}${c.fg.cyan}tAbLe${m.reset} ${m.bold}${c.fg.black}As${m.reset} ${m.dim}${c.fg.cyan}ReTuRn${m.reset}
+
+               ${m.dim}${c.fg.cyan}SeLeCt${m.reset} name, schema_id ${m.bold}${c.fg.black}As${m.reset} 'id'
+               ${m.dim}${c.fg.cyan}FrOm${m.reset} sys.schemas
+               ${m.dim}${c.fg.cyan}WhErE${m.reset} schema_id <> principal_id ${m.bold}${c.fg.black}aNd${m.reset} principal_id = @schema_id`;
 
     t.is(output, expected);
 });
-/*
+
+test('lowercase data types and keywords', t => {
+    const options = {
+        dataTypes:            { mode: 'dim', fg: 'green', casing: 'lowercase' },
+        standardKeywords:     { mode: 'dim', fg: 'cyan', casing: 'lowercase' },
+        lesserKeywords:       { mode: 'bold', fg: 'black', casing: 'lowercase' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_f);
+    const expected =
+        dedent`${m.dim}${c.fg.cyan}create${m.reset} ${m.dim}${c.fg.cyan}function${m.reset} get_child_schemas (@schema_id ${m.dim}${c.fg.green}integer${m.reset})
+               ${m.dim}${c.fg.cyan}returns${m.reset} ${m.dim}${c.fg.cyan}table${m.reset} ${m.bold}${c.fg.black}as${m.reset} ${m.dim}${c.fg.cyan}return${m.reset}
+
+               ${m.dim}${c.fg.cyan}select${m.reset} name, schema_id ${m.bold}${c.fg.black}as${m.reset} 'id'
+               ${m.dim}${c.fg.cyan}from${m.reset} sys.schemas
+               ${m.dim}${c.fg.cyan}where${m.reset} schema_id <> principal_id ${m.bold}${c.fg.black}and${m.reset} principal_id = @schema_id`;
+
+    t.is(output, expected);
+});
+
+test('uppercase data types and keywords', t => {
+    const options = {
+        dataTypes:            { mode: 'dim', fg: 'green', casing: 'uppercase' },
+        standardKeywords:     { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
+        lesserKeywords:       { mode: 'bold', fg: 'black', casing: 'uppercase' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_f);
+    const expected =
+        dedent`${m.dim}${c.fg.cyan}CREATE${m.reset} ${m.dim}${c.fg.cyan}FUNCTION${m.reset} get_child_schemas (@schema_id ${m.dim}${c.fg.green}INTEGER${m.reset})
+               ${m.dim}${c.fg.cyan}RETURNS${m.reset} ${m.dim}${c.fg.cyan}TABLE${m.reset} ${m.bold}${c.fg.black}AS${m.reset} ${m.dim}${c.fg.cyan}RETURN${m.reset}
+
+               ${m.dim}${c.fg.cyan}SELECT${m.reset} name, schema_id ${m.bold}${c.fg.black}AS${m.reset} 'id'
+               ${m.dim}${c.fg.cyan}FROM${m.reset} sys.schemas
+               ${m.dim}${c.fg.cyan}WHERE${m.reset} schema_id <> principal_id ${m.bold}${c.fg.black}AND${m.reset} principal_id = @schema_id`;
+
+    t.is(output, expected);
+});
+
 test('data types and keywords among constant and identifiers', t => {
     const options = {
         constants:                { mode: 'dim', fg: 'red' },
@@ -394,7 +438,7 @@ test('data types and keywords among constant and identifiers', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_d);
+    const output = print(statement_c);
     const expected =
         dedent`${m.dim}${c.fg.cyan}SELECT${m.reset} ${m.dim}${c.fg.red}'Feature'${m.reset} ${m.bold}${c.fg.black}as${m.reset} type, ${m.dim}${c.fg.red}'Point'${m.reset} ${m.bold}${c.fg.black}as${m.reset} ${m.dim}${c.fg.yellow}[geometry.type]${m.reset},
                    JSON_QUERY(FORMATMESSAGE(${m.dim}${c.fg.red}'[%s,%s]'${m.reset},
@@ -410,35 +454,7 @@ test('data types and keywords among constant and identifiers', t => {
 
     t.is(output, expected);
 });
-*/
-test('data types and keywords among constant and identifiers', t => {
-    const options = {
-        constants:                { mode: 'dim', fg: 'red' },
-        delimitedIdentifiers:     { mode: 'dim', fg: 'yellow' },
-        dataTypes:                { mode: 'dim', fg: 'green' },
-        standardKeywords:         { mode: 'dim', fg: 'cyan' },
-        lesserKeywords:           { mode: 'bold', fg: 'black' }
-    };
 
-    const print = igniculus(Object.assign(options, echo));
-
-    const output = print(statement_c);
-    const expected =
-        dedent`${m.dim}${c.fg.cyan}SELECT${m.reset} ${m.dim}${c.fg.red}'Feature'${m.reset} ${m.bold}${c.fg.black}AS${m.reset} type, ${m.dim}${c.fg.red}'Point'${m.reset} ${m.bold}${c.fg.black}AS${m.reset} ${m.dim}${c.fg.yellow}[geometry.type]${m.reset},
-                   JSON_QUERY(FORMATMESSAGE(${m.dim}${c.fg.red}'[%s,%s]'${m.reset},
-                       FORMAT(L.position.STY, N${m.dim}${c.fg.red}'0.##################################################'${m.reset}),
-                       FORMAT(L.position.STX, N${m.dim}${c.fg.red}'0.##################################################'${m.reset})
-                   )) ${m.bold}${c.fg.black}AS${m.reset} ${m.dim}${c.fg.yellow}[geometry.coordinates]${m.reset},
-                   L.descriptor ${m.bold}${c.fg.black}AS${m.reset} ${m.dim}${c.fg.yellow}[properties.descriptor]${m.reset},
-                   C.name ${m.bold}${c.fg.black}AS${m.reset} ${m.dim}${c.fg.yellow}[properties.class]${m.reset}
-               ${m.dim}${c.fg.cyan}FROM${m.reset} Locators L
-               ${m.dim}${c.fg.cyan}INNER${m.reset} ${m.dim}${c.fg.cyan}JOIN${m.reset} Locator_Classes C ${m.dim}${c.fg.cyan}ON${m.reset} L.lcid = C.lcid
-               ${m.dim}${c.fg.cyan}WHERE${m.reset} L.lid = 20295
-               FOR JSON PATH`;
-
-    t.is(output, expected);
-});
-/*
 test('custom data types and keywords', t => {
     const options = {
         dataTypes:            { mode: 'dim', fg: 'green', types: ['GEOMETRY', 'POINT', 'JSON'] },
@@ -448,7 +464,7 @@ test('custom data types and keywords', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_d);
+    const output = print(statement_c);
     const expected =
         dedent`${m.bold}${c.fg.black}SELECT${m.reset} 'Feature' ${m.bold}${c.fg.black}as${m.reset} type, 'Point' ${m.bold}${c.fg.black}as${m.reset} [geometry.type],
                    JSON_QUERY(${m.dim}${c.fg.red}FORMATMESSAGE${m.reset}('[%s,%s]',
@@ -464,33 +480,7 @@ test('custom data types and keywords', t => {
 
     t.is(output, expected);
 });
-*/
-test('custom data types and keywords', t => {
-    const options = {
-        dataTypes:            { mode: 'dim', fg: 'green', types: ['GEOMETRY', 'POINT', 'JSON'] },
-        standardKeywords:     { mode: 'bold', fg: 'black', keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH'] },
-        lesserKeywords:       { mode: 'dim', fg: 'red', keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY'] }
-    };
 
-    const print = igniculus(Object.assign(options, echo));
-
-    const output = print(statement_c);
-    const expected =
-        dedent`${m.bold}${c.fg.black}SELECT${m.reset} 'Feature' ${m.bold}${c.fg.black}AS${m.reset} type, 'Point' ${m.bold}${c.fg.black}AS${m.reset} [geometry.type],
-                   JSON_QUERY(${m.dim}${c.fg.red}FORMATMESSAGE${m.reset}('[%s,%s]',
-                       ${m.dim}${c.fg.red}FORMAT${m.reset}(L.position.${m.dim}${c.fg.red}STY${m.reset}, N'0.##################################################'),
-                       ${m.dim}${c.fg.red}FORMAT${m.reset}(L.position.${m.dim}${c.fg.red}STX${m.reset}, N'0.##################################################')
-                   )) ${m.bold}${c.fg.black}AS${m.reset} [geometry.coordinates],
-                   L.descriptor ${m.bold}${c.fg.black}AS${m.reset} [properties.descriptor],
-                   C.name ${m.bold}${c.fg.black}AS${m.reset} [properties.class]
-               ${m.bold}${c.fg.black}FROM${m.reset} Locators L
-               ${m.bold}${c.fg.black}INNER${m.reset} ${m.bold}${c.fg.black}JOIN${m.reset} Locator_Classes C ${m.bold}${c.fg.black}ON${m.reset} L.lcid = C.lcid
-               ${m.bold}${c.fg.black}WHERE${m.reset} L.lid = 20295
-               ${m.bold}${c.fg.black}FOR${m.reset} ${m.dim}${c.fg.green}JSON${m.reset} ${m.bold}${c.fg.black}PATH${m.reset}`;
-
-    t.is(output, expected);
-});
-/*
 test('custom data types and keywords among constant and identifiers', t => {
     const options = {
         constants:                { mode: 'inverse', bg: 'black', fg: 'red' },
@@ -502,7 +492,7 @@ test('custom data types and keywords among constant and identifiers', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_d);
+    const output = print(statement_c);
     const expected =
         dedent`${m.bold}${c.fg.black}SELECT${m.reset} ${m.inverse}${c.bg.black}${c.fg.red}'Feature'${m.reset} ${m.bold}${c.fg.black}as${m.reset} type, ${m.inverse}${c.bg.black}${c.fg.red}'Point'${m.reset} ${m.bold}${c.fg.black}as${m.reset} ${m.italic}${c.bg.yellow}${c.fg.black}[geometry.type]${m.reset},
                    JSON_QUERY(${m.dim}${c.fg.red}FORMATMESSAGE${m.reset}(${m.inverse}${c.bg.black}${c.fg.red}'[%s,%s]'${m.reset},
@@ -518,53 +508,7 @@ test('custom data types and keywords among constant and identifiers', t => {
 
     t.is(output, expected);
 });
-*/
-test('custom data types and keywords among constant and identifiers', t => {
-    const options = {
-        constants:                { mode: 'inverse', bg: 'black', fg: 'red' },
-        delimitedIdentifiers:     { mode: 'italic', bg: 'yellow', fg: 'black' },
-        dataTypes:                { mode: 'dim', fg: 'green', types: ['GEOMETRY', 'POINT', 'JSON'] },
-        standardKeywords:         { mode: 'bold', fg: 'black', keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH'] },
-        lesserKeywords:           { mode: 'dim', fg: 'red', keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY'] }
-    };
 
-    const print = igniculus(Object.assign(options, echo));
-
-    const output = print(statement_c);
-    const expected =
-        dedent`${m.bold}${c.fg.black}SELECT${m.reset} ${m.inverse}${c.bg.black}${c.fg.red}'Feature'${m.reset} ${m.bold}${c.fg.black}AS${m.reset} type, ${m.inverse}${c.bg.black}${c.fg.red}'Point'${m.reset} ${m.bold}${c.fg.black}AS${m.reset} ${m.italic}${c.bg.yellow}${c.fg.black}[geometry.type]${m.reset},
-                   JSON_QUERY(${m.dim}${c.fg.red}FORMATMESSAGE${m.reset}(${m.inverse}${c.bg.black}${c.fg.red}'[%s,%s]'${m.reset},
-                       ${m.dim}${c.fg.red}FORMAT${m.reset}(L.position.${m.dim}${c.fg.red}STY${m.reset}, N${m.inverse}${c.bg.black}${c.fg.red}'0.##################################################'${m.reset}),
-                       ${m.dim}${c.fg.red}FORMAT${m.reset}(L.position.${m.dim}${c.fg.red}STX${m.reset}, N${m.inverse}${c.bg.black}${c.fg.red}'0.##################################################'${m.reset})
-                   )) ${m.bold}${c.fg.black}AS${m.reset} ${m.italic}${c.bg.yellow}${c.fg.black}[geometry.coordinates]${m.reset},
-                   L.descriptor ${m.bold}${c.fg.black}AS${m.reset} ${m.italic}${c.bg.yellow}${c.fg.black}[properties.descriptor]${m.reset},
-                   C.name ${m.bold}${c.fg.black}AS${m.reset} ${m.italic}${c.bg.yellow}${c.fg.black}[properties.class]${m.reset}
-               ${m.bold}${c.fg.black}FROM${m.reset} Locators L
-               ${m.bold}${c.fg.black}INNER${m.reset} ${m.bold}${c.fg.black}JOIN${m.reset} Locator_Classes C ${m.bold}${c.fg.black}ON${m.reset} L.lcid = C.lcid
-               ${m.bold}${c.fg.black}WHERE${m.reset} L.lid = 20295
-               ${m.bold}${c.fg.black}FOR${m.reset} ${m.dim}${c.fg.green}JSON${m.reset} ${m.bold}${c.fg.black}PATH${m.reset}`;
-
-    t.is(output, expected);
-});
-/*
-test('colliding data types and keywords', t => {
-    const options = {
-        dataTypes:            { fg: 'magenta', types: ['DATE', 'DB'] },
-        standardKeywords:     { mode: 'hidden', bg: 'black', fg: 'black', keywords: ['SELECT', 'CREATE', 'FROM', 'WHERE', 'USER', 'MASTER', 'DATE'] },
-        lesserKeywords:       { mode: 'bold', fg: 'black', keywords: ['CONVERT', 'AS', 'MASTER'] }
-    };
-
-    const print = igniculus(Object.assign(options, echo));
-
-    const output = print(statement_e);
-    const expected =
-        dedent`${m.hidden}${c.bg.black}${c.fg.black}SELECT${m.reset} name ${m.bold}${c.fg.black}AS${m.reset} 'user', ${m.bold}${c.fg.black}CONVERT${m.reset}(${c.fg.magenta}DATE${m.reset}, createdate, 102) ${m.bold}${c.fg.black}AS${m.reset} 'created'
-               ${m.hidden}${c.bg.black}${c.fg.black}FROM${m.reset} ${m.hidden}${c.bg.black}${c.fg.black}master${m.reset}..syslogins
-               ${m.hidden}${c.bg.black}${c.fg.black}WHERE${m.reset} dbname = 'master'`;
-
-    t.is(output, expected);
-});
-*/
 test('colliding data types and keywords', t => {
     const options = {
         dataTypes:            { fg: 'magenta', types: ['DATE', 'DB'] },
@@ -577,7 +521,7 @@ test('colliding data types and keywords', t => {
     const output = print(statement_d);
     const expected =
         dedent`${m.hidden}${c.bg.black}${c.fg.black}SELECT${m.reset} name ${m.bold}${c.fg.black}AS${m.reset} 'user', ${m.bold}${c.fg.black}CONVERT${m.reset}(${c.fg.magenta}DATE${m.reset}, createdate, 102) ${m.bold}${c.fg.black}AS${m.reset} 'created'
-               ${m.hidden}${c.bg.black}${c.fg.black}FROM${m.reset} ${m.hidden}${c.bg.black}${c.fg.black}MASTER${m.reset}..syslogins
+               ${m.hidden}${c.bg.black}${c.fg.black}FROM${m.reset} ${m.hidden}${c.bg.black}${c.fg.black}master${m.reset}..syslogins
                ${m.hidden}${c.bg.black}${c.fg.black}WHERE${m.reset} dbname = 'master'`;
 
     t.is(output, expected);

@@ -20,7 +20,7 @@ const igniculus = require('igniculus')();
 
 igniculus('SELECT [port] AS Printer, \'on fire\' AS Status ' +
           'FROM [Printers] P ' +
-          'WHERE P."online" AND P."check"');
+          'WHERE P."online" = 1 AND P."check" = 1');
 ```
 
 ![Simple Query Default](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/simple-query.png)
@@ -92,10 +92,13 @@ The _options_ argument is optional and each property should be one of the follow
 - options.**delimitedIdentifiers** - Text between brackets or double quotes. _E.g:_ `[Employee]` or `"salary"` 
 - options.**dataTypes** - One of the included data types. _E.g:_ `INTEGER` or `VARCHAR`
   - dataTypes.**types** - Array of custom data types. Replaces the ones by default. _E.g:_ `['SERIAL', 'TIMESTAMP']`
+  - dataTypes.**casing** - Either `'lowercase'` or `'uppercase'`. If not defined data types won't be capitalized.
 - options.**standardKeywords** - One the included keywords. _E.g:_ `SELECT` or `CONSTRAINT`
   - standardKeywords.**keywords** - Array of custom standard keywords. Replaces the ones by default. _E.g:_ `['CLUSTER', 'NATURAL']`
+  - standardKeywords.**casing** - Either `'lowercase'` or `'uppercase'`. If not defined standard keywords won't be capitalized.
 - options.**lesserKeywords** - One of the included lesser keywords. _E.g:_ `ANY`, `AVG` or `DESC`
   - lesserKeywords.**keywords** - Array of custom lesser keywords. Replaces the ones by default. _E.g:_ `['VOLATILE', 'ASYMMETRIC']`
+  - lesserKeywords.**casing** - Either `'lowercase'` or `'uppercase'`. If not defined lesser keywords won't be capitalized.
 - options.**prefix**
   - prefix.**text** - A prefix can be appended to every log through this option. This prefix can be styled like any previous options.
   - prefix.**replace** - Also, a _string_ or _regular expression_ can be provided and it will replace (if a prefix.**text** was given) or remove a prefix that matches such parameter. _E.g:_ [Sequelize](https://www.npmjs.com/package/sequelize) prefixes every _SQL statement_ with `Executing (default|transaction_id):` This is removed by **default** by the option `prefix: { replace: /.*?: / }`
@@ -108,7 +111,8 @@ If defined, the _options_ argument takes precedence over _default_ options. If a
 >#### A word on types and keywords
 >Most often, highlighting every reserved keyword can make syntax difficult to read, defeating the purpose altogether. Therefore, three distinct rules are provided: _dataTypes_, _standardKeywords_ and _lesserKeywords_.
 Each of these rules can be customized individually and come with a [predefined list](https://github.com/Undre4m/igniculus/blob/master/index.js#L3) of most widely used T-SQL and SQL-92 keywords and data types. Furthermore each of this lists can be customized as described above.
-
+>
+>Starting from [v1.1.0](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md#110--26-feb-2018) _types_ and _keywords_ are no longer uppercased by default. Custom styles should use the `casing: 'uppercase'` option for this behaviour. Predefined style already provides this option so no changes should be required.
 
 ### Styles
 
@@ -165,9 +169,9 @@ These can be one of the following.
 /* Predifined style */
 const defaults = {
     constants:              { mode: 'dim', fg: 'red' },
-    delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-    dataTypes:              { mode: 'dim', fg: 'green' },
-    standardKeywords:       { mode: 'dim', fg: 'cyan' },
+    delimitedIdentifiers:   { mode: 'dim', fg: 'yellow', casing: 'uppercase' },
+    dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
+    standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
     lesserKeywords:         { mode: 'bold', fg: 'black' },
     prefix:                 { replace: /.*?: / }
 };
@@ -282,7 +286,7 @@ sequelize.sync({ logging: igniculus});
 For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
 
 ### Future Upgrades
-Planned support for custom rules.
+Planned support for variables and custom rules.
 
 ## Maintainers
 

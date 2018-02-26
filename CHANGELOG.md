@@ -1,6 +1,11 @@
 ## Changelog
 
-### 1.0.1 ~ _03 Jan 2018_
+### 1.1.0 ~ _26 Feb 2018_
+- Fixed types and keywords matching inside constants
+- Support for optional types and keywords casing
+- Performance improvements
+
+#### 1.0.1 ~ _03 Jan 2018_
 - LICENSE and README updates
 - CHANGELOG
 

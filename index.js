@@ -2,55 +2,55 @@
 
 const defaultDataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'INTEGER', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE'];
 
-const defaultStandardKeywords = ['ACTION', 'ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'NO', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
+const defaultStandardKeywords = ['ACTION', 'ADD', 'ALTER', 'BEGIN', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'ELSE', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'MERGE', 'MODIFY', 'NO', 'ON', 'ORDER', 'OUTER', 'PREPARE', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RETURN', 'RETURNS', 'RIGHT', 'SAVE', 'SELECT', 'SET', 'TABLE', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
 
-const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
+const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM'];
 
 let dataTypes = defaultDataTypes.slice();
 let standardKeywords = defaultStandardKeywords.slice();
 let lesserKeywords = defaultLesserKeywords.slice();
 
 const ANSIModes = {
-    reset: '\x1b[0m',
-    bold: '\x1b[1m',
-    dim: '\x1b[2m',
-    italic: '\x1b[3m',
-    underline: '\x1b[4m',
-    blink: '\x1b[5m',
-    inverse: '\x1b[7m',
-    hidden: '\x1b[8m',
+    reset:         '\x1b[0m',
+    bold:          '\x1b[1m',
+    dim:           '\x1b[2m',
+    italic:        '\x1b[3m',
+    underline:     '\x1b[4m',
+    blink:         '\x1b[5m',
+    inverse:       '\x1b[7m',
+    hidden:        '\x1b[8m',
     strikethrough: '\x1b[9m'
 };
 
 const ANSIColours = {
     fg: {
-        black: '\x1b[30m',
-        red: '\x1b[31m',
-        green: '\x1b[32m',
-        yellow: '\x1b[33m',
-        blue: '\x1b[34m',
-        magenta: '\x1b[35m',
-        cyan: '\x1b[36m',
-        white: '\x1b[37m'
+        black:     '\x1b[30m',
+        red:       '\x1b[31m',
+        green:     '\x1b[32m',
+        yellow:    '\x1b[33m',
+        blue:      '\x1b[34m',
+        magenta:   '\x1b[35m',
+        cyan:      '\x1b[36m',
+        white:     '\x1b[37m'
     },
     bg: {
-        black: '\x1b[40m',
-        red: '\x1b[41m',
-        green: '\x1b[42m',
-        yellow: '\x1b[43m',
-        blue: '\x1b[44m',
-        magenta: '\x1b[45m',
-        cyan: '\x1b[46m',
-        white: '\x1b[47m'
+        black:     '\x1b[40m',
+        red:       '\x1b[41m',
+        green:     '\x1b[42m',
+        yellow:    '\x1b[43m',
+        blue:      '\x1b[44m',
+        magenta:   '\x1b[45m',
+        cyan:      '\x1b[46m',
+        white:     '\x1b[47m'
     }
 };
 
 const defaults = {
     constants:              { mode: 'dim', fg: 'red' },
     delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-    dataTypes:              { mode: 'dim', fg: 'green' },
-    standardKeywords:       { mode: 'dim', fg: 'cyan' },
-    lesserKeywords:         { mode: 'bold', fg: 'black' },
+    dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
+    standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
+    lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
     prefix:                 { replace: /.*?: / }
 };
 
@@ -111,25 +111,49 @@ function illumine(text) {
         output = output.replace(/(\[.*?\]|".*?")/g, '⇁※↼');
     }
 
+    // Extract constants so no subsequent operations alter them. Mark their positions for reinsertion.
+    let __constants = output.match(/('.*?')/g);
+    if (__constants && __constants.length) {
+        output = output.replace(/('.*?')/g, '⇝※⇜');
+    }
+
     if (runestone.dataTypes && runestone.dataTypes.sequence) {
-        for (let i = 0; i < dataTypes.length; i++) {
-            let regex = new RegExp('\\b' + dataTypes[i] + '\\b' + '(?![\'"\\]])', 'gi');
-            output = output.replace(regex, runestone.dataTypes.sequence + dataTypes[i] + ANSIModes.reset);
-        }
+        let regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        output = output.replace(regex, (match, g1) => {
+            let word = g1;
+
+            const casing = runestone.dataTypes.casing;
+            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
+                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+
+            return runestone.dataTypes.sequence + word + ANSIModes.reset;
+        });
     }
 
     if (runestone.standardKeywords && runestone.standardKeywords.sequence) {
-        for (let i = 0; i < standardKeywords.length; i++) {
-            let regex = new RegExp('\\b' + standardKeywords[i] + '\\b' + '(?![\'"\\]])', 'gi');
-            output = output.replace(regex, runestone.standardKeywords.sequence + standardKeywords[i] + ANSIModes.reset);
-        }
+        let regex = new RegExp('\\b' + '(' + standardKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        output = output.replace(regex, (match, g1) => {
+            let word = g1;
+
+            const casing = runestone.standardKeywords.casing;
+            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
+                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+
+            return runestone.standardKeywords.sequence + word + ANSIModes.reset;
+        });
     }
 
     if (runestone.lesserKeywords && runestone.lesserKeywords.sequence) {
-        for (let i = 0; i < lesserKeywords.length; i++) {
-            let regex = new RegExp('\\b' + lesserKeywords[i] + '\\b' + '(?![\'"\\]])', 'gi');
-            output = output.replace(regex, runestone.lesserKeywords.sequence + lesserKeywords[i] + ANSIModes.reset);
-        }
+        let regex = new RegExp('\\b' + '(' + lesserKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        output = output.replace(regex, (match, g1) => {
+            let word = g1;
+
+            const casing = runestone.lesserKeywords.casing;
+            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
+                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+
+            return runestone.lesserKeywords.sequence + word + ANSIModes.reset;
+        });
     }
 
     if (runestone.numbers && runestone.numbers.sequence) {
@@ -138,6 +162,17 @@ function illumine(text) {
 
     if (runestone.operators && runestone.operators.sequence) {
         output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$&' + ANSIModes.reset);
+    }
+
+    // If constants were found and extracted, reinsert them on the marked positions.
+    if (__constants && __constants.length) {
+        for (let i of __constants) {
+            // If constants were to be formatted, apply the provided style.
+            if (runestone.constants && runestone.constants.sequence)
+                output = output.replace('⇝※⇜', runestone.constants.sequence + i + ANSIModes.reset);
+            else
+                output = output.replace('⇝※⇜', i);
+        }
     }
 
     // If delimited identifiers were found and extracted, reinsert them on the marked positions.
@@ -151,17 +186,10 @@ function illumine(text) {
         }
     }
 
-    if (runestone.constants && runestone.constants.sequence) {
-        output = output.replace(/('.*?')/g, (match) => {
-            return runestone.constants.sequence + voidFormatting(match) + ANSIModes.reset;
-        });
-    }
     // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
-    else {
-        output = output.replace(/('.*?')/g, (match) => {
-            return voidFormatting(match);
-        });
-    }
+    output = output.replace(/('.*?')/g, (match) => {
+        return voidFormatting(match);
+    });
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
     if (__prefix && runestone.prefix.text) {

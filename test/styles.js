@@ -58,6 +58,15 @@ const statement_b = dedent`Executing (default): IF OBJECT_ID('[Users]', 'U') IS 
                                FOREIGN KEY ([profileId]) REFERENCES [Profiles] ([profileId]) ON DELETE NO ACTION
                            );`;
 
+const statement_c = dedent`create procedure stop_if_combusting
+                           (
+                               @port char(3)
+                           )
+                           as
+                               update [Printers]
+                               set [online] = 0, [ready] = 0
+                               where [online] = 1 and [check] = 1 and [port] = @port`;
+
 test('no style', t => {
     const options = {};
 
@@ -87,7 +96,7 @@ test('modifiers', t => {
     const output = print(statement_a);
     const expected =
         dedent`${m.hidden}[START]
-               ${m.reset}${m.blink}SELECT${m.reset} LOWER(${m.italic}[port]${m.reset}) ${m.inverse}AS${m.reset} Printer, 'ON fire' ${m.inverse}AS${m.reset} Status, CONVERT(${m.underline}DATETIME2${m.reset}(${m.bold}0${m.reset}), CURRENT_TIMESTAMP) ${m.inverse}AS${m.reset} At
+               ${m.reset}${m.blink}SELECT${m.reset} LOWER(${m.italic}[port]${m.reset}) ${m.inverse}AS${m.reset} Printer, 'on fire' ${m.inverse}AS${m.reset} Status, CONVERT(${m.underline}DATETIME2${m.reset}(${m.bold}0${m.reset}), CURRENT_TIMESTAMP) ${m.inverse}AS${m.reset} At
                ${m.blink}FROM${m.reset} ${m.italic}[Printers]${m.reset} P
                ${m.blink}WHERE${m.reset} P.${m.italic}"online"${m.reset} ${m.dim}=${m.reset} ${m.bold}1${m.reset} ${m.inverse}AND${m.reset} P.${m.italic}"check"${m.reset} ${m.dim}=${m.reset} ${m.bold}1${m.reset};${m.strikethrough}
                [END]${m.reset}`;
@@ -113,7 +122,7 @@ test('foreground colors', t => {
     const output = print(statement_a);
     const expected =
         dedent`${c.fg.cyan}[START]
-               ${m.reset}${c.fg.blue}SELECT${m.reset} LOWER(${c.fg.green}[port]${m.reset}) ${c.fg.magenta}AS${m.reset} Printer, 'ON fire' ${c.fg.magenta}AS${m.reset} Status, CONVERT(${c.fg.yellow}DATETIME2${m.reset}(${c.fg.black}0${m.reset}), CURRENT_TIMESTAMP) ${c.fg.magenta}AS${m.reset} At
+               ${m.reset}${c.fg.blue}SELECT${m.reset} LOWER(${c.fg.green}[port]${m.reset}) ${c.fg.magenta}AS${m.reset} Printer, 'on fire' ${c.fg.magenta}AS${m.reset} Status, CONVERT(${c.fg.yellow}DATETIME2${m.reset}(${c.fg.black}0${m.reset}), CURRENT_TIMESTAMP) ${c.fg.magenta}AS${m.reset} At
                ${c.fg.blue}FROM${m.reset} ${c.fg.green}[Printers]${m.reset} P
                ${c.fg.blue}WHERE${m.reset} P.${c.fg.green}"online"${m.reset} ${c.fg.red}=${m.reset} ${c.fg.black}1${m.reset} ${c.fg.magenta}AND${m.reset} P.${c.fg.green}"check"${m.reset} ${c.fg.red}=${m.reset} ${c.fg.black}1${m.reset};${c.fg.white}
                [END]${m.reset}`;
@@ -139,7 +148,7 @@ test('background colors', t => {
     const output = print(statement_a);
     const expected =
         dedent`${c.bg.cyan}[START]
-               ${m.reset}${c.bg.blue}SELECT${m.reset} LOWER(${c.bg.green}[port]${m.reset}) ${c.bg.magenta}AS${m.reset} Printer, 'ON fire' ${c.bg.magenta}AS${m.reset} Status, CONVERT(${c.bg.yellow}DATETIME2${m.reset}(${c.bg.black}0${m.reset}), CURRENT_TIMESTAMP) ${c.bg.magenta}AS${m.reset} At
+               ${m.reset}${c.bg.blue}SELECT${m.reset} LOWER(${c.bg.green}[port]${m.reset}) ${c.bg.magenta}AS${m.reset} Printer, 'on fire' ${c.bg.magenta}AS${m.reset} Status, CONVERT(${c.bg.yellow}DATETIME2${m.reset}(${c.bg.black}0${m.reset}), CURRENT_TIMESTAMP) ${c.bg.magenta}AS${m.reset} At
                ${c.bg.blue}FROM${m.reset} ${c.bg.green}[Printers]${m.reset} P
                ${c.bg.blue}WHERE${m.reset} P.${c.bg.green}"online"${m.reset} ${c.bg.red}=${m.reset} ${c.bg.black}1${m.reset} ${c.bg.magenta}AND${m.reset} P.${c.bg.green}"check"${m.reset} ${c.bg.red}=${m.reset} ${c.bg.black}1${m.reset};${c.bg.white}
                [END]${m.reset}`;
@@ -151,9 +160,9 @@ test('default style', t => {
     const options = {
         constants:              { mode: 'dim', fg: 'red' },
         delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-        dataTypes:              { mode: 'dim', fg: 'green' },
-        standardKeywords:       { mode: 'dim', fg: 'cyan' },
-        lesserKeywords:         { mode: 'bold', fg: 'black' },
+        dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
+        standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
+        lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
         prefix:                 { replace: /.*?: / }
     };
 
@@ -171,6 +180,33 @@ test('default style', t => {
                    ${m.dim}${c.fg.cyan}FOREIGN${m.reset} ${m.dim}${c.fg.cyan}KEY${m.reset} (${m.dim}${c.fg.yellow}[userId]${m.reset}) ${m.dim}${c.fg.cyan}REFERENCES${m.reset} ${m.dim}${c.fg.yellow}[Employees]${m.reset} (${m.dim}${c.fg.yellow}[employeeId]${m.reset}) ${m.dim}${c.fg.cyan}ON${m.reset} ${m.dim}${c.fg.cyan}DELETE${m.reset} ${m.dim}${c.fg.cyan}CASCADE${m.reset},
                    ${m.dim}${c.fg.cyan}FOREIGN${m.reset} ${m.dim}${c.fg.cyan}KEY${m.reset} (${m.dim}${c.fg.yellow}[profileId]${m.reset}) ${m.dim}${c.fg.cyan}REFERENCES${m.reset} ${m.dim}${c.fg.yellow}[Profiles]${m.reset} (${m.dim}${c.fg.yellow}[profileId]${m.reset}) ${m.dim}${c.fg.cyan}ON${m.reset} ${m.dim}${c.fg.cyan}DELETE${m.reset} ${m.dim}${c.fg.cyan}NO${m.reset} ${m.dim}${c.fg.cyan}ACTION${m.reset}
                );`;
+
+    t.is(output, expected);
+});
+
+test('default style casing', t => {
+    const options = {
+        constants:              { mode: 'dim', fg: 'red' },
+        delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+        dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
+        standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
+        lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
+        prefix:                 { replace: /.*?: / }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_c);
+    const expected =
+
+dedent`${m.dim}${c.fg.cyan}CREATE${m.reset} ${m.dim}${c.fg.cyan}PROCEDURE${m.reset} stop_if_combusting
+       (
+           @port ${m.dim}${c.fg.green}CHAR${m.reset}(3)
+       )
+       ${m.bold}${c.fg.black}AS${m.reset}
+           ${m.dim}${c.fg.cyan}UPDATE${m.reset} ${m.dim}${c.fg.yellow}[Printers]${m.reset}
+           ${m.dim}${c.fg.cyan}SET${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 0, ${m.dim}${c.fg.yellow}[ready]${m.reset} = 0
+           ${m.dim}${c.fg.cyan}WHERE${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[check]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[port]${m.reset} = @port`;
 
     t.is(output, expected);
 });
