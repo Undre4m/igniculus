@@ -94,10 +94,10 @@ const statement_e = dedent`DECLARE @name VARCHAR(50)
 
                            WHILE @@FETCH_STATUS = 0
                            BEGIN
-                                  SET @fileName = @path + @name + '_' + @stamp + '.bak'
-                                  BACKUP DATABASE @name TO DISK = @fileName
+                               SET @fileName = @path + @name + '_' + @stamp + '.bak'
+                               BACKUP DATABASE @name TO DISK = @fileName
 
-                                  FETCH NEXT FROM db_cursor INTO @name
+                               FETCH NEXT FROM db_cursor INTO @name
                            END
 
                            CLOSE db_cursor
@@ -109,6 +109,14 @@ const statement_f = dedent`cReAtE fUnCtIoN get_child_schemas (@schema_id iNtEgEr
                            SeLeCt name, schema_id As 'id'
                            FrOm sys.schemas
                            WhErE schema_id <> principal_id aNd principal_id = @schema_id`;
+
+const statement_g = dedent`declare @@ char(2) = 'B0'
+                           declare @0 decimal(3,3) = 0.326
+                           declare @# varchar(32) = '@nix'
+
+                           select @@ as category, [@nima_uid_1], [@nima_uid_2]
+                           from [ARCs]
+                           where domain=@# and exposure<=@0 and g@ is null`;
 
 test('custom output', t => {
     const options = {
@@ -227,6 +235,45 @@ test('delimitedIdentifiers', t => {
                    CONSTRAINT 'PK_Printers' PRIMARY KEY (${c.fg.yellow}"scid"${m.reset}),
                    CONSTRAINT 'FK_Locator' FOREIGN KEY (${c.fg.yellow}"locator"${m.reset}) REFERENCES ${c.fg.yellow}[Locators]${m.reset}(${c.fg.yellow}"lid"${m.reset})
                );`;
+
+    t.is(output, expected);
+});
+
+test('variables', t => {
+    const options = {
+        variables: { fg: 'magenta' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_e);
+    const expected =
+        dedent`DECLARE ${c.fg.magenta}@name${m.reset} VARCHAR(50)
+               DECLARE ${c.fg.magenta}@path${m.reset} VARCHAR(256)
+               DECLARE ${c.fg.magenta}@stamp${m.reset} VARCHAR(20)
+               DECLARE ${c.fg.magenta}@fileName${m.reset} VARCHAR(256)
+
+               SET ${c.fg.magenta}@path${m.reset} = 'U:\\Ark\\'
+               SET ${c.fg.magenta}@stamp${m.reset} = CONVERT(VARCHAR(20), GETDATE(), 112)
+
+               DECLARE db_cursor CURSOR FOR
+               SELECT name
+               FROM master.dbo.sysdatabases
+               WHERE name NOT IN ('monitor', 'index', 'library')
+
+               OPEN db_cursor
+               FETCH NEXT FROM db_cursor INTO ${c.fg.magenta}@name${m.reset}
+
+               WHILE ${c.fg.magenta}@@FETCH_STATUS${m.reset} = 0
+               BEGIN
+                   SET ${c.fg.magenta}@fileName${m.reset} = ${c.fg.magenta}@path${m.reset} + ${c.fg.magenta}@name${m.reset} + '_' + ${c.fg.magenta}@stamp${m.reset} + '.bak'
+                   BACKUP DATABASE ${c.fg.magenta}@name${m.reset} TO DISK = ${c.fg.magenta}@fileName${m.reset}
+
+                   FETCH NEXT FROM db_cursor INTO ${c.fg.magenta}@name${m.reset}
+               END
+
+               CLOSE db_cursor
+               DEALLOCATE db_cursor`;
 
     t.is(output, expected);
 });
@@ -527,6 +574,31 @@ test('colliding data types and keywords', t => {
     t.is(output, expected);
 });
 
+test('numbers and data types among variables', t => {
+    const options = {
+        numbers:              { mode: 'italic' },
+        constants:            { mode: 'dim', fg: 'white' },
+        variables:            { fg: 'red' },
+        dataTypes:            { fg: 'blue', types: ['char', 'varchar', 'decimal', 'uid'], casing: 'lowercase' },
+        standardKeywords:     { fg: 'yellow' },
+        lesserKeywords:       { mode: 'bold', fg: 'black' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_g);
+    const expected =
+        dedent`${c.fg.yellow}declare${m.reset} ${c.fg.red}@@${m.reset} ${c.fg.blue}char${m.reset}(${m.italic}2${m.reset}) = ${m.dim}${c.fg.white}'B0'${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@0${m.reset} ${c.fg.blue}decimal${m.reset}(${m.italic}3${m.reset},${m.italic}3${m.reset}) = ${m.italic}0.326${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@#${m.reset} ${c.fg.blue}varchar${m.reset}(${m.italic}32${m.reset}) = ${m.dim}${c.fg.white}'@nix'${m.reset}
+
+               ${c.fg.yellow}select${m.reset} ${c.fg.red}@@${m.reset} ${m.bold}${c.fg.black}as${m.reset} category, [@nima_uid_1], [@nima_uid_2]
+               ${c.fg.yellow}from${m.reset} [ARCs]
+               ${c.fg.yellow}where${m.reset} domain=${c.fg.red}@#${m.reset} ${m.bold}${c.fg.black}and${m.reset} exposure<=${c.fg.red}@0${m.reset} ${m.bold}${c.fg.black}and${m.reset} g@ ${m.bold}${c.fg.black}is${m.reset} ${m.bold}${c.fg.black}null${m.reset}`;
+
+    t.is(output, expected);
+});
+
 test('prefix replace', t => {
     const options = {
         constants:            { fg: 'red' },
@@ -558,10 +630,10 @@ test('prefix replace', t => {
 
                ${m.bold}${c.fg.black}WHILE${m.reset} @@FETCH_STATUS = 0
                ${m.bold}${c.fg.black}BEGIN${m.reset}
-                      ${m.bold}${c.fg.black}SET${m.reset} @fileName = @path + @name + ${c.fg.red}'_'${m.reset} + @stamp + ${c.fg.red}'.bak'${m.reset}
-                      ${m.bold}${c.fg.black}BACKUP${m.reset} ${m.bold}${c.fg.black}DATABASE${m.reset} @name ${m.bold}${c.fg.black}TO${m.reset} ${m.bold}${c.fg.black}DISK${m.reset} = @fileName
+                   ${m.bold}${c.fg.black}SET${m.reset} @fileName = @path + @name + ${c.fg.red}'_'${m.reset} + @stamp + ${c.fg.red}'.bak'${m.reset}
+                   ${m.bold}${c.fg.black}BACKUP${m.reset} ${m.bold}${c.fg.black}DATABASE${m.reset} @name ${m.bold}${c.fg.black}TO${m.reset} ${m.bold}${c.fg.black}DISK${m.reset} = @fileName
 
-                      ${m.bold}${c.fg.black}FETCH${m.reset} ${m.bold}${c.fg.black}NEXT${m.reset} ${m.bold}${c.fg.black}FROM${m.reset} db_cursor ${m.bold}${c.fg.black}INTO${m.reset} @name
+                   ${m.bold}${c.fg.black}FETCH${m.reset} ${m.bold}${c.fg.black}NEXT${m.reset} ${m.bold}${c.fg.black}FROM${m.reset} db_cursor ${m.bold}${c.fg.black}INTO${m.reset} @name
                ${m.bold}${c.fg.black}END${m.reset}
 
                ${m.bold}${c.fg.black}CLOSE${m.reset} db_cursor
@@ -588,10 +660,10 @@ test('prefix remove', t => {
 
                ${m.bold}${c.fg.black}WHILE${m.reset} @@FETCH_STATUS ${c.fg.yellow}=${m.reset} 0
                ${m.bold}${c.fg.black}BEGIN${m.reset}
-                      ${m.bold}${c.fg.black}SET${m.reset} @fileName ${c.fg.yellow}=${m.reset} @path ${c.fg.yellow}+${m.reset} @name ${c.fg.yellow}+${m.reset} ${c.fg.red}'_'${m.reset} ${c.fg.yellow}+${m.reset} @stamp ${c.fg.yellow}+${m.reset} ${c.fg.red}'.bak'${m.reset}
-                      ${m.bold}${c.fg.black}BACKUP${m.reset} ${m.bold}${c.fg.black}DATABASE${m.reset} @name ${m.bold}${c.fg.black}TO${m.reset} ${m.bold}${c.fg.black}DISK${m.reset} ${c.fg.yellow}=${m.reset} @fileName
+                   ${m.bold}${c.fg.black}SET${m.reset} @fileName ${c.fg.yellow}=${m.reset} @path ${c.fg.yellow}+${m.reset} @name ${c.fg.yellow}+${m.reset} ${c.fg.red}'_'${m.reset} ${c.fg.yellow}+${m.reset} @stamp ${c.fg.yellow}+${m.reset} ${c.fg.red}'.bak'${m.reset}
+                   ${m.bold}${c.fg.black}BACKUP${m.reset} ${m.bold}${c.fg.black}DATABASE${m.reset} @name ${m.bold}${c.fg.black}TO${m.reset} ${m.bold}${c.fg.black}DISK${m.reset} ${c.fg.yellow}=${m.reset} @fileName
 
-                      ${m.bold}${c.fg.black}FETCH${m.reset} ${m.bold}${c.fg.black}NEXT${m.reset} ${m.bold}${c.fg.black}FROM${m.reset} db_cursor ${m.bold}${c.fg.black}INTO${m.reset} @name
+                   ${m.bold}${c.fg.black}FETCH${m.reset} ${m.bold}${c.fg.black}NEXT${m.reset} ${m.bold}${c.fg.black}FROM${m.reset} db_cursor ${m.bold}${c.fg.black}INTO${m.reset} @name
                ${m.bold}${c.fg.black}END${m.reset}
 
                ${m.bold}${c.fg.black}CLOSE${m.reset} db_cursor

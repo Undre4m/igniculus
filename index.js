@@ -48,6 +48,7 @@ const ANSIColours = {
 const defaults = {
     constants:              { mode: 'dim', fg: 'red' },
     delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+    variables:              { mode: 'dim', fg: 'magenta' },
     dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
     standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
     lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
@@ -117,6 +118,12 @@ function illumine(text) {
         output = output.replace(/('.*?')/g, '⇝※⇜');
     }
 
+    // Extract local variables so no subsequent operations alter them. Mark their positions for reinsertion.
+    let __variables = output.match(/(\B@[@#$_\w]*)/g);
+    if (__variables && __variables.length) {
+        output = output.replace(/(\B@[@#$_\w]*)/g, '↪※↩');
+    }
+
     if (runestone.dataTypes && runestone.dataTypes.sequence) {
         let regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
@@ -162,6 +169,17 @@ function illumine(text) {
 
     if (runestone.operators && runestone.operators.sequence) {
         output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$&' + ANSIModes.reset);
+    }
+
+    // If local variables were found and extracted, reinsert them on the marked positions.
+    if (__variables && __variables.length) {
+        for (let i of __variables) {
+            // If local variables were to be formatted, apply the provided style.
+            if (runestone.variables && runestone.variables.sequence)
+                output = output.replace('↪※↩', runestone.variables.sequence + i + ANSIModes.reset);
+            else
+                output = output.replace('↪※↩', i);
+        }
     }
 
     // If constants were found and extracted, reinsert them on the marked positions.
@@ -234,6 +252,10 @@ function igniculus(options) {
 
     if (runestone.operators) {
         runestone.operators.sequence = forgeANSISequence(runestone.operators);
+    }
+
+    if (runestone.variables) {
+        runestone.variables.sequence = forgeANSISequence(runestone.variables);
     }
 
     if (runestone.dataTypes) {

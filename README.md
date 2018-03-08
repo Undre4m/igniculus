@@ -86,10 +86,11 @@ The _options_ argument is optional and each property should be one of the follow
 
 ### Rules
 
-- options.**constants** - Values surrounded by single quotes. _E.g:_ `'static'` 
+- options.**constants** - Values surrounded by single quotes. _E.g:_ `'static'`
 - options.**numbers** - Numeric values. _E.g:_ `2.5`
-- options.**operators** - Arithmetic, Bitwise and Comparison operators. _E.g:_ `+` or `>=` 
-- options.**delimitedIdentifiers** - Text between brackets or double quotes. _E.g:_ `[Employee]` or `"salary"` 
+- options.**operators** - Arithmetic, Bitwise and Comparison operators. _E.g:_ `+` or `>=`
+- options.**variables** - Local variables and parameters. _E.g:_ `@name` or `@@IDENTITY`
+- options.**delimitedIdentifiers** - Text between brackets or double quotes. _E.g:_ `[Employee]` or `"salary"`
 - options.**dataTypes** - One of the included data types. _E.g:_ `INTEGER` or `VARCHAR`
   - dataTypes.**types** - Array of custom data types. Replaces the ones by default. _E.g:_ `['SERIAL', 'TIMESTAMP']`
   - dataTypes.**casing** - Either `'lowercase'` or `'uppercase'`. If not defined data types won't be capitalized.
@@ -169,10 +170,11 @@ These can be one of the following.
 /* Predifined style */
 const defaults = {
     constants:              { mode: 'dim', fg: 'red' },
-    delimitedIdentifiers:   { mode: 'dim', fg: 'yellow', casing: 'uppercase' },
+    delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+    variables:              { mode: 'dim', fg: 'magenta' },
     dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
     standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
-    lesserKeywords:         { mode: 'bold', fg: 'black' },
+    lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
     prefix:                 { replace: /.*?: / }
 };
 ```
@@ -262,7 +264,7 @@ const igniculus = require('igniculus')(
                                    replace: /.*?:/,
                                    text: '(Sequelize)'
                                },
-        postfix:               { text:'\r\n' }
+        postfix:               { text: '\r\n' }
     }
 );
 const sequelize = new Sequelize('database', 'username', 'password', {
@@ -286,7 +288,7 @@ sequelize.sync({ logging: igniculus});
 For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
 
 ### Future Upgrades
-Planned support for variables and custom rules.
+Planned support for custom rules.
 
 ## Maintainers
 

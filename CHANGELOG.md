@@ -1,6 +1,9 @@
 ## Changelog
 
-### 1.1.0 ~ _26 Feb 2018_
+### 1.2.0 ~ _08 Mar 2018_
+- Support for local variables and parameters
+
+#### 1.1.0 ~ _26 Feb 2018_
 - Fixed types and keywords matching inside constants
 - Support for optional types and keywords casing
 - Performance improvements

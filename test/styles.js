@@ -160,6 +160,7 @@ test('default style', t => {
     const options = {
         constants:              { mode: 'dim', fg: 'red' },
         delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+        variables:              { mode: 'dim', fg: 'magenta' },
         dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
         standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
         lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
@@ -184,10 +185,11 @@ test('default style', t => {
     t.is(output, expected);
 });
 
-test('default style casing', t => {
+test('default style 2', t => {
     const options = {
         constants:              { mode: 'dim', fg: 'red' },
         delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+        variables:              { mode: 'dim', fg: 'magenta' },
         dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
         standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
         lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
@@ -198,15 +200,14 @@ test('default style casing', t => {
 
     const output = print(statement_c);
     const expected =
-
-dedent`${m.dim}${c.fg.cyan}CREATE${m.reset} ${m.dim}${c.fg.cyan}PROCEDURE${m.reset} stop_if_combusting
-       (
-           @port ${m.dim}${c.fg.green}CHAR${m.reset}(3)
-       )
-       ${m.bold}${c.fg.black}AS${m.reset}
-           ${m.dim}${c.fg.cyan}UPDATE${m.reset} ${m.dim}${c.fg.yellow}[Printers]${m.reset}
-           ${m.dim}${c.fg.cyan}SET${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 0, ${m.dim}${c.fg.yellow}[ready]${m.reset} = 0
-           ${m.dim}${c.fg.cyan}WHERE${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[check]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[port]${m.reset} = @port`;
+        dedent`${m.dim}${c.fg.cyan}CREATE${m.reset} ${m.dim}${c.fg.cyan}PROCEDURE${m.reset} stop_if_combusting
+               (
+                   ${m.dim}${c.fg.magenta}@port${m.reset} ${m.dim}${c.fg.green}CHAR${m.reset}(3)
+               )
+               ${m.bold}${c.fg.black}AS${m.reset}
+                   ${m.dim}${c.fg.cyan}UPDATE${m.reset} ${m.dim}${c.fg.yellow}[Printers]${m.reset}
+                   ${m.dim}${c.fg.cyan}SET${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 0, ${m.dim}${c.fg.yellow}[ready]${m.reset} = 0
+                   ${m.dim}${c.fg.cyan}WHERE${m.reset} ${m.dim}${c.fg.yellow}[online]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[check]${m.reset} = 1 ${m.bold}${c.fg.black}AND${m.reset} ${m.dim}${c.fg.yellow}[port]${m.reset} = ${m.dim}${c.fg.magenta}@port${m.reset}`;
 
     t.is(output, expected);
 });
