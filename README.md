@@ -1,11 +1,12 @@
 # Igniculus
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
-[![version](https://img.shields.io/npm/v/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
-[![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?style=flat-square)](https://travis-ci.org/Undre4m/igniculus)
-[![node](https://img.shields.io/node/v/igniculus.svg?style=flat-square)](https://nodejs.org/en/download/releases)
-[![downloads](https://img.shields.io/npm/dt/igniculus.svg?style=flat-square)](https://www.npmjs.com/package/igniculus)
-[![license](https://img.shields.io/npm/l/igniculus.svg?style=flat-square)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
+[![version](https://img.shields.io/npm/v/igniculus.svg)](https://www.npmjs.com/package/igniculus)
+[![license](https://img.shields.io/npm/l/igniculus.svg)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
+[![downloads](https://img.shields.io/npm/dt/igniculus.svg?colorB=ffdf00)](https://www.npmjs.com/package/igniculus)
+[![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?logo=travis&logoWidth=15)](https://travis-ci.org/Undre4m/igniculus)
+[![maintainability](https://api.codeclimate.com/v1/badges/30482d982a79b253aed9/maintainability)](https://codeclimate.com/github/Undre4m/igniculus/maintainability)
+[![test Coverage](https://api.codeclimate.com/v1/badges/30482d982a79b253aed9/test_coverage)](https://codeclimate.com/github/Undre4m/igniculus/test_coverage)
 
 ## Install
 
@@ -86,6 +87,7 @@ The _options_ argument is optional and each property should be one of the follow
 
 ### Rules
 
+- options.**comments** - Single and multi-line comments. _E.g:_ `-- comments` or `/* Author: undre4m */`
 - options.**constants** - Values surrounded by single quotes. _E.g:_ `'static'`
 - options.**numbers** - Numeric values. _E.g:_ `2.5`
 - options.**operators** - Arithmetic, Bitwise and Comparison operators. _E.g:_ `+` or `>=`
@@ -169,6 +171,7 @@ These can be one of the following.
 ```js
 /* Predifined style */
 const defaults = {
+    comments:               { mode: 'dim', fg: 'white' },
     constants:              { mode: 'dim', fg: 'red' },
     delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
     variables:              { mode: 'dim', fg: 'magenta' },

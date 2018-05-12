@@ -158,6 +158,7 @@ test('background colors', t => {
 
 test('default style', t => {
     const options = {
+        comments:               { mode: 'dim', fg: 'white' },
         constants:              { mode: 'dim', fg: 'red' },
         delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
         variables:              { mode: 'dim', fg: 'magenta' },
@@ -187,6 +188,7 @@ test('default style', t => {
 
 test('default style 2', t => {
     const options = {
+        comments:               { mode: 'dim', fg: 'white' },
         constants:              { mode: 'dim', fg: 'red' },
         delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
         variables:              { mode: 'dim', fg: 'magenta' },

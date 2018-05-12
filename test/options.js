@@ -118,7 +118,7 @@ const statement_g = dedent`declare @@ char(2) = 'B0'
                            from [ARCs]
                            where domain=@# and exposure<=@0 and g@ is null`;
 
-const statement_i = dedent`declare @Æőn char(2) = 'ƀ2'
+const statement_h = dedent`declare @Æőn char(2) = 'ƀ2'
                            declare @nìma_ünûlak char(36) = '1147D009-466B-4B50-BCA0-DFF1F1573899'
                            declare @ŴāłŤż@Đėśiğnator varchar(32) = '@ÕçÝ'
                            declare @Ø decimal(3,3) = 0.901
@@ -128,15 +128,185 @@ const statement_i = dedent`declare @Æőn char(2) = 'ƀ2'
                            from "ÁRCs"
                            where [@nimüid_2] = @nìma_ünûlak and domain=@ŴāłŤż@Đėśiğnator and exposure>=@Ø and [ƶ@]>@ĶValue`;
 
+const statement_i = dedent`/*
+                           THE SCRIPT - BUILDING A QUERY WITHOUT SANITIZING DATA
+                           $sql = "SELECT first_name, last_name, email FROM members WHERE username='".$value."' AND showpublic=1"
+                           */
+
+                           /*
+                           ATTACKER INPUT USING LINE COMMENTING
+                           admin' -- 
+                           */
+
+                           -- QUERY GENERATED --
+                           SELECT first_name, last_name, email
+                           FROM members
+                           WHERE username='admin' -- '
+                           AND showpublic=1`;
+
+const statement_j = dedent`CREATE OR ALTER VIEW "---"."vw_A/*" AS
+
+                           SELECT [*/], [--], [-]
+                           FROM [/*d*/v].[dbo].[/*]
+
+                           UNION ALL
+
+                           SELECT U.[*/], TODATETIMEOFFSET(C.[--], '-03:00'),
+                               CASE
+                                   WHEN C.[-] COLLATE DATABASE_DEFAULT IN ('O','o') THEN '--E'
+                                   WHEN C.[-] COLLATE DATABASE_DEFAULT IN ('I','i') THEN '--I'
+                                   WHEN ISNUMERIC(C.[-]) = 1 THEN
+                                       CASE C.[-]
+                                           WHEN 0 THEN '/*E*/'
+                                           WHEN 1 THEN '/*I*/'
+                                       END
+                               END
+                           FROM [téngtòng].[dbo].[/*CHECK--] C
+                           INNER JOIN [téngtòng].[dbo].[--USER*/] U ON -C.[USERID] = -U.[USERID]`;
+
+test('object input', t => {
+    const options = {
+        comments:               { mode: 'dim', fg: 'white' },
+        constants:              { mode: 'dim', fg: 'red' },
+        delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
+        variables:              { mode: 'dim', fg: 'magenta' },
+        dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
+        standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
+        lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
+        prefix:                 { replace: /.*?: / }
+    };
+
+    const input = {
+        toString: () => '/* GENERATED */ ' + statement_b
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(input);
+    const expected = `${m.dim}${c.fg.white}/* GENERATED */${m.reset} ${m.dim}${c.fg.cyan}SELECT${m.reset} CURRENT_TIMESTAMP`;
+
+    t.is(output, expected);
+});
+
+test('null input', t => {
+    const print = igniculus();
+
+    const output = print(null);
+
+    t.is(output, undefined);
+});
+
 test('custom output', t => {
     const options = {
         output: out => out.split('').reduce((a, c) => a += c.charCodeAt(0), 0)
     };
 
-    const print = igniculus(Object.assign(options));
+    const print = igniculus(options);
 
     const output = print(statement_a);
     const expected = 36876;
+
+    t.is(output, expected);
+});
+
+test('comments', t => {
+    const options = {
+        comments:             { mode: 'bold', fg: 'black' },
+        constants:            { fg: 'red' },
+        dataTypes:            { fg: 'blue' },
+        standardKeywords:     { fg: 'blue' },
+        lesserKeywords:       { fg: 'blue' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_i);
+    const expected =
+        dedent`${m.bold}${c.fg.black}/*
+               THE SCRIPT - BUILDING A QUERY WITHOUT SANITIZING DATA
+               $sql = "SELECT first_name, last_name, email FROM members WHERE username='".$value."' AND showpublic=1"
+               */${m.reset}
+
+               ${m.bold}${c.fg.black}/*
+               ATTACKER INPUT USING LINE COMMENTING
+               admin' -- 
+               */${m.reset}
+
+               ${m.bold}${c.fg.black}-- QUERY GENERATED --${m.reset}
+               ${c.fg.blue}SELECT${m.reset} first_name, last_name, email
+               ${c.fg.blue}FROM${m.reset} members
+               ${c.fg.blue}WHERE${m.reset} username=${c.fg.red}'admin'${m.reset} ${m.bold}${c.fg.black}-- '${m.reset}
+               ${c.fg.blue}AND${m.reset} showpublic=1`;
+
+    t.is(output, expected);
+});
+
+test('not comments', t => {
+    const options = {
+        comments:             { mode: 'bold', fg: 'black' },
+        constants:            { fg: 'red' },
+        dataTypes:            { fg: 'blue' },
+        standardKeywords:     { fg: 'blue' },
+        lesserKeywords:       { fg: 'blue' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_j);
+    const expected =
+        dedent`${c.fg.blue}CREATE${m.reset} ${c.fg.blue}OR${m.reset} ${c.fg.blue}ALTER${m.reset} ${c.fg.blue}VIEW${m.reset} "---"."vw_A/*" ${c.fg.blue}AS${m.reset}
+
+               ${c.fg.blue}SELECT${m.reset} [*/], [--], [-]
+               ${c.fg.blue}FROM${m.reset} [/*d*/v].[dbo].[/*]
+
+               ${c.fg.blue}UNION${m.reset} ${c.fg.blue}ALL${m.reset}
+
+               ${c.fg.blue}SELECT${m.reset} U.[*/], TODATETIMEOFFSET(C.[--], ${c.fg.red}'-03:00'${m.reset}),
+                   ${c.fg.blue}CASE${m.reset}
+                       ${c.fg.blue}WHEN${m.reset} C.[-] ${c.fg.blue}COLLATE${m.reset} DATABASE_DEFAULT ${c.fg.blue}IN${m.reset} (${c.fg.red}'O'${m.reset},${c.fg.red}'o'${m.reset}) ${c.fg.blue}THEN${m.reset} ${c.fg.red}'--E'${m.reset}
+                       ${c.fg.blue}WHEN${m.reset} C.[-] ${c.fg.blue}COLLATE${m.reset} DATABASE_DEFAULT ${c.fg.blue}IN${m.reset} (${c.fg.red}'I'${m.reset},${c.fg.red}'i'${m.reset}) ${c.fg.blue}THEN${m.reset} ${c.fg.red}'--I'${m.reset}
+                       ${c.fg.blue}WHEN${m.reset} ISNUMERIC(C.[-]) = 1 ${c.fg.blue}THEN${m.reset}
+                           ${c.fg.blue}CASE${m.reset} C.[-]
+                               ${c.fg.blue}WHEN${m.reset} 0 ${c.fg.blue}THEN${m.reset} ${c.fg.red}'/*E*/'${m.reset}
+                               ${c.fg.blue}WHEN${m.reset} 1 ${c.fg.blue}THEN${m.reset} ${c.fg.red}'/*I*/'${m.reset}
+                           ${c.fg.blue}END${m.reset}
+                   ${c.fg.blue}END${m.reset}
+               ${c.fg.blue}FROM${m.reset} [téngtòng].[dbo].[/*CHECK--] C
+               ${c.fg.blue}INNER${m.reset} ${c.fg.blue}JOIN${m.reset} [téngtòng].[dbo].[--USER*/] U ${c.fg.blue}ON${m.reset} -C.[USERID] = -U.[USERID]`;
+
+    t.is(output, expected);
+});
+
+test('no comment style', t => {
+    const options = {
+        numbers:                  { mode: 'italic' },
+        constants:                { fg: 'yellow' },
+        delimitedIdentifiers:     { bg: 'yellow', fg: 'black' },
+        operators:                { fg: 'red' },
+        dataTypes:                { fg: 'blue' },
+        standardKeywords:         { fg: 'blue' },
+        lesserKeywords:           { fg: 'blue' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_i);
+    const expected =
+        dedent`/*
+               THE SCRIPT - BUILDING A QUERY WITHOUT SANITIZING DATA
+               $sql = "SELECT first_name, last_name, email FROM members WHERE username='".$value."' AND showpublic=1"
+               */
+
+               /*
+               ATTACKER INPUT USING LINE COMMENTING
+               admin' -- 
+               */
+
+               -- QUERY GENERATED --
+               ${c.fg.blue}SELECT${m.reset} first_name, last_name, email
+               ${c.fg.blue}FROM${m.reset} members
+               ${c.fg.blue}WHERE${m.reset} username${c.fg.red}=${m.reset}${c.fg.yellow}'admin'${m.reset} -- '
+               ${c.fg.blue}AND${m.reset} showpublic${c.fg.red}=${m.reset}${m.italic}1${m.reset}`;
 
     t.is(output, expected);
 });
@@ -621,7 +791,7 @@ test('extended latin variables, constants and identifiers', t => {
 
     const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_i);
+    const output = print(statement_h);
     const expected =
         dedent`${c.fg.yellow}declare${m.reset} ${c.fg.red}@Æőn${m.reset} char(${m.italic}2${m.reset}) = ${m.dim}${c.fg.white}'ƀ2'${m.reset}
                ${c.fg.yellow}declare${m.reset} ${c.fg.red}@nìma_ünûlak${m.reset} char(${m.italic}36${m.reset}) = ${m.dim}${c.fg.white}'1147D009-466B-4B50-BCA0-DFF1F1573899'${m.reset}
@@ -636,7 +806,20 @@ test('extended latin variables, constants and identifiers', t => {
     t.is(output, expected);
 });
 
-test('prefix replace', t => {
+test('prefix string replace', t => {
+    const options = {
+        prefix: { fg: 'red', replace: 'SELECT CURRENT' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_b);
+    const expected = '_TIMESTAMP';
+
+    t.is(output, expected);
+});
+
+test('prefix regexp replace', t => {
     const options = {
         constants:            { fg: 'red' },
         dataTypes:            { fg: 'magenta' },

@@ -1,6 +1,10 @@
 ## Changelog
 
-### 1.2.0 ~ _08 Mar 2018_
+### 1.3.0 ~ _12 May 2018_
+- Basic support for single and multi-line comments
+- Extended support for latin script unicode characters
+
+#### 1.2.0 ~ _08 Mar 2018_
 - Support for local variables and parameters
 
 #### 1.1.0 ~ _26 Feb 2018_

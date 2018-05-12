@@ -46,6 +46,7 @@ const ANSIColours = {
 };
 
 const defaults = {
+    comments:               { mode: 'dim', fg: 'white' },
     constants:              { mode: 'dim', fg: 'red' },
     delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
     variables:              { mode: 'dim', fg: 'magenta' },
@@ -124,6 +125,12 @@ function illumine(text) {
         output = output.replace(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g, '↪※↩');
     }
 
+    // Extract comment sections so no subsequent operations alter them. Mark their positions for reinsertion.
+    let __comments = output.match(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g);
+    if (__comments && __comments.length) {
+        output = output.replace(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g, '⥤※⥢');
+    }
+
     if (runestone.dataTypes && runestone.dataTypes.sequence) {
         let regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
@@ -171,6 +178,17 @@ function illumine(text) {
         output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$&' + ANSIModes.reset);
     }
 
+    // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
+    if (__comments && __comments.length) {
+        for (let i of __comments) {
+            // If comment sections were to be formatted, apply the provided style.
+            if (runestone.comments && runestone.comments.sequence)
+                output = output.replace('⥤※⥢', runestone.comments.sequence + 'c†s' + i + 'c‡e' + ANSIModes.reset);
+            else
+                output = output.replace('⥤※⥢', 'c†s' + i + 'c‡e');
+        }
+    }
+
     // If local variables were found and extracted, reinsert them on the marked positions.
     if (__variables && __variables.length) {
         for (let i of __variables) {
@@ -209,6 +227,11 @@ function illumine(text) {
         return voidFormatting(match);
     });
 
+    // Comment sections are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied and remove cordon.
+    output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => {
+        return voidFormatting(p2);
+    });
+
     // If the given prefix was found and a replacement pattern was provided, substitute it.
     if (__prefix && runestone.prefix.text) {
         output = __prefix + output;
@@ -237,6 +260,10 @@ function igniculus(options) {
      * configuration and save them.
      */
     runestone = options || defaults;
+
+    if (runestone.comments) {
+        runestone.comments.sequence = forgeANSISequence(runestone.comments);
+    }
 
     if (runestone.constants) {
         runestone.constants.sequence = forgeANSISequence(runestone.constants);
