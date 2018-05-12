@@ -4,6 +4,10 @@
 # IDE Specific
 .vscode
 
+# Coverage Reports
+**/.nyc_output/
+**/coverage/
+
 # Windows
 Thumbs.db
 Desktop.ini

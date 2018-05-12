@@ -4,10 +4,15 @@
 # Tests
 **/test
 
+# Coverage Reports
+**/.nyc_output/
+**/coverage/
+
 # ESLint
 .eslint*
 
 # CI
+.nycrc
 .travis.yml
 .codeclimate.yml
 
