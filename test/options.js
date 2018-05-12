@@ -118,6 +118,16 @@ const statement_g = dedent`declare @@ char(2) = 'B0'
                            from [ARCs]
                            where domain=@# and exposure<=@0 and g@ is null`;
 
+const statement_i = dedent`declare @Æőn char(2) = 'ƀ2'
+                           declare @nìma_ünûlak char(36) = '1147D009-466B-4B50-BCA0-DFF1F1573899'
+                           declare @ŴāłŤż@Đėśiğnator varchar(32) = '@ÕçÝ'
+                           declare @Ø decimal(3,3) = 0.901
+                           declare @ĶValue decimal(2,2) = 0.76
+
+                           select @Æőn as category, [@nimüid_1], [@nimüid_2]
+                           from "ÁRCs"
+                           where [@nimüid_2] = @nìma_ünûlak and domain=@ŴāłŤż@Đėśiğnator and exposure>=@Ø and [ƶ@]>@ĶValue`;
+
 test('custom output', t => {
     const options = {
         output: out => out.split('').reduce((a, c) => a += c.charCodeAt(0), 0)
@@ -595,6 +605,33 @@ test('numbers and data types among variables', t => {
                ${c.fg.yellow}select${m.reset} ${c.fg.red}@@${m.reset} ${m.bold}${c.fg.black}as${m.reset} category, [@nima_uid_1], [@nima_uid_2]
                ${c.fg.yellow}from${m.reset} [ARCs]
                ${c.fg.yellow}where${m.reset} domain=${c.fg.red}@#${m.reset} ${m.bold}${c.fg.black}and${m.reset} exposure<=${c.fg.red}@0${m.reset} ${m.bold}${c.fg.black}and${m.reset} g@ ${m.bold}${c.fg.black}is${m.reset} ${m.bold}${c.fg.black}null${m.reset}`;
+
+    t.is(output, expected);
+});
+
+test('extended latin variables, constants and identifiers', t => {
+    const options = {
+        numbers:                  { mode: 'italic' },
+        constants:                { mode: 'dim', fg: 'white' },
+        delimitedIdentifiers:     { fg: 'blue' },
+        variables:                { fg: 'red' },
+        standardKeywords:         { fg: 'yellow' },
+        lesserKeywords:           { mode: 'bold', fg: 'black' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_i);
+    const expected =
+        dedent`${c.fg.yellow}declare${m.reset} ${c.fg.red}@Æőn${m.reset} char(${m.italic}2${m.reset}) = ${m.dim}${c.fg.white}'ƀ2'${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@nìma_ünûlak${m.reset} char(${m.italic}36${m.reset}) = ${m.dim}${c.fg.white}'1147D009-466B-4B50-BCA0-DFF1F1573899'${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@ŴāłŤż@Đėśiğnator${m.reset} varchar(${m.italic}32${m.reset}) = ${m.dim}${c.fg.white}'@ÕçÝ'${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@Ø${m.reset} decimal(${m.italic}3${m.reset},${m.italic}3${m.reset}) = ${m.italic}0.901${m.reset}
+               ${c.fg.yellow}declare${m.reset} ${c.fg.red}@ĶValue${m.reset} decimal(${m.italic}2${m.reset},${m.italic}2${m.reset}) = ${m.italic}0.76${m.reset}
+
+               ${c.fg.yellow}select${m.reset} ${c.fg.red}@Æőn${m.reset} ${m.bold}${c.fg.black}as${m.reset} category, ${c.fg.blue}[@nimüid_1]${m.reset}, ${c.fg.blue}[@nimüid_2]${m.reset}
+               ${c.fg.yellow}from${m.reset} ${c.fg.blue}"ÁRCs"${m.reset}
+               ${c.fg.yellow}where${m.reset} ${c.fg.blue}[@nimüid_2]${m.reset} = ${c.fg.red}@nìma_ünûlak${m.reset} ${m.bold}${c.fg.black}and${m.reset} domain=${c.fg.red}@ŴāłŤż@Đėśiğnator${m.reset} ${m.bold}${c.fg.black}and${m.reset} exposure>=${c.fg.red}@Ø${m.reset} ${m.bold}${c.fg.black}and${m.reset} ${c.fg.blue}[ƶ@]${m.reset}>${c.fg.red}@ĶValue${m.reset}`;
 
     t.is(output, expected);
 });
