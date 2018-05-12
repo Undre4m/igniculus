@@ -18,7 +18,11 @@
   "main": "index.js",
   "scripts": {
     "test": "ava test",
-    "eslint": "eslint **/*.js"
+    "eslint": "eslint **/*.js",
+    "coverage": "nyc --reporter=text ava test",
+    "postcoverage": "rimraf .nyc_output",
+    "nyc": "nyc ava --fail-fast test",
+    "travis": "npm run eslint && npm run nyc"
   },
   "repository": {
     "type": "git",
@@ -34,8 +38,10 @@
     "node": ">=4.0.0"
   },
   "devDependencies": {
-    "ava": "^0.24.0",
+    "ava": "^0.25.0",
     "dedent": "^0.7.0",
-    "eslint": "^4.14.0"
+    "eslint": "^4.19.1",
+    "nyc": "^11.7.3",
+    "rimraf": "^2.6.2"
   }
 }

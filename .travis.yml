@@ -7,5 +7,4 @@ node_js:
 sudo: false
 
 script:
-  - npm run eslint
-  - npm test
+  - npm run travis
