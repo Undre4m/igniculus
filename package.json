@@ -19,8 +19,7 @@
   "scripts": {
     "test": "ava test",
     "eslint": "eslint **/*.js",
-    "coverage": "nyc --reporter=text ava test",
-    "postcoverage": "rimraf .nyc_output",
+    "coverage": "nyc --reporter=text ava test && rimraf .nyc_output",
     "nyc": "nyc ava --fail-fast test",
     "travis": "npm run eslint && npm run nyc"
   },
