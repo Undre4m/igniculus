@@ -7,6 +7,10 @@
 # ESLint
 .eslint*
 
+# CI
+.travis.yml
+.codeclimate.yml
+
 # IDE Specific
 .vscode
 
