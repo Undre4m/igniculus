@@ -2,6 +2,7 @@
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
 [![version](https://img.shields.io/npm/v/igniculus.svg)](https://www.npmjs.com/package/igniculus)
+[![rc](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
 [![license](https://img.shields.io/npm/l/igniculus.svg)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
 [![downloads](https://img.shields.io/npm/dt/igniculus.svg?colorB=ffdf00)](https://www.npmjs.com/package/igniculus)
 [![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?logo=travis&logoWidth=15)](https://travis-ci.org/Undre4m/igniculus)
@@ -109,6 +110,11 @@ The _options_ argument is optional and each property should be one of the follow
   - postfix.**text** - A postfix can be appended to every log through this option. This postfix can be styled like any previous options.
 - options.**output** - Output function for the highlighted statements, `console.log` by default. _E.g:_ `process.stdout`, `st => st`
 
+---
+[![version](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
+- options.**own** - _[(Release candidate)](https://www.npmjs.com/package/igniculus/v/1.4.0-0#custom-rules)_ Custom-built rules.
+
+---
 If defined, the _options_ argument takes precedence over _default_ options. If a rule or it´s style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](#examples)_
 
 >#### A word on types and keywords
@@ -291,7 +297,7 @@ sequelize.sync({ logging: igniculus});
 For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
 
 ### Future Upgrades
-Planned support for custom rules.
+[![version](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
 
 ## Maintainers
 

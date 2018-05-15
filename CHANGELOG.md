@@ -1,6 +1,9 @@
 ## Changelog
 
-### 1.3.0 ~ _12 May 2018_
+### 1.4.0-0 _(rc)_ ~ _15 May 2018_
+- Experimental support for custom-built rules
+
+#### 1.3.0 ~ _12 May 2018_
 - Basic support for single and multi-line comments
 - Extended support for latin script unicode characters
 
