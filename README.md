@@ -1,7 +1,7 @@
 # Igniculus
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
-[![version](https://img.shields.io/npm/v/igniculus.svg)](https://www.npmjs.com/package/igniculus)
+[![version](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
 [![license](https://img.shields.io/npm/l/igniculus.svg)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
 [![downloads](https://img.shields.io/npm/dt/igniculus.svg?colorB=ffdf00)](https://www.npmjs.com/package/igniculus)
 [![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?logo=travis&logoWidth=15)](https://travis-ci.org/Undre4m/igniculus)
