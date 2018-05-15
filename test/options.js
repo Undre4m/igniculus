@@ -164,6 +164,52 @@ const statement_j = dedent`CREATE OR ALTER VIEW "---"."vw_A/*" AS
                            FROM [téngtòng].[dbo].[/*CHECK--] C
                            INNER JOIN [téngtòng].[dbo].[--USER*/] U ON -C.[USERID] = -U.[USERID]`;
 
+const statement_k = dedent`/* May 13th, 2018 | 06:09:28.262 | http://server.local:8000 */
+                           select [username], [password] from Users where [_uuid] = '4072FA1B-D9E7-4F0E-9553-5F2CFFE6CC7A' and [status] = 'active'`;
+
+const nyan = dedent`
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.?.,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    .?.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,''''''''''''''',,,,,,,,,,,,,,,,,,,,,,,,
+    ,,>>>>>>>>,,,,,,,,>>>>>>'@@@@@@@@@@@@@@@',,,,,,,,,,,,,,,,,,,,,,,
+    >>>>>>>>>>>>>>>>>>>>>>>'@@@$$$$$$$$$$$@@@',,,,,,,,,,,,,,,,,,,,,,
+    >>&&&&&&&&>>>>>>>>&&&&&'@@$$$$$-$$-$$$$@@',,,,,,,,,,,,,,,,,,,,,,
+    &&&&&&&&&&&&&&&&&&&&&&&'@$$-$$$$$$''$-$$@','',,,,,,,,,,,,,,,,,,,
+    &&&&&&&&&&&&&&&&&&&&&&&'@$$$$$$$$'**'$$$@''**',,,,,,,,,,,,,,,,,,
+    &&++++++++&&&&&&&&'''++'@$$$$$-$$'***$$$@'***',,,,,,,,,,,,,,,,,,
+    ++++++++++++++++++**''+'@$$$$$$$$'***''''****',,,,,,,,,,,,,,,,,,
+    ++++++++++++++++++'**'''@$$$$$$$$'***********',,,,,,,,,,,,,,,,,,
+    ++########++++++++''**''@$$$$$$-'*************',,,,,,,,,,,,,,,,,
+    ###################''**'@$-$$$$$'***?'****?'**',,,,,,,,,,,,,,,,,
+    ####################''''@$$$$$$$'***''**:*''**',,,,,,,,,,,,,,,,,
+    ##========########====''@@$$$-$$'*%%********%%',,,,,,,,,,,,,,,,,
+    ======================='@@@$$$$$$'***'::':'**',,,,,,,,,,,,,,,,,,
+    ==;;;;;;;;?=======;;;;'''@@@@@@@@@'*********',,,,,,,,,,,,,,,,,,,
+    ;;;;;;;;;;;;;;;;;;;;;'***''''''''''''''''''',,,,,,,,,,,,,,,,,,,,
+    ;;;;;;;;;;;;;;;;;?;;;'**'','*',,,,,'*','**',,,,,,,,,,,,,,,,,,,,,
+    ;;,,,,,?.,;;;;?;;;,,,'''',,'',,,,,,,'',,'',,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,?.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.?.,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`;
+
 test('object input', t => {
     const options = {
         comments:               { mode: 'dim', fg: 'white' },
@@ -888,6 +934,132 @@ test('prefix remove', t => {
 
                ${m.bold}${c.fg.black}CLOSE${m.reset} db_cursor
                ${m.bold}${c.fg.black}DEALLOCATE${m.reset} db_cursor`;
+
+    t.is(output, expected);
+});
+
+test('custom-built rules', t => {
+    const options = {
+        constants:                { mode: 'bold', fg: 'red' },
+        delimitedIdentifiers:     { mode: 'bold', fg: 'cyan' },
+        standardKeywords:         { fg: 'blue', casing: 'uppercase' },
+        lesserKeywords:           { mode: 'bold', fg: 'red', casing: 'uppercase' },
+        own: {
+            _:                    { regexp: /$/, transform: null },
+            nop:                  { regexp: /\u0000/ },
+            comments:             { regexp: /(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)[\r\n]*/g, transform: '' },
+            uuidv4s:              { mode: 'bold', fg: 'black', regexp: /'[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}'/gi, transform: (uuid) => uuid.replace(/\w{1}/g, 'x') }
+        }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_k);
+    const expected =
+        dedent`${c.fg.blue}SELECT${m.reset} ${m.bold}${c.fg.cyan}[username]${m.reset}, ${m.bold}${c.fg.cyan}[password]${m.reset} ${c.fg.blue}FROM${m.reset} Users ${c.fg.blue}WHERE${m.reset} ${m.bold}${c.fg.cyan}[_uuid]${m.reset} = ${m.bold}${c.fg.black}'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'${m.reset} ${m.bold}${c.fg.red}AND${m.reset} ${m.bold}${c.fg.cyan}[status]${m.reset} = ${m.bold}${c.fg.red}'active'${m.reset}`;
+
+    t.is(output, expected);
+});
+
+test('custom-built nyan portrait', t => {
+    const options = {
+        own: {
+            'cyan': {
+                mode: 'dim', bg: 'blue', fg: 'blue', regexp: /,+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'black': {
+                mode: 'dim', fg: 'black', regexp: /'+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'halfblack': {
+                mode: 'bold', bg: 'black', fg: 'black', regexp: /:+/g, transform: (v) => '▀'.repeat(v.length)
+            },
+            'gray': {
+                mode: 'bold', fg: 'black', regexp: /\*+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'white': {
+                mode: 'bold', bg: 'white', fg: 'white', regexp: /\?+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'spray': {
+                mode: 'bold', bg: 'blue', fg: 'white', regexp: /\.+/g, transform: (v) => '░'.repeat(v.length)
+            },
+            'bread': {
+                mode: 'bold', bg: 'red', fg: 'white', regexp: /@+/g, transform: (v) => '░'.repeat(v.length)
+            },
+            'red': {
+                mode: 'bold', fg: 'red', regexp: />+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'orange': {
+                mode: 'bold', bg: 'red', fg: 'yellow', regexp: /&+/g, transform: (v) => '▒'.repeat(v.length)
+            },
+            'yellow': {
+                mode: 'bold', bg: 'yellow', fg: 'yellow', regexp: /\++/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'green': {
+                mode: 'bold', bg: 'green', fg: 'green', regexp: /#+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'blue': {
+                mode: 'bold', bg: 'blue', fg: 'blue', regexp: /=+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'purple': {
+                mode: 'dim', bg: 'blue', fg: 'magenta', regexp: /;+/g, transform: (v) => '▓'.repeat(v.length)
+            },
+            'cranberry': {
+                mode: 'bold', bg: 'black', fg: 'magenta', regexp: /-+/g, transform: (v) => '▒'.repeat(v.length)
+            },
+            'pink': {
+                mode: 'dim', bg: 'magenta', fg: 'magenta', regexp: /\$+/g, transform: (v) => '█'.repeat(v.length)
+            },
+            'blush': {
+                mode: 'bold', bg: 'red', fg: 'black', regexp: /%+/g, transform: (v) => '▓'.repeat(v.length)
+            }
+        }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(nyan);
+    const expected =
+        dedent`${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}█████████████████████████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}█████████████████████████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████████████████████████████████████████████${m.reset}
+               ${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}█████████████████████████${m.reset}${m.dim}${c.fg.black}███████████████${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}██${m.reset}${m.bold}${c.fg.red}████████${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}████████${m.reset}${m.bold}${c.fg.red}██████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░░░░░░░░░░░░░░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████████████████████${m.reset}
+               ${m.bold}${c.fg.red}███████████████████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}███████████${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████${m.reset}
+               ${m.bold}${c.fg.red}██${m.reset}${m.bold}${c.bg.red}${c.fg.yellow}▒▒▒▒▒▒▒▒${m.reset}${m.bold}${c.fg.red}████████${m.reset}${m.bold}${c.bg.red}${c.fg.yellow}▒▒▒▒▒${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}█████${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}████${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████${m.reset}
+               ${m.bold}${c.bg.red}${c.fg.yellow}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██████${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}█${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████████████████${m.reset}
+               ${m.bold}${c.bg.red}${c.fg.yellow}▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}███${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████${m.reset}
+               ${m.bold}${c.bg.red}${c.fg.yellow}▒▒${m.reset}${m.bold}${c.bg.yellow}${c.fg.yellow}████████${m.reset}${m.bold}${c.bg.red}${c.fg.yellow}▒▒▒▒▒▒▒▒${m.reset}${m.dim}${c.fg.black}███${m.reset}${m.bold}${c.bg.yellow}${c.fg.yellow}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}█████${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}███${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████${m.reset}
+               ${m.bold}${c.bg.yellow}${c.fg.yellow}██████████████████${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.bg.yellow}${c.fg.yellow}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.fg.black}████${m.reset}${m.bold}${c.fg.black}████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████${m.reset}
+               ${m.bold}${c.bg.yellow}${c.fg.yellow}██████████████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}███${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████${m.reset}
+               ${m.bold}${c.bg.yellow}${c.fg.yellow}██${m.reset}${m.bold}${c.bg.green}${c.fg.green}████████${m.reset}${m.bold}${c.bg.yellow}${c.fg.yellow}████████${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██████${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}█████████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████${m.reset}
+               ${m.bold}${c.bg.green}${c.fg.green}███████████████████${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}█${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}█████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}████${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████${m.reset}
+               ${m.bold}${c.bg.green}${c.fg.green}████████████████████${m.reset}${m.dim}${c.fg.black}████${m.reset}${m.bold}${c.bg.red}${c.fg.white}░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}███████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.bold}${c.bg.black}${c.fg.black}▀${m.reset}${m.bold}${c.fg.black}█${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████${m.reset}
+               ${m.bold}${c.bg.green}${c.fg.green}██${m.reset}${m.bold}${c.bg.blue}${c.fg.blue}████████${m.reset}${m.bold}${c.bg.green}${c.fg.green}████████${m.reset}${m.bold}${c.bg.blue}${c.fg.blue}████${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}███${m.reset}${m.bold}${c.bg.black}${c.fg.magenta}▒${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.black}▓▓${m.reset}${m.bold}${c.fg.black}████████${m.reset}${m.bold}${c.bg.red}${c.fg.black}▓▓${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████${m.reset}
+               ${m.bold}${c.bg.blue}${c.fg.blue}███████████████████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░░${m.reset}${m.dim}${c.bg.magenta}${c.fg.magenta}██████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.black}${c.fg.black}▀▀${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.bg.black}${c.fg.black}▀${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████${m.reset}
+               ${m.bold}${c.bg.blue}${c.fg.blue}██${m.reset}${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓▓▓▓▓▓${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.blue}███████${m.reset}${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓▓${m.reset}${m.dim}${c.fg.black}███${m.reset}${m.bold}${c.bg.red}${c.fg.white}░░░░░░░░░${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}█████████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}███${m.reset}${m.dim}${c.fg.black}███████████████████${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.bold}${c.fg.black}██${m.reset}${m.dim}${c.fg.black}█${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.magenta}▓▓${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█████${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}█${m.reset}${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓▓${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.dim}${c.bg.blue}${c.fg.magenta}▓▓▓${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███${m.reset}${m.dim}${c.fg.black}████${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██${m.reset}${m.dim}${c.fg.black}██${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}██████████${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}███████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.bold}${c.bg.white}${c.fg.white}█${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}██████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████${m.reset}${m.bold}${c.bg.blue}${c.fg.white}░${m.reset}${m.dim}${c.bg.blue}${c.fg.blue}███████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}
+               ${m.dim}${c.bg.blue}${c.fg.blue}████████████████████████████████████████████████████████████████${m.reset}`;
 
     t.is(output, expected);
 });
