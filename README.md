@@ -2,7 +2,6 @@
 SQL Syntax Highlighter and Logger. Unadorned and customizable.
 
 [![version](https://img.shields.io/npm/v/igniculus.svg)](https://www.npmjs.com/package/igniculus)
-[![rc](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
 [![license](https://img.shields.io/npm/l/igniculus.svg)](https://github.com/Undre4m/igniculus/blob/master/LICENSE)
 [![downloads](https://img.shields.io/npm/dt/igniculus.svg?colorB=ffdf00)](https://www.npmjs.com/package/igniculus)
 [![build status](https://img.shields.io/travis/Undre4m/igniculus.svg?logo=travis&logoWidth=15)](https://travis-ci.org/Undre4m/igniculus)
@@ -32,6 +31,7 @@ igniculus('SELECT [port] AS Printer, \'on fire\' AS Status ' +
 - [Options](#options)
     - [Rules](#rules)
     - [Styles](#styles)
+    - [Custom Rules](#custom-rules)
 - [Examples](#examples)
 - [Integration](#integration)
     - [Sequelize](#sequelize)
@@ -109,13 +109,9 @@ The _options_ argument is optional and each property should be one of the follow
 - options.**postfix**
   - postfix.**text** - A postfix can be appended to every log through this option. This postfix can be styled like any previous options.
 - options.**output** - Output function for the highlighted statements, `console.log` by default. _E.g:_ `process.stdout`, `st => st`
+- options.**own** - Your own custom-built rules can be defined here. See _[(Custom Rules)](#custom-rules)_ below for details.
 
----
-[![version](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
-- options.**own** - _[(Release candidate)](https://www.npmjs.com/package/igniculus/v/1.4.0-0#custom-rules)_ Custom-built rules.
-
----
-If defined, the _options_ argument takes precedence over _default_ options. If a rule or it´s style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](#examples)_
+If defined, the _options_ argument takes precedence over _default_ options. If a rule or it's style is missing it won't be applied. This allows to _"enable"_ or _"disable"_ certain syntax highlighting as you see fit. _[(Examples below)](#examples)_
 
 >#### A word on types and keywords
 >Most often, highlighting every reserved keyword can make syntax difficult to read, defeating the purpose altogether. Therefore, three distinct rules are provided: _dataTypes_, _standardKeywords_ and _lesserKeywords_.
@@ -171,6 +167,17 @@ These can be one of the following.
 - `magenta`
 - `cyan`
 - `white`
+
+### Custom Rules
+>#### ⚠ Be advised
+>This feature is experimental and should be used with discretion. Custom pattern-matching has the potential to disrupt other rules and induce defects in highlighting.
+
+You can define as many rules as needed. Like built-in rules, an optional style can be set for each one. Every **rule** can be named as desired, simple names are encouraged to avoid problems though. Option **transform** is not required, **regexp** is.
+
+- options.**own**
+    - own.**rule**
+      - rule.**regexp** - A _regular expression_ must be provided for the rule to be applied. _E.g:_ `/(https?|ftp):\/\/[^\s/$.?#].[^\s]*/g`
+      - rule.**transform** - Each matched expression can be either replaced by a _string_ or transformed by a _function_. The function takes one argument, the matched expression, and it's return value will be used for replacement. _E.g:_ `'hidden'` or `match => match.trim()`
 
 ## Examples
 
@@ -240,6 +247,40 @@ igniculus.log('CREATE TABLE User (' +
 
 ![Custom Create](https://raw.githubusercontent.com/Undre4m/igniculus/master/media/simple-create-custom.png)
 
+
+```js
+const igniculus = require('igniculus');
+
+const log = igniculus({
+    constants:                { fg: 'red' },
+    delimitedIdentifiers:     { mode: 'bold', fg: 'cyan' },
+    standardKeywords:         { fg: 'blue', casing: 'uppercase' },
+    own: {
+        _: {
+            mode: 'bold',
+            fg: 'white',
+            regexp: /^/,
+            transform: '█ '
+        },
+        comments: {
+            regexp: /(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)[\r\n]*/g,
+            transform: ''
+        },
+        UUIDv4s: {
+            mode: 'bold',
+            fg: 'black',
+            regexp: /'[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}'/gi,
+            transform: (uuid) => uuid.replace(/\w{1}/g, 'x')
+        }
+    }
+});
+
+log("/* May 13th, 2018 | 06:09:28.262 | http://server.local:8000 */" +
+    "select [username], [password] from Users where [_uuid] = '4072FA1B-D9E7-4F0E-9553-5F2CFFE6CC7A'");
+```
+
+![Custom Rules](https://raw.githubusercontent.com/Undre4m/igniculus/v1.4.0-rc/media/simple-query-custom-rules.png)
+
 ## Integration
 
 Igniculus' logger is a _drop in_ replacement on any tool that passes the log function either a `string` or `Object` paramater. In the latest case the `toString()` method will be called to obtain a `string` primitive.
@@ -297,7 +338,12 @@ sequelize.sync({ logging: igniculus});
 For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
 
 ### Future Upgrades
-[![version](https://img.shields.io/npm/v/igniculus/rc.svg?colorB=e05d44)](https://www.npmjs.com/package/igniculus/v/1.4.0-0)
+Adding and omitting data types and keywords from the predefined sets
+
+#### [v2.0.0 milestone](https://github.com/Undre4m/igniculus/milestone/1)
+Separation of style-related and option-specific configurations **BC**
+Basic built-in themes
+Option validation and friendly error detection
 
 ## Maintainers
 

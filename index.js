@@ -107,6 +107,20 @@ function illumine(text) {
         }
     }
 
+    let __archetypes = {};
+
+    if (runestone.own) {
+        for (const key of Object.keys(runestone.own)) {
+            const rule = runestone.own[key];
+
+            // Extract custom-built archetypes so no subsequent operations alter them. Mark their positions for reinsertion.
+            __archetypes[key] = output.match(rule.regexp);
+            if (__archetypes[key] && __archetypes[key].length) {
+                output = output.replace(rule.regexp, '⥂_' + key + '⥄');
+            }
+        }
+    }
+
     // Extract delimited identifiers so no subsequent operations alter them. Mark their positions for reinsertion.
     let __identifiers = output.match(/(\[.*?\]|".*?")/g);
     if (__identifiers && __identifiers.length) {
@@ -222,6 +236,33 @@ function illumine(text) {
         }
     }
 
+    if (runestone.own) {
+        for (const key of Object.keys(runestone.own).reverse()) {
+            const rule = runestone.own[key];
+
+            // If custom-built archetypes were found and extracted, reinsert them on the marked positions.
+            if (__archetypes[key] && __archetypes[key].length) {
+                for (let i of __archetypes[key]) {
+                    let re = i;
+
+                    if (typeof rule.transform === 'string')
+                        re = rule.transform;
+                    else if (typeof rule.transform === 'function')
+                        re = rule.transform(i);
+
+                    // Prevent back-reference
+                    re = re.replace(/\$/g,'$$$');
+
+                    // If custom-built archetypes were to be formatted, apply the provided style.
+                    if (rule && rule.sequence)
+                        output = output.replace('⥂_' + key + '⥄', rule.sequence + re + ANSIModes.reset);
+                    else
+                        output = output.replace('⥂_' + key + '⥄', re);
+                }
+            }
+        }
+    }
+
     // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
     output = output.replace(/('.*?')/g, (match) => {
         return voidFormatting(match);
@@ -233,7 +274,7 @@ function illumine(text) {
     });
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
-    if (__prefix && runestone.prefix.text) {
+    if (__prefix && typeof runestone.prefix.text === 'string') {
         output = __prefix + output;
         output = output.replace(__prefix, runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset);
     }
@@ -326,6 +367,14 @@ function igniculus(options) {
 
     if (runestone.postfix) {
         runestone.postfix.sequence = forgeANSISequence(runestone.postfix);
+    }
+
+    if (runestone.own) {
+        for (const key of Object.keys(runestone.own)) {
+            const rule = runestone.own[key];
+
+            rule.sequence = forgeANSISequence(rule);
+        }
     }
 
     if (typeof runestone.output !== 'function') {
