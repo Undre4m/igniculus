@@ -338,11 +338,12 @@ sequelize.sync({ logging: igniculus});
 For a full list of changes please refer to the [changelog](https://github.com/Undre4m/igniculus/blob/master/CHANGELOG.md).
 
 ### Future Upgrades
-Adding and omitting data types and keywords from the predefined sets
 
 #### [v2.0.0 milestone](https://github.com/Undre4m/igniculus/milestone/1)
 Separation of style-related and option-specific configurations **BC**
+Adding and omitting data types and keywords from the predefined sets
 Basic built-in themes
+Easier to read documentation
 Option validation and friendly error detection
 
 ## Maintainers

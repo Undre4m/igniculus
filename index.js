@@ -1,8 +1,81 @@
 'use strict';
 
-const defaultDataTypes = ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE', 'GEOMETRY', 'GEOGRAPHY', 'UNIQUEIDENTIFIER', 'XML'];
+/* SQL-92 standard data types and keywords
+ * http://www.frontbase.com/docs/5.3.html
+ */
+const sql92 = {
+    defaultDataTypes: ['SMALLINT', 'INTEGER', 'INT', 'NUMERIC', 'DECIMAL', 'DEC', 'FLOAT', 'REAL', 'DOUBLE PRECISION', 'CHARACTER', 'CHAR', 'NCHAR', 'VARCHAR', 'BIT', 'DATE', 'TIME', 'TIMESTAMP', 'INTERVAL', 'NATIONAL', 'VARYING', 'TIME ZONE']
+};
 
-const defaultStandardKeywords = ['ADD', 'AFTER', 'ALTER', 'BEFORE', 'BEGIN', 'BREAK', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'CLOSE', 'COLUMN', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'CURSOR', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'EACH', 'ELSE', 'ELSEIF', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'EXIT', 'FETCH', 'FIRST', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GRANT', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'LIMIT', 'LAST', 'LOOP', 'MERGE', 'NEXT', 'NO', 'OFFSET', 'ON', 'OPEN', 'ORDER', 'OUTER', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RELATIVE', 'REPLACE', 'RETURN', 'RETURNS', 'REVOKE', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVE', 'SELECT', 'SET', 'TABLE', 'THEN', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'USING', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH'];
+/* Oracle data types
+ * https://docs.oracle.com/en/database/oracle/oracle-database/18/sqlrf/Data-Types.html#GUID-7B72E154-677A-4342-A1EA-C74C1EA928E6
+ */
+const oracle = {
+    defaultDataTypes: ['VARCHAR2', 'NVARCHAR2', 'NUMBER', 'FLOAT', 'LONG', 'DATE', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'TIMESTAMP', 'INTERVAL', 'RAW', 'ROWID', 'UROWID', 'CHAR', 'NCHAR', 'CLOB', 'NCLOB', 'BLOB', 'BFILE', 'BYTE', 'LOCAL', 'TIME ZONE']
+};
+
+/* T-SQL data types and keywords
+ * https://docs.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql?view=sql-server-2017
+ */
+const tsql = {
+    defaultDataTypes: ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE', 'GEOMETRY', 'GEOGRAPHY', 'UNIQUEIDENTIFIER', 'XML']
+};
+
+/* PostgreSQL data types and keywords
+ * https://www.postgresql.org/docs/10/static/datatype.html
+ */
+const postgresql = {
+    defaultDataTypes: ['SMALLINT', 'INTEGER', 'BIGINT', 'DECIMAL', 'NUMERIC', 'REAL', 'DOUBLE PRECISION', 'SMALLSERIAL', 'SERIAL', 'BIGSERIAL', 'MONEY', 'CHAR', 'CHARACTER', 'VARCHAR', 'TEXT', 'BYTEA', 'TIMESTAMP', 'TIMESTAMPTZ', 'DATE', 'TIME', 'INTERVAL', 'BOOLEAN', 'ENUM', 'POINT', 'LINE', 'LSEG', 'BOX', 'PATH', 'POLYGON', 'CIRCLE', 'CIDR', 'INET', 'MACADDR', 'MACADDR8', 'BIT', 'UUID', 'XML', 'JSON', 'JSONB', 'TSQUERY', 'TSVECTOR', 'INT4RANGE', 'INT8RANGE', 'NUMRANGE', 'TSRANGE', 'TSTZRANGE', 'DATERANGE', 'ARRAY', 'TIME ZONE']
+};
+
+/* MariaDB data types and keywords
+ * https://mariadb.com/kb/en/library/data-types
+ */
+const mariadb = {
+    defaultDataTypes: ['TINYINT', 'BOOLEAN', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT', 'DECIMAL', 'DEC', 'NUMERIC', 'FIXED', 'FLOAT', 'DOUBLE', 'DOUBLE PRECISION', 'REAL', 'BIT', 'CHAR', 'VARCHAR', 'BINARY', 'CHAR BYTE', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT', 'JSON', 'ENUM', 'SET', 'ROW', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'YEAR', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY']
+};
+
+/**
+ * Creates an array of unique values
+ * @param {...Array} [arrays]
+ * @returns {Array}
+ */
+/* Incompatible with current node version
+ * Bump version on 2.0 release
+ *
+ * function union(...arrays) {
+ *     return [...new Set([].concat(...arrays))];
+ * }
+ */
+function union() {
+    let array = [];
+    for (let arg of arguments)
+        for (let item of arg)
+            if (!~array.indexOf(item))
+                array.push(item);
+
+    return array;
+}
+
+/**
+ * Moves all compound keywords to the front of the array
+ * @param {string[]} array - Array of keywords to mutate
+ * @returns {string[]}
+ */
+function unshiftCompoundKeywords(array) {
+    for (let i = array.length - 1; i >= 0; i--) {
+        const word = array[i];
+
+        if (/\w+\s\w+/.test(word))
+            array.unshift(array.splice(i, 1)[0]);
+    }
+
+    return array;
+}
+
+const defaultDataTypes = unshiftCompoundKeywords(union(sql92.defaultDataTypes, tsql.defaultDataTypes));
+
+const defaultStandardKeywords = ['ACTION', 'ADD', 'AFTER', 'ALTER', 'AUTHORIZATION', 'BEFORE', 'BEGIN', 'BREAK', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'CLOSE', 'COLUMN', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'CURSOR', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'EACH', 'ELSE', 'ELSEIF', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'EXIT', 'FETCH', 'FIRST', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GRANT', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'LIMIT', 'LAST', 'LOOP', 'MERGE', 'MODIFY', 'NEXT', 'NO', 'OFFSET', 'ON', 'OPEN', 'ORDER', 'OUTER', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RELATIVE', 'REPLACE', 'RETURN', 'RETURNS', 'REVOKE', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVE', 'SCHEMA', 'SELECT', 'SET', 'TABLE', 'THEN', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'USING', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH', 'WITHOUT'];
 
 const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'ESCAPE', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM', 'TO'];
 

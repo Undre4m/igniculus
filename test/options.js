@@ -167,6 +167,18 @@ const statement_j = dedent`CREATE OR ALTER VIEW "---"."vw_A/*" AS
 const statement_k = dedent`/* May 13th, 2018 | 06:09:28.262 | http://server.local:8000 */
                            select [username], [password] from Users where [_uuid] = '4072FA1B-D9E7-4F0E-9553-5F2CFFE6CC7A' and [status] = 'active'`;
 
+const statement_l = dedent`create table roid_logs (
+                             id integer,
+                             roid character varying(64) not null,
+                             assessment_ts timestamp with time zone not null,
+                             albedo double precision not null,
+                             SMASS_C national character varying(2),
+                             estimated_mass dec(10,5),
+                             estimated_velocity numeric(9),
+                             constraint pk_roid_logs primary key (id),
+                             constraint fk_roids foreign key (roid) references roids (id)
+                           )`;
+
 const nyan = dedent`
     ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -632,7 +644,7 @@ test('data types and keywords', t => {
                ${m.dim}${c.fg.cyan}FROM${m.reset} Locators L
                ${m.dim}${c.fg.cyan}INNER${m.reset} ${m.dim}${c.fg.cyan}JOIN${m.reset} Locator_Classes C ${m.dim}${c.fg.cyan}ON${m.reset} L.lcid = C.lcid
                ${m.dim}${c.fg.cyan}WHERE${m.reset} L.lid = 20295
-               FOR JSON PATH`;
+               ${m.dim}${c.fg.cyan}FOR${m.reset} JSON PATH`;
 
     t.is(output, expected);
 });
@@ -700,6 +712,33 @@ test('uppercase data types and keywords', t => {
     t.is(output, expected);
 });
 
+test('uppercase keywords and compound sql-92 data types', t => {
+    const options = {
+        numbers:              { mode: 'dim', fg: 'white' },
+        dataTypes:            { mode: 'dim', fg: 'yellow', casing: 'lowercase' },
+        standardKeywords:     { mode: 'dim', fg: 'red', casing: 'uppercase' },
+        lesserKeywords:       { mode: 'dim', fg: 'blue', casing: 'lowercase' }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_l);
+    const expected =
+        dedent`${m.dim}${c.fg.red}CREATE${m.reset} ${m.dim}${c.fg.red}TABLE${m.reset} roid_logs (
+                 id ${m.dim}${c.fg.yellow}integer${m.reset},
+                 roid ${m.dim}${c.fg.yellow}character${m.reset} ${m.dim}${c.fg.yellow}varying${m.reset}(${m.dim}${c.fg.white}64${m.reset}) ${m.dim}${c.fg.blue}not${m.reset} ${m.dim}${c.fg.blue}null${m.reset},
+                 assessment_ts ${m.dim}${c.fg.yellow}timestamp${m.reset} ${m.dim}${c.fg.red}WITH${m.reset} ${m.dim}${c.fg.yellow}time zone${m.reset} ${m.dim}${c.fg.blue}not${m.reset} ${m.dim}${c.fg.blue}null${m.reset},
+                 albedo ${m.dim}${c.fg.yellow}double precision${m.reset} ${m.dim}${c.fg.blue}not${m.reset} ${m.dim}${c.fg.blue}null${m.reset},
+                 SMASS_C ${m.dim}${c.fg.yellow}national${m.reset} ${m.dim}${c.fg.yellow}character${m.reset} ${m.dim}${c.fg.yellow}varying${m.reset}(${m.dim}${c.fg.white}2${m.reset}),
+                 estimated_mass ${m.dim}${c.fg.yellow}dec${m.reset}(${m.dim}${c.fg.white}10${m.reset},${m.dim}${c.fg.white}5${m.reset}),
+                 estimated_velocity ${m.dim}${c.fg.yellow}numeric${m.reset}(${m.dim}${c.fg.white}9${m.reset}),
+                 ${m.dim}${c.fg.red}CONSTRAINT${m.reset} pk_roid_logs ${m.dim}${c.fg.red}PRIMARY${m.reset} ${m.dim}${c.fg.red}KEY${m.reset} (id),
+                 ${m.dim}${c.fg.red}CONSTRAINT${m.reset} fk_roids ${m.dim}${c.fg.red}FOREIGN${m.reset} ${m.dim}${c.fg.red}KEY${m.reset} (roid) ${m.dim}${c.fg.red}REFERENCES${m.reset} roids (id)
+               )`;
+
+    t.is(output, expected);
+});
+
 test('data types and keywords among constant and identifiers', t => {
     const options = {
         constants:                { mode: 'dim', fg: 'red' },
@@ -723,7 +762,7 @@ test('data types and keywords among constant and identifiers', t => {
                ${m.dim}${c.fg.cyan}FROM${m.reset} Locators L
                ${m.dim}${c.fg.cyan}INNER${m.reset} ${m.dim}${c.fg.cyan}JOIN${m.reset} Locator_Classes C ${m.dim}${c.fg.cyan}ON${m.reset} L.lcid = C.lcid
                ${m.dim}${c.fg.cyan}WHERE${m.reset} L.lid = 20295
-               FOR JSON PATH`;
+               ${m.dim}${c.fg.cyan}FOR${m.reset} JSON PATH`;
 
     t.is(output, expected);
 });

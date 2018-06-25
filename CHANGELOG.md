@@ -1,6 +1,14 @@
 ## Changelog
 
-### 1.4.0-0 _(rc)_ ~ _15 May 2018_
+### 1.5.0 ~ _24 Jun 2018_
+- Extended data types
+    - Added all sql-99 standard data types plus some t-sql data types
+- Keyword sets pruning
+    - Included non standard commonly used keywords [AFTER, AUTHORIZATION, BEFORE, BREAK, CLOSE, COLUMN, CURSOR, EACH, ELSEIF, EXIT, FETCH, FIRST, FOR, GRANT, LIMIT, LAST, LOOP, NEXT, OFFSET, OPEN, RELATIVE, REPLACE, REVOKE, ROLLBACK, ROW, ROWS, SCHEMA, USING, WITHOUT] and lesser keywords [ESCAPE, TO]
+    - Excluded seldom used dbms-specific keywords [PREPARE]
+- Merged __1.4.0-0__ (Experimental support for custom-built rules)
+
+#### 1.4.0-0 _(rc)_ ~ _15 May 2018_
 - Experimental support for custom-built rules
 
 #### 1.3.0 ~ _12 May 2018_
