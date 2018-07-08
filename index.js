@@ -133,18 +133,17 @@ let runestone;
 
 /**
  * Forge ANSI escape code sequence for text formatting.
- * @param {Object} rule - Object that defines the colors to use for formatting a particular rule.
+ * @param {Object} style - Object that defines the colors to use for formatting a particular rule.
  * @returns {string}
  */
-function forgeANSISequence(rule) {
+function forgeANSISequence(style) {
     let mode, fg, bg;
 
-    mode = (rule.mode && ANSIModes[rule.mode]) ? ANSIModes[rule.mode] : '';
-    fg = (rule.fg && ANSIColours.fg[rule.fg]) ? ANSIColours.fg[rule.fg] : '';
-    bg = (rule.bg && ANSIColours.bg[rule.bg]) ? ANSIColours.bg[rule.bg] : '';
+    mode = (style.mode && ANSIModes[style.mode]) ? ANSIModes[style.mode] : '';
+    fg = (style.fg && ANSIColours.fg[style.fg]) ? ANSIColours.fg[style.fg] : '';
+    bg = (style.bg && ANSIColours.bg[style.bg]) ? ANSIColours.bg[style.bg] : '';
 
-    let ANSISequence = mode + bg + fg;
-    return ANSISequence;
+    return mode + bg + fg;
 }
 
 /**
@@ -161,19 +160,21 @@ function voidFormatting(text) {
  * @param {string|Object} text - String of SQL-statements to highlight.
  */
 function illumine(text) {
+    const { rules = {}, own = {} } = runestone;
+
     let output,
         type = typeof text;
 
     // Coerce entry to string primitive capable of being altered or exit.
-    if (text && (type === 'string' || type === 'object'))
+    if (text && (type === 'string' || (type === 'object' && text.toString)))
         output = type === 'string' ? text : text.toString();
     else
         return;
 
     // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
     let __prefix;
-    if (runestone.prefix && runestone.prefix.replace) {
-        let match = runestone.prefix.replace.exec(output);
+    if (rules.prefix && rules.prefix.replace) {
+        let match = rules.prefix.replace.exec(output);
         if (match) {
             __prefix = match[0];
             output = output.substr(__prefix.length);
@@ -182,15 +183,13 @@ function illumine(text) {
 
     let __archetypes = {};
 
-    if (runestone.own) {
-        for (const key of Object.keys(runestone.own)) {
-            const rule = runestone.own[key];
+    for (const key of Object.keys(own)) {
+        const rule = own[key];
 
-            // Extract custom-built archetypes so no subsequent operations alter them. Mark their positions for reinsertion.
-            __archetypes[key] = output.match(rule.regexp);
-            if (__archetypes[key] && __archetypes[key].length) {
-                output = output.replace(rule.regexp, '⥂_' + key + '⥄');
-            }
+        // Extract custom-built archetypes so no subsequent operations alter them. Mark their positions for reinsertion.
+        __archetypes[key] = output.match(rule.regexp);
+        if (__archetypes[key] && __archetypes[key].length) {
+            output = output.replace(rule.regexp, '⥂_' + key + '⥄');
         }
     }
 
@@ -218,59 +217,65 @@ function illumine(text) {
         output = output.replace(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g, '⥤※⥢');
     }
 
-    if (runestone.dataTypes && runestone.dataTypes.sequence) {
+    if (rules.dataTypes && (rules.dataTypes.sequence || rules.dataTypes.casing)) {
         let regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
-            const casing = runestone.dataTypes.casing;
-            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
-                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+            if (rules.dataTypes.casing)
+                word = rules.dataTypes.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
-            return runestone.dataTypes.sequence + word + ANSIModes.reset;
+            if (rules.dataTypes.sequence)
+                return rules.dataTypes.sequence + word + ANSIModes.reset;
+            else
+                return word;
         });
     }
 
-    if (runestone.standardKeywords && runestone.standardKeywords.sequence) {
+    if (rules.standardKeywords && (rules.standardKeywords.sequence || rules.standardKeywords.casing)) {
         let regex = new RegExp('\\b' + '(' + standardKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
-            const casing = runestone.standardKeywords.casing;
-            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
-                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+            if (rules.standardKeywords.casing)
+                word = rules.standardKeywords.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
-            return runestone.standardKeywords.sequence + word + ANSIModes.reset;
+            if (rules.standardKeywords.sequence)
+                return rules.standardKeywords.sequence + word + ANSIModes.reset;
+            else
+                return word;
         });
     }
 
-    if (runestone.lesserKeywords && runestone.lesserKeywords.sequence) {
+    if (rules.lesserKeywords && (rules.lesserKeywords.sequence || rules.lesserKeywords.casing)) {
         let regex = new RegExp('\\b' + '(' + lesserKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
-            const casing = runestone.lesserKeywords.casing;
-            if (typeof casing === 'string' && (casing === 'lowercase' || casing === 'uppercase'))
-                word = casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
+            if (rules.lesserKeywords.casing)
+                word = rules.lesserKeywords.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
-            return runestone.lesserKeywords.sequence + word + ANSIModes.reset;
+            if (rules.lesserKeywords.sequence)
+                return rules.lesserKeywords.sequence + word + ANSIModes.reset;
+            else
+                return word;
         });
     }
 
-    if (runestone.numbers && runestone.numbers.sequence) {
-        output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, runestone.numbers.sequence + '$1' + ANSIModes.reset);
+    if (rules.numbers && rules.numbers.sequence) {
+        output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, rules.numbers.sequence + '$1' + ANSIModes.reset);
     }
 
-    if (runestone.operators && runestone.operators.sequence) {
-        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, runestone.operators.sequence + '$&' + ANSIModes.reset);
+    if (rules.operators && rules.operators.sequence) {
+        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, rules.operators.sequence + '$&' + ANSIModes.reset);
     }
 
     // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
     if (__comments && __comments.length) {
         for (let i of __comments) {
             // If comment sections were to be formatted, apply the provided style.
-            if (runestone.comments && runestone.comments.sequence)
-                output = output.replace('⥤※⥢', runestone.comments.sequence + 'c†s' + i + 'c‡e' + ANSIModes.reset);
+            if (rules.comments && rules.comments.sequence)
+                output = output.replace('⥤※⥢', rules.comments.sequence + 'c†s' + i + 'c‡e' + ANSIModes.reset);
             else
                 output = output.replace('⥤※⥢', 'c†s' + i + 'c‡e');
         }
@@ -280,8 +285,8 @@ function illumine(text) {
     if (__variables && __variables.length) {
         for (let i of __variables) {
             // If local variables were to be formatted, apply the provided style.
-            if (runestone.variables && runestone.variables.sequence)
-                output = output.replace('↪※↩', runestone.variables.sequence + i + ANSIModes.reset);
+            if (rules.variables && rules.variables.sequence)
+                output = output.replace('↪※↩', rules.variables.sequence + i + ANSIModes.reset);
             else
                 output = output.replace('↪※↩', i);
         }
@@ -291,8 +296,8 @@ function illumine(text) {
     if (__constants && __constants.length) {
         for (let i of __constants) {
             // If constants were to be formatted, apply the provided style.
-            if (runestone.constants && runestone.constants.sequence)
-                output = output.replace('⇝※⇜', runestone.constants.sequence + i + ANSIModes.reset);
+            if (rules.constants && rules.constants.sequence)
+                output = output.replace('⇝※⇜', rules.constants.sequence + i + ANSIModes.reset);
             else
                 output = output.replace('⇝※⇜', i);
         }
@@ -302,36 +307,34 @@ function illumine(text) {
     if (__identifiers && __identifiers.length) {
         for (let i of __identifiers) {
             // If delimited identifiers were to be formatted, apply the provided style.
-            if (runestone.delimitedIdentifiers && runestone.delimitedIdentifiers.sequence)
-                output = output.replace('⇁※↼', runestone.delimitedIdentifiers.sequence + i + ANSIModes.reset);
+            if (rules.delimitedIdentifiers && rules.delimitedIdentifiers.sequence)
+                output = output.replace('⇁※↼', rules.delimitedIdentifiers.sequence + i + ANSIModes.reset);
             else
                 output = output.replace('⇁※↼', i);
         }
     }
 
-    if (runestone.own) {
-        for (const key of Object.keys(runestone.own).reverse()) {
-            const rule = runestone.own[key];
+    for (const key of Object.keys(own).reverse()) {
+        const rule = own[key];
 
-            // If custom-built archetypes were found and extracted, reinsert them on the marked positions.
-            if (__archetypes[key] && __archetypes[key].length) {
-                for (let i of __archetypes[key]) {
-                    let re = i;
+        // If custom-built archetypes were found and extracted, reinsert them on the marked positions.
+        if (__archetypes[key] && __archetypes[key].length) {
+            for (let i of __archetypes[key]) {
+                let re = i;
 
-                    if (typeof rule.transform === 'string')
-                        re = rule.transform;
-                    else if (typeof rule.transform === 'function')
-                        re = rule.transform(i);
+                if (typeof rule.transform === 'string')
+                    re = rule.transform;
+                else if (typeof rule.transform === 'function')
+                    re = rule.transform(i);
 
-                    // Prevent back-reference
-                    re = re.replace(/\$/g,'$$$');
+                // Prevent back-reference
+                re = re.replace(/\$/g,'$$$');
 
-                    // If custom-built archetypes were to be formatted, apply the provided style.
-                    if (rule && rule.sequence)
-                        output = output.replace('⥂_' + key + '⥄', rule.sequence + re + ANSIModes.reset);
-                    else
-                        output = output.replace('⥂_' + key + '⥄', re);
-                }
+                // If custom-built archetypes were to be formatted, apply the provided style.
+                if (rule && rule.sequence)
+                    output = output.replace('⥂_' + key + '⥄', rule.sequence + re + ANSIModes.reset);
+                else
+                    output = output.replace('⥂_' + key + '⥄', re);
             }
         }
     }
@@ -347,21 +350,35 @@ function illumine(text) {
     });
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
-    if (__prefix && typeof runestone.prefix.text === 'string') {
+    if (__prefix && typeof rules.prefix.text === 'string') {
         output = __prefix + output;
-        output = output.replace(__prefix, runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset);
+        output = output.replace(__prefix, rules.prefix.sequence + rules.prefix.text + ANSIModes.reset);
     }
     // If only the prefix text was provided, append it.
-    else if (runestone.prefix && runestone.prefix.text && !runestone.prefix.replace) {
-        output = runestone.prefix.sequence + runestone.prefix.text + ANSIModes.reset + output;
+    else if (rules.prefix && rules.prefix.text && !rules.prefix.replace) {
+        output = rules.prefix.sequence + rules.prefix.text + ANSIModes.reset + output;
     }
 
-    if (runestone.postfix && runestone.postfix.text) {
-        output = output + runestone.postfix.sequence + runestone.postfix.text + ANSIModes.reset;
+    if (rules.postfix && rules.postfix && rules.postfix.text) {
+        output = output + rules.postfix.sequence + rules.postfix.text + ANSIModes.reset;
     }
 
     return runestone.output(output);
 }
+
+const knownRules = [
+    'comments',
+    'constants',
+    'numbers',
+    'operators',
+    'variables',
+    'delimitedIdentifiers',
+    'dataTypes',
+    'standardKeywords',
+    'lesserKeywords',
+    'prefix',
+    'postfix'
+];
 
 /**
  * Create logger.
@@ -375,78 +392,64 @@ function igniculus(options) {
      */
     runestone = options || defaults;
 
-    if (runestone.comments) {
-        runestone.comments.sequence = forgeANSISequence(runestone.comments);
-    }
+    const { rules, own } = runestone;
 
-    if (runestone.constants) {
-        runestone.constants.sequence = forgeANSISequence(runestone.constants);
-    }
+    if (rules) {
+        for (const name of Object.keys(rules)) {
+            if (rules[name].style) {
+                rules[name].sequence = forgeANSISequence(rules[name].style);
+            }
+        }
 
-    if (runestone.delimitedIdentifiers) {
-        runestone.delimitedIdentifiers.sequence = forgeANSISequence(runestone.delimitedIdentifiers);
-    }
+        if (rules.dataTypes) {
+            const { types, casing } = rules.dataTypes;
 
-    if (runestone.numbers) {
-        runestone.numbers.sequence = forgeANSISequence(runestone.numbers);
-    }
+            if (Array.isArray(types))
+                dataTypes = types;
+            else
+                dataTypes = defaultDataTypes.slice();
 
-    if (runestone.operators) {
-        runestone.operators.sequence = forgeANSISequence(runestone.operators);
-    }
+            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+        }
 
-    if (runestone.variables) {
-        runestone.variables.sequence = forgeANSISequence(runestone.variables);
-    }
+        if (rules.standardKeywords) {
+            const { keywords, casing } = rules.standardKeywords;
 
-    if (runestone.dataTypes) {
-        if (Array.isArray(runestone.dataTypes.types))
-            dataTypes = runestone.dataTypes.types;
-        else
-            dataTypes = defaultDataTypes.slice();
+            if (Array.isArray(keywords))
+                standardKeywords = keywords;
+            else
+                standardKeywords = defaultStandardKeywords.slice();
 
-        runestone.dataTypes.sequence = forgeANSISequence(runestone.dataTypes);
-    }
+            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+        }
 
-    if (runestone.standardKeywords) {
-        if (Array.isArray(runestone.standardKeywords.keywords))
-            standardKeywords = runestone.standardKeywords.keywords;
-        else
-            standardKeywords = defaultStandardKeywords.slice();
+        if (rules.lesserKeywords) {
+            const { keywords, casing } = rules.lesserKeywords;
 
-        runestone.standardKeywords.sequence = forgeANSISequence(runestone.standardKeywords);
-    }
+            if (Array.isArray(keywords))
+                lesserKeywords = keywords;
+            else
+                lesserKeywords = defaultLesserKeywords.slice();
 
-    if (runestone.lesserKeywords) {
-        if (Array.isArray(runestone.lesserKeywords.keywords))
-            lesserKeywords = runestone.lesserKeywords.keywords;
-        else
-            lesserKeywords = defaultLesserKeywords.slice();
-
-        runestone.lesserKeywords.sequence = forgeANSISequence(runestone.lesserKeywords);
-    }
-
-    if (runestone.prefix) {
-        runestone.prefix.sequence = forgeANSISequence(runestone.prefix);
+            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+        }
 
         /* If prefix should replace a given pattern and that pattern is a string,
          * escape it so it can be passed to the RegExp constructor.
          */
-        if (runestone.prefix.replace && typeof runestone.prefix.replace === 'string') {
-            runestone.prefix.replace = runestone.prefix.replace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-            runestone.prefix.replace = new RegExp('^' + runestone.prefix.replace, 'i');
+        if (rules.prefix) {
+            if (rules.prefix.replace && typeof rules.prefix.replace === 'string') {
+                rules.prefix.replace = rules.prefix.replace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+                rules.prefix.replace = new RegExp('^' + rules.prefix.replace, 'i');
+            }
         }
     }
 
-    if (runestone.postfix) {
-        runestone.postfix.sequence = forgeANSISequence(runestone.postfix);
-    }
-
-    if (runestone.own) {
-        for (const key of Object.keys(runestone.own)) {
-            const rule = runestone.own[key];
-
-            rule.sequence = forgeANSISequence(rule);
+    if (own) {
+        for (const name of Object.keys(own)) {
+            if (own[name].style) {
+                own[name].sequence = forgeANSISequence(own[name].style);
+            }
         }
     }
 

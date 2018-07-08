@@ -80,15 +80,37 @@ test('no style', t => {
 
 test('modifiers', t => {
     const options = {
-        constants:              { mode: null },
-        numbers:                { mode: 'bold' },
-        operators:              { mode: 'dim' },
-        delimitedIdentifiers:   { mode: 'italic' },
-        dataTypes:              { mode: 'underline' },
-        standardKeywords:       { mode: 'blink' },
-        lesserKeywords:         { mode: 'inverse' },
-        prefix:                 { mode: 'hidden', text: '[START]\n' },
-        postfix:                { mode: 'strikethrough', text: '\n[END]' }
+        rules: {
+            constants: {
+                style: { mode: null }
+            },
+            numbers: {
+                style: { mode: 'bold' }
+            },
+            operators: {
+                style: { mode: 'dim' }
+            },
+            delimitedIdentifiers: {
+                style: { mode: 'italic' }
+            },
+            dataTypes: {
+                style: { mode: 'underline' }
+            },
+            standardKeywords: {
+                style: { mode: 'blink' }
+            },
+            lesserKeywords: {
+                style: { mode: 'inverse' }
+            },
+            prefix: {
+                style: { mode: 'hidden' },
+                text: '[START]\n'
+            },
+            postfix: {
+                style: { mode: 'strikethrough' },
+                text: '\n[END]'
+            }
+        }
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -106,15 +128,37 @@ test('modifiers', t => {
 
 test('foreground colors', t => {
     const options = {
-        constants:              { fg: null },
-        numbers:                { fg: 'black' },
-        operators:              { fg: 'red' },
-        delimitedIdentifiers:   { fg: 'green' },
-        dataTypes:              { fg: 'yellow' },
-        standardKeywords:       { fg: 'blue' },
-        lesserKeywords:         { fg: 'magenta' },
-        prefix:                 { fg: 'cyan', text: '[START]\n' },
-        postfix:                { fg: 'white', text: '\n[END]' }
+        rules: {
+            constants: {
+                style: { fg: null }
+            },
+            numbers: {
+                style: { fg: 'black' }
+            },
+            operators: {
+                style: { fg: 'red' }
+            },
+            delimitedIdentifiers: {
+                style: { fg: 'green' }
+            },
+            dataTypes: {
+                style: { fg: 'yellow' }
+            },
+            standardKeywords: {
+                style: { fg: 'blue' }
+            },
+            lesserKeywords: {
+                style: { fg: 'magenta' }
+            },
+            prefix: {
+                style: { fg: 'cyan' },
+                text: '[START]\n'
+            },
+            postfix: {
+                style: { fg: 'white' },
+                text: '\n[END]'
+            }
+        }
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -132,15 +176,37 @@ test('foreground colors', t => {
 
 test('background colors', t => {
     const options = {
-        constants:              { bg: null },
-        numbers:                { bg: 'black' },
-        operators:              { bg: 'red' },
-        delimitedIdentifiers:   { bg: 'green' },
-        dataTypes:              { bg: 'yellow' },
-        standardKeywords:       { bg: 'blue' },
-        lesserKeywords:         { bg: 'magenta' },
-        prefix:                 { bg: 'cyan', text: '[START]\n' },
-        postfix:                { bg: 'white', text: '\n[END]' }
+        rules: {
+            constants: {
+                style: { bg: null }
+            },
+            numbers: {
+                style: { bg: 'black' }
+            },
+            operators: {
+                style: { bg: 'red' }
+            },
+            delimitedIdentifiers: {
+                style: { bg: 'green' }
+            },
+            dataTypes: {
+                style: { bg: 'yellow' }
+            },
+            standardKeywords: {
+                style: { bg: 'blue' }
+            },
+            lesserKeywords: {
+                style: { bg: 'magenta' }
+            },
+            prefix: {
+                style: { bg: 'cyan' },
+                text: '[START]\n'
+            },
+            postfix: {
+                style: { bg: 'white' },
+                text: '\n[END]'
+            }
+        }
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -158,14 +224,35 @@ test('background colors', t => {
 
 test('default style', t => {
     const options = {
-        comments:               { mode: 'dim', fg: 'white' },
-        constants:              { mode: 'dim', fg: 'red' },
-        delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-        variables:              { mode: 'dim', fg: 'magenta' },
-        dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
-        standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
-        lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
-        prefix:                 { replace: /.*?: / }
+        rules: {
+            comments: {
+                style: { mode: 'dim', fg: 'white' }
+            },
+            constants: {
+                style: { mode: 'dim', fg: 'red' }
+            },
+            delimitedIdentifiers: {
+                style: { mode: 'dim', fg: 'yellow' }
+            },
+            variables: {
+                style: { mode: 'dim', fg: 'magenta' }
+            },
+            dataTypes: {
+                style: { mode: 'dim', fg: 'green' },
+                casing: 'uppercase'
+            },
+            standardKeywords: {
+                style: { mode: 'dim', fg: 'cyan' },
+                casing: 'uppercase'
+            },
+            lesserKeywords: {
+                style: { mode: 'bold', fg: 'black' },
+                casing: 'uppercase'
+            },
+            prefix: {
+                replace: /.*?: /
+            }
+        }
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -188,14 +275,35 @@ test('default style', t => {
 
 test('default style 2', t => {
     const options = {
-        comments:               { mode: 'dim', fg: 'white' },
-        constants:              { mode: 'dim', fg: 'red' },
-        delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-        variables:              { mode: 'dim', fg: 'magenta' },
-        dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
-        standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
-        lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
-        prefix:                 { replace: /.*?: / }
+        rules: {
+            comments: {
+                style: { mode: 'dim', fg: 'white' }
+            },
+            constants: {
+                style: { mode: 'dim', fg: 'red' }
+            },
+            delimitedIdentifiers: {
+                style: { mode: 'dim', fg: 'yellow' }
+            },
+            variables: {
+                style: { mode: 'dim', fg: 'magenta' }
+            },
+            dataTypes: {
+                style: { mode: 'dim', fg: 'green' },
+                casing: 'uppercase'
+            },
+            standardKeywords: {
+                style: { mode: 'dim', fg: 'cyan' },
+                casing: 'uppercase'
+            },
+            lesserKeywords: {
+                style: { mode: 'bold', fg: 'black' },
+                casing: 'uppercase'
+            },
+            prefix: {
+                replace: /.*?: /
+            }
+        }
     };
 
     const print = igniculus(Object.assign(options, echo));
