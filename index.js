@@ -1,5 +1,7 @@
 'use strict';
 
+const ansi = require('./ansi');
+
 /* SQL-92 standard data types and keywords
  * http://www.frontbase.com/docs/5.3.html
  */
@@ -83,41 +85,6 @@ let dataTypes = defaultDataTypes.slice();
 let standardKeywords = defaultStandardKeywords.slice();
 let lesserKeywords = defaultLesserKeywords.slice();
 
-const ANSIModes = {
-    reset:         '\x1b[0m',
-    bold:          '\x1b[1m',
-    dim:           '\x1b[2m',
-    italic:        '\x1b[3m',
-    underline:     '\x1b[4m',
-    blink:         '\x1b[5m',
-    inverse:       '\x1b[7m',
-    hidden:        '\x1b[8m',
-    strikethrough: '\x1b[9m'
-};
-
-const ANSIColours = {
-    fg: {
-        black:     '\x1b[30m',
-        red:       '\x1b[31m',
-        green:     '\x1b[32m',
-        yellow:    '\x1b[33m',
-        blue:      '\x1b[34m',
-        magenta:   '\x1b[35m',
-        cyan:      '\x1b[36m',
-        white:     '\x1b[37m'
-    },
-    bg: {
-        black:     '\x1b[40m',
-        red:       '\x1b[41m',
-        green:     '\x1b[42m',
-        yellow:    '\x1b[43m',
-        blue:      '\x1b[44m',
-        magenta:   '\x1b[45m',
-        cyan:      '\x1b[46m',
-        white:     '\x1b[47m'
-    }
-};
-
 const defaults = {
     comments:               { mode: 'dim', fg: 'white' },
     constants:              { mode: 'dim', fg: 'red' },
@@ -132,35 +99,13 @@ const defaults = {
 let runestone;
 
 /**
- * Forge ANSI escape code sequence for text formatting.
- * @param {Object} style - Object that defines the colors to use for formatting a particular rule.
- * @returns {string}
- */
-function forgeANSISequence(style) {
-    let mode, fg, bg;
-
-    mode = (style.mode && ANSIModes[style.mode]) ? ANSIModes[style.mode] : '';
-    fg = (style.fg && ANSIColours.fg[style.fg]) ? ANSIColours.fg[style.fg] : '';
-    bg = (style.bg && ANSIColours.bg[style.bg]) ? ANSIColours.bg[style.bg] : '';
-
-    return mode + bg + fg;
-}
-
-/**
- * Remove all ANSI escape code sequences from text.
- * @param {string} text - Text piece from which to void all formatting.
- * @returns {string}
- */
-function voidFormatting(text) {
-    return text.replace(/\x1b\[\d{1,2}m/g, '');
-}
-
-/**
  * Highlight syntax of SQL-statments and log to terminal.
  * @param {string|Object} text - String of SQL-statements to highlight.
  */
 function illumine(text) {
     const { rules = {}, own = {} } = runestone;
+
+    const reset = ansi.modes.reset;
 
     let output,
         type = typeof text;
@@ -226,7 +171,7 @@ function illumine(text) {
                 word = rules.dataTypes.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
             if (rules.dataTypes.sequence)
-                return rules.dataTypes.sequence + word + ANSIModes.reset;
+                return rules.dataTypes.sequence + word + reset;
             else
                 return word;
         });
@@ -241,7 +186,7 @@ function illumine(text) {
                 word = rules.standardKeywords.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
             if (rules.standardKeywords.sequence)
-                return rules.standardKeywords.sequence + word + ANSIModes.reset;
+                return rules.standardKeywords.sequence + word + reset;
             else
                 return word;
         });
@@ -256,18 +201,18 @@ function illumine(text) {
                 word = rules.lesserKeywords.casing === 'lowercase' ? word.toLowerCase() : word.toUpperCase();
 
             if (rules.lesserKeywords.sequence)
-                return rules.lesserKeywords.sequence + word + ANSIModes.reset;
+                return rules.lesserKeywords.sequence + word + reset;
             else
                 return word;
         });
     }
 
     if (rules.numbers && rules.numbers.sequence) {
-        output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, rules.numbers.sequence + '$1' + ANSIModes.reset);
+        output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, rules.numbers.sequence + '$1' + reset);
     }
 
     if (rules.operators && rules.operators.sequence) {
-        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, rules.operators.sequence + '$&' + ANSIModes.reset);
+        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, rules.operators.sequence + '$&' + reset);
     }
 
     // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
@@ -275,7 +220,7 @@ function illumine(text) {
         for (let i of __comments) {
             // If comment sections were to be formatted, apply the provided style.
             if (rules.comments && rules.comments.sequence)
-                output = output.replace('⥤※⥢', rules.comments.sequence + 'c†s' + i + 'c‡e' + ANSIModes.reset);
+                output = output.replace('⥤※⥢', rules.comments.sequence + 'c†s' + i + 'c‡e' + reset);
             else
                 output = output.replace('⥤※⥢', 'c†s' + i + 'c‡e');
         }
@@ -286,7 +231,7 @@ function illumine(text) {
         for (let i of __variables) {
             // If local variables were to be formatted, apply the provided style.
             if (rules.variables && rules.variables.sequence)
-                output = output.replace('↪※↩', rules.variables.sequence + i + ANSIModes.reset);
+                output = output.replace('↪※↩', rules.variables.sequence + i + reset);
             else
                 output = output.replace('↪※↩', i);
         }
@@ -297,7 +242,7 @@ function illumine(text) {
         for (let i of __constants) {
             // If constants were to be formatted, apply the provided style.
             if (rules.constants && rules.constants.sequence)
-                output = output.replace('⇝※⇜', rules.constants.sequence + i + ANSIModes.reset);
+                output = output.replace('⇝※⇜', rules.constants.sequence + i + reset);
             else
                 output = output.replace('⇝※⇜', i);
         }
@@ -308,7 +253,7 @@ function illumine(text) {
         for (let i of __identifiers) {
             // If delimited identifiers were to be formatted, apply the provided style.
             if (rules.delimitedIdentifiers && rules.delimitedIdentifiers.sequence)
-                output = output.replace('⇁※↼', rules.delimitedIdentifiers.sequence + i + ANSIModes.reset);
+                output = output.replace('⇁※↼', rules.delimitedIdentifiers.sequence + i + reset);
             else
                 output = output.replace('⇁※↼', i);
         }
@@ -332,7 +277,7 @@ function illumine(text) {
 
                 // If custom-built archetypes were to be formatted, apply the provided style.
                 if (rule && rule.sequence)
-                    output = output.replace('⥂_' + key + '⥄', rule.sequence + re + ANSIModes.reset);
+                    output = output.replace('⥂_' + key + '⥄', rule.sequence + re + reset);
                 else
                     output = output.replace('⥂_' + key + '⥄', re);
             }
@@ -341,26 +286,26 @@ function illumine(text) {
 
     // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
     output = output.replace(/('.*?')/g, (match) => {
-        return voidFormatting(match);
+        return ansi.voidFormatting(match);
     });
 
     // Comment sections are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied and remove cordon.
     output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => {
-        return voidFormatting(p2);
+        return ansi.voidFormatting(p2);
     });
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
     if (__prefix && typeof rules.prefix.text === 'string') {
         output = __prefix + output;
-        output = output.replace(__prefix, rules.prefix.sequence + rules.prefix.text + ANSIModes.reset);
+        output = output.replace(__prefix, rules.prefix.sequence + rules.prefix.text + reset);
     }
     // If only the prefix text was provided, append it.
     else if (rules.prefix && rules.prefix.text && !rules.prefix.replace) {
-        output = rules.prefix.sequence + rules.prefix.text + ANSIModes.reset + output;
+        output = rules.prefix.sequence + rules.prefix.text + reset + output;
     }
 
     if (rules.postfix && rules.postfix && rules.postfix.text) {
-        output = output + rules.postfix.sequence + rules.postfix.text + ANSIModes.reset;
+        output = output + rules.postfix.sequence + rules.postfix.text + reset;
     }
 
     return runestone.output(output);
@@ -397,7 +342,7 @@ function igniculus(options) {
     if (rules) {
         for (const name of Object.keys(rules)) {
             if (rules[name].style) {
-                rules[name].sequence = forgeANSISequence(rules[name].style);
+                rules[name].sequence = ansi.forgeSequence(rules[name].style);
             }
         }
 
@@ -448,7 +393,7 @@ function igniculus(options) {
     if (own) {
         for (const name of Object.keys(own)) {
             if (own[name].style) {
-                own[name].sequence = forgeANSISequence(own[name].style);
+                own[name].sequence = ansi.forgeSequence(own[name].style);
             }
         }
     }
