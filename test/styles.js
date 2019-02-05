@@ -78,7 +78,7 @@ test('no style', t => {
     t.is(output, expected);
 });
 
-test('modifiers', t => {
+test('single modifiers', t => {
     const options = {
         rules: {
             constants: {
@@ -121,6 +121,42 @@ test('modifiers', t => {
                ${m.reset}${m.blink}SELECT${m.reset} LOWER(${m.italic}[port]${m.reset}) ${m.inverse}AS${m.reset} Printer, 'on fire' ${m.inverse}AS${m.reset} Status, CONVERT(${m.underline}DATETIME2${m.reset}(${m.bold}0${m.reset}), CURRENT_TIMESTAMP) ${m.inverse}AS${m.reset} At
                ${m.blink}FROM${m.reset} ${m.italic}[Printers]${m.reset} P
                ${m.blink}WHERE${m.reset} P.${m.italic}"online"${m.reset} ${m.dim}=${m.reset} ${m.bold}1${m.reset} ${m.inverse}AND${m.reset} P.${m.italic}"check"${m.reset} ${m.dim}=${m.reset} ${m.bold}1${m.reset};${m.strikethrough}
+               [END]${m.reset}`;
+
+    t.is(output, expected);
+});
+
+test('multiple modifiers', t => {
+    const options = {
+        rules: {
+            constants: {
+                style: { mode: ['dim', 'italic', 'underline'] }
+            },
+            standardKeywords: {
+                style: { mode: ['bold'] }
+            },
+            lesserKeywords: {
+                style: { mode: [] }
+            },
+            prefix: {
+                style: { mode: ['blink', 'inverse', 'strikethrough'] },
+                text: '[START]\n'
+            },
+            postfix: {
+                style: { mode: ['strikethrough', 'blink', 'inverse'] },
+                text: '\n[END]'
+            }
+        }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_a);
+    const expected =
+        dedent`${m.blink + m.inverse + m.strikethrough}[START]
+               ${m.reset}${m.bold}SELECT${m.reset} LOWER([port]) AS Printer, ${m.dim + m.italic + m.underline}'on fire'${m.reset} AS Status, CONVERT(DATETIME2(0), CURRENT_TIMESTAMP) AS At
+               ${m.bold}FROM${m.reset} [Printers] P
+               ${m.bold}WHERE${m.reset} P."online" = 1 AND P."check" = 1;${m.blink + m.inverse + m.strikethrough}
                [END]${m.reset}`;
 
     t.is(output, expected);

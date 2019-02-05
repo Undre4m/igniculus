@@ -1,6 +1,7 @@
 'use strict';
 
 const ansi = require('./ansi');
+const proxy = require('./style');
 
 /* SQL-92 standard data types and keywords
  * http://www.frontbase.com/docs/5.3.html
@@ -60,30 +61,22 @@ function union() {
 }
 
 /**
- * Moves all compound keywords to the front of the array
- * @param {string[]} array - Array of keywords to mutate
- * @returns {string[]}
+ * Compares and orders keywords by descending amount of individual words
+ * @returns {number}
  */
-function unshiftCompoundKeywords(array) {
-    for (let i = array.length - 1; i >= 0; i--) {
-        const word = array[i];
-
-        if (/\w+\s\w+/.test(word))
-            array.unshift(array.splice(i, 1)[0]);
-    }
-
-    return array;
+function descendingCompositeOrder(v, nv) {
+    return (nv.match(/\S+/g) || []).length - (v.match(/\S+/g) || []).length;
 }
 
-const defaultDataTypes = unshiftCompoundKeywords(union(sql92.defaultDataTypes, tsql.defaultDataTypes));
+const defaultDataTypes = union(sql92.defaultDataTypes, tsql.defaultDataTypes);
 
 const defaultStandardKeywords = ['ACTION', 'ADD', 'AFTER', 'ALTER', 'AUTHORIZATION', 'BEFORE', 'BEGIN', 'BREAK', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'CLOSE', 'COLUMN', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'CURSOR', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'EACH', 'ELSE', 'ELSEIF', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'EXIT', 'FETCH', 'FIRST', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GRANT', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'LIMIT', 'LAST', 'LOOP', 'MERGE', 'MODIFY', 'NEXT', 'NO', 'OFFSET', 'ON', 'OPEN', 'ORDER', 'OUTER', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RELATIVE', 'REPLACE', 'RETURN', 'RETURNS', 'REVOKE', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVE', 'SCHEMA', 'SELECT', 'SET', 'TABLE', 'THEN', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'USING', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH', 'WITHOUT'];
 
 const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'ESCAPE', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM', 'TO'];
 
-let dataTypes = defaultDataTypes.slice();
-let standardKeywords = defaultStandardKeywords.slice();
-let lesserKeywords = defaultLesserKeywords.slice();
+let dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
+let standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
+let lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
 const defaults = {
     comments:               { mode: 'dim', fg: 'white' },
@@ -297,15 +290,24 @@ function illumine(text) {
     // If the given prefix was found and a replacement pattern was provided, substitute it.
     if (__prefix && typeof rules.prefix.text === 'string') {
         output = __prefix + output;
-        output = output.replace(__prefix, rules.prefix.sequence + rules.prefix.text + reset);
+        output = output.replace(__prefix, rules.prefix.sequence ?
+            rules.prefix.sequence + rules.prefix.text + reset :
+            rules.prefix.text
+        );
     }
     // If only the prefix text was provided, append it.
     else if (rules.prefix && rules.prefix.text && !rules.prefix.replace) {
-        output = rules.prefix.sequence + rules.prefix.text + reset + output;
+        output = (rules.prefix.sequence ?
+            rules.prefix.sequence + rules.prefix.text + reset :
+            rules.prefix.text
+        ) + output;
     }
 
-    if (rules.postfix && rules.postfix && rules.postfix.text) {
-        output = output + rules.postfix.sequence + rules.postfix.text + reset;
+    if (rules.postfix && rules.postfix.text) {
+        output = output + (rules.postfix.sequence ?
+            rules.postfix.sequence + rules.postfix.text + reset :
+            rules.postfix.text
+        );
     }
 
     return runestone.output(output);
@@ -341,8 +343,13 @@ function igniculus(options) {
 
     if (rules) {
         for (const name of Object.keys(rules)) {
-            if (rules[name].style) {
-                rules[name].sequence = ansi.forgeSequence(rules[name].style);
+            const style = rules[name].style;
+
+            if (style) {
+                rules[name].sequence = ansi.forgeSequence(
+                    // If using proxy builder pass style parameters as object
+                    style instanceof proxy.constructor ? style.style : style
+                );
             }
         }
 
@@ -350,9 +357,9 @@ function igniculus(options) {
             const { types, casing } = rules.dataTypes;
 
             if (Array.isArray(types))
-                dataTypes = types;
+                dataTypes = types.slice().sort(descendingCompositeOrder);
             else
-                dataTypes = defaultDataTypes.slice();
+                dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
 
             if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
         }
@@ -361,9 +368,9 @@ function igniculus(options) {
             const { keywords, casing } = rules.standardKeywords;
 
             if (Array.isArray(keywords))
-                standardKeywords = keywords;
+                standardKeywords = keywords.slice().sort(descendingCompositeOrder);
             else
-                standardKeywords = defaultStandardKeywords.slice();
+                standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
 
             if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
         }
@@ -372,9 +379,9 @@ function igniculus(options) {
             const { keywords, casing } = rules.lesserKeywords;
 
             if (Array.isArray(keywords))
-                lesserKeywords = keywords;
+                lesserKeywords = keywords.slice().sort(descendingCompositeOrder);
             else
-                lesserKeywords = defaultLesserKeywords.slice();
+                lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
             if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
         }
@@ -392,8 +399,13 @@ function igniculus(options) {
 
     if (own) {
         for (const name of Object.keys(own)) {
-            if (own[name].style) {
-                own[name].sequence = ansi.forgeSequence(own[name].style);
+            const style = own[name].style;
+
+            if (style) {
+                own[name].sequence = ansi.forgeSequence(
+                    // If using proxy builder pass style parameters as object
+                    style instanceof proxy.constructor ? style.style : style
+                );
             }
         }
     }
@@ -407,3 +419,4 @@ function igniculus(options) {
 
 module.exports = igniculus;
 module.exports.log = illumine;
+module.exports.nox = proxy;

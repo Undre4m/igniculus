@@ -1,37 +1,6 @@
-const ANSIModes = {
-    reset:         '\x1b[0m',
-    bold:          '\x1b[1m',
-    dim:           '\x1b[2m',
-    italic:        '\x1b[3m',
-    underline:     '\x1b[4m',
-    blink:         '\x1b[5m',
-    inverse:       '\x1b[7m',
-    hidden:        '\x1b[8m',
-    strikethrough: '\x1b[9m'
-};
+'use strict';
 
-const ANSIColours = {
-    fg: {
-        black:     '\x1b[30m',
-        red:       '\x1b[31m',
-        green:     '\x1b[32m',
-        yellow:    '\x1b[33m',
-        blue:      '\x1b[34m',
-        magenta:   '\x1b[35m',
-        cyan:      '\x1b[36m',
-        white:     '\x1b[37m'
-    },
-    bg: {
-        black:     '\x1b[40m',
-        red:       '\x1b[41m',
-        green:     '\x1b[42m',
-        yellow:    '\x1b[43m',
-        blue:      '\x1b[44m',
-        magenta:   '\x1b[45m',
-        cyan:      '\x1b[46m',
-        white:     '\x1b[47m'
-    }
-};
+const { modes, colors } = require('./ansi');
 
 function getToken(name) {
     if (typeof name !== 'string')
@@ -39,16 +8,16 @@ function getToken(name) {
 
     const lname = name.toLowerCase();
 
-    if (lname in ANSIModes)
+    if (modes.hasOwnProperty(lname))
         return ['mode', lname];
 
-    else if (lname in ANSIColours.fg)
+    else if (colors.fg.hasOwnProperty(lname))
         return ['fg', lname];
 
-    else if (lname.startsWith('fg') && lname.replace('fg','') in ANSIColours.fg)
+    else if (lname.startsWith('fg') && colors.fg.hasOwnProperty(lname.replace('fg','')))
         return ['fg', lname.replace('fg','')];
 
-    else if (lname.startsWith('bg') && lname.replace('bg','') in ANSIColours.bg)
+    else if (lname.startsWith('bg') && colors.bg.hasOwnProperty(lname.replace('bg','')))
         return ['bg', lname.replace('bg','')];
 }
 
@@ -75,12 +44,12 @@ class Builder {
         toggle(this.style.mode, mode);
     }
 
-    fg(colour) {
-        this.style.fg = colour;
+    fg(color) {
+        this.style.fg = color;
     }
 
-    bg(colour) {
-        this.style.bg = colour;
+    bg(color) {
+        this.style.bg = color;
     }
 }
 

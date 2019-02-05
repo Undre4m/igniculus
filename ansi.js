@@ -37,13 +37,17 @@ const colors = {
 
 /**
  * Forge ANSI escape code sequence for text formatting.
- * @param {Object} style - Object that defines the colors to use for formatting a particular rule.
+ * @param {Object} style - Object which defines formatting for a particular rule.
  * @returns {string}
  */
 function forgeSequence(style) {
     let mode, fg, bg;
 
-    mode = (style.mode && modes[style.mode]) ? modes[style.mode] : '';
+    mode = []
+        .concat(style.mode || [])
+        .filter(m => modes[m]).map(m => modes[m])
+        .sort().join('');
+
     fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
     bg = (style.bg && colors.bg[style.bg]) ? colors.bg[style.bg] : '';
 
