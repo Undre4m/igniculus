@@ -14,6 +14,9 @@ function getToken(name) {
     else if (colors.fg.hasOwnProperty(lname))
         return ['fg', lname];
 
+    else if (lname.startsWith('_') && colors.bg.hasOwnProperty(lname.replace('_','')))
+        return ['bg', lname.replace('_','')];
+
     else if (lname.startsWith('fg') && colors.fg.hasOwnProperty(lname.replace('fg','')))
         return ['fg', lname.replace('fg','')];
 

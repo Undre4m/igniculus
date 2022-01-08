@@ -9,7 +9,11 @@ const modes = {
     blink:         '\x1b[5m',
     inverse:       '\x1b[7m',
     hidden:        '\x1b[8m',
-    strikethrough: '\x1b[9m'
+    strikethrough: '\x1b[9m',
+    fraktur:       '\x1b[20m',
+    framed:        '\x1b[51m',
+    encircled:     '\x1b[52m',
+    overline:      '\x1b[53m'
 };
 
 const colors = {
@@ -36,20 +40,31 @@ const colors = {
 };
 
 /**
+ * Compares and orders SGR (Select Graphic Rendition) parameters by ascending code
+ * @returns {number}
+ */
+function ascendingSGR(a, b) {
+    return Math.sign(
+        a.substring(2, a.length - 1) -
+        b.substring(2, b.length - 1)
+    );
+}
+
+/**
  * Forge ANSI escape code sequence for text formatting.
  * @param {Object} style - Object which defines formatting for a particular rule.
  * @returns {string}
  */
 function forgeSequence(style) {
-    let mode, fg, bg;
+    let mode, bg, fg;
 
     mode = []
         .concat(style.mode || [])
         .filter(m => modes[m]).map(m => modes[m])
-        .sort().join('');
+        .sort(ascendingSGR).join('');
 
-    fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
     bg = (style.bg && colors.bg[style.bg]) ? colors.bg[style.bg] : '';
+    fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
 
     return mode + bg + fg;
 }

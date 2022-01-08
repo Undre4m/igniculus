@@ -852,6 +852,29 @@ test('uppercase data types and keywords', t => {
     t.is(output, expected);
 });
 
+test('styleless lower and uppercase data types and keywords', t => {
+    const options = {
+        rules: {
+            dataTypes:        { casing: 'uppercase' },
+            standardKeywords: { casing: 'lowercase' },
+            lesserKeywords:   { casing: 'lowercase' }
+        }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_f);
+    const expected =
+        dedent`create function get_child_schemas (@schema_id INTEGER)
+               returns table as return
+
+               select name, schema_id as 'id'
+               from sys.schemas
+               where schema_id <> principal_id and principal_id = @schema_id`;
+
+    t.is(output, expected);
+});
+
 test('uppercase keywords and compound sql-92 data types', t => {
     const options = {
         rules: {
@@ -969,6 +992,51 @@ test('custom data types and keywords', t => {
     t.is(output, expected);
 });
 
+test('custom included and excluded data types and keywords', t => {
+    const options = {
+        rules: {
+            dataTypes: {
+                style: { mode: ['bold', 'underline'], fg: 'magenta' },
+                types: {
+                    include: ['JSON', 'JSON_QUERY', 'FOR JSON PATH', 'STX', 'STY', 'FORMAT'],
+                    exclude: ['FORMAT']
+                }
+            },
+            standardKeywords: {
+                style: { mode: ['bold'], fg: 'yellow' },
+                keywords: {
+                    exclude: ['ON']
+                }
+            },
+            lesserKeywords: {
+                style: { mode: ['bold'], fg: 'blue' },
+                casing: 'lowercase',
+                keywords: {
+                    include: ['ON']
+                }
+            }
+        }
+    };
+
+    const print = igniculus(Object.assign(options, echo));
+
+    const output = print(statement_c);
+    const expected =
+        dedent`${m.bold}${c.fg.yellow}SELECT${m.reset} 'Feature' ${m.bold}${c.fg.blue}as${m.reset} type, 'Point' ${m.bold}${c.fg.blue}as${m.reset} [geometry.type],
+                   ${m.bold + m.underline}${c.fg.magenta}JSON_QUERY${m.reset}(FORMATMESSAGE('[%s,%s]',
+                       FORMAT(L.position.${m.bold + m.underline}${c.fg.magenta}STY${m.reset}, N'0.##################################################'),
+                       FORMAT(L.position.${m.bold + m.underline}${c.fg.magenta}STX${m.reset}, N'0.##################################################')
+                   )) ${m.bold}${c.fg.blue}as${m.reset} [geometry.coordinates],
+                   L.descriptor ${m.bold}${c.fg.blue}as${m.reset} [properties.descriptor],
+                   C.name ${m.bold}${c.fg.blue}as${m.reset} [properties.class]
+               ${m.bold}${c.fg.yellow}FROM${m.reset} Locators L
+               ${m.bold}${c.fg.yellow}INNER${m.reset} ${m.bold}${c.fg.yellow}JOIN${m.reset} Locator_Classes C ${m.bold}${c.fg.blue}on${m.reset} L.lcid = C.lcid
+               ${m.bold}${c.fg.yellow}WHERE${m.reset} L.lid = 20295
+               ${m.bold + m.underline}${c.fg.magenta}FOR JSON PATH${m.reset}`;
+
+    t.is(output, expected);
+});
+
 test('custom data types and keywords among constant and identifiers', t => {
     const options = {
         rules: {
@@ -1039,6 +1107,59 @@ test('colliding data types and keywords', t => {
                ${m.hidden}${c.bg.black}${c.fg.black}WHERE${m.reset} dbname = 'master'`;
 
     t.is(output, expected);
+});
+
+test('wrongful options for data types and keywords', t => {
+    const wrongs = [{
+        types: null,
+        casing: null
+    }, {
+        types: {},
+        keywords: {},
+        casing: 'low'
+    }, {
+        types: { include: NaN, exclude: '' },
+        keywords: { include: 0, exclude: 1 },
+        casing: ''
+    }];
+
+    const expected =
+        dedent`cReAtE fUnCtIoN get_child_schemas (@schema_id iNtEgEr)
+               ReTuRnS tAbLe As ReTuRn
+
+               SeLeCt name, schema_id As 'id'
+               FrOm sys.schemas
+               WhErE schema_id <> principal_id aNd principal_id = @schema_id`;
+
+    t.is(igniculus(
+        Object.assign({
+            rules: {
+                dataTypes: wrongs[0],
+                standardKeywords: wrongs[1],
+                lesserKeywords: wrongs[2]
+            }
+        }, echo)
+    )(statement_f), expected);
+
+    t.is(igniculus(
+        Object.assign({
+            rules: {
+                dataTypes: wrongs[1],
+                standardKeywords: wrongs[2],
+                lesserKeywords: wrongs[0]
+            }
+        }, echo)
+    )(statement_f), expected);
+
+    t.is(igniculus(
+        Object.assign({
+            rules: {
+                dataTypes: wrongs[2],
+                standardKeywords: wrongs[0],
+                lesserKeywords: wrongs[1]
+            }
+        }, echo)
+    )(statement_f), expected);
 });
 
 test('numbers and data types among variables', t => {
@@ -1127,7 +1248,7 @@ test('prefix string replace', t => {
     const options = {
         rules: {
             prefix: {
-                style: { fg: 'red' },
+                text: '',
                 replace: 'SELECT CURRENT'
             }
         }

@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/Undre4m/igniculus#readme",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.4.0"
   },
   "devDependencies": {
     "ava": "^0.25.0",

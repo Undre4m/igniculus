@@ -43,21 +43,8 @@ const mariadb = {
  * @param {...Array} [arrays]
  * @returns {Array}
  */
-/* Incompatible with current node version
- * Bump version on 2.0 release
- *
- * function union(...arrays) {
- *     return [...new Set([].concat(...arrays))];
- * }
- */
-function union() {
-    let array = [];
-    for (let arg of arguments)
-        for (let item of arg)
-            if (!~array.indexOf(item))
-                array.push(item);
-
-    return array;
+function union(...arrays) {
+    return [...new Set([].concat(...arrays))];
 }
 
 /**
@@ -66,6 +53,25 @@ function union() {
  */
 function descendingCompositeOrder(v, nv) {
     return (nv.match(/\S+/g) || []).length - (v.match(/\S+/g) || []).length;
+}
+
+/**
+ * Creates, refines and streamlines an array of reserved words
+ * @param {string[]} [array=[]] - The base array of reserved words
+ * @param {string[]} [include=[]] - Reserved words that should be contained in the resulting array
+ * @param {string[]} [exclude=[]] - Reserved words that should not be contained in the resulting array
+ * @returns {string[]}
+ */
+function refineReservedWords(array = [], include = [], exclude = []) {
+    const inc = include.map(rw => rw.toUpperCase());
+    const exc = exclude.map(rw => rw.toUpperCase());
+
+    return union(
+        array
+            .concat(inc)
+            .filter(rw => !exc.includes(rw))
+            .sort(descendingCompositeOrder)
+    );
 }
 
 const defaultDataTypes = union(sql92.defaultDataTypes, tsql.defaultDataTypes);
@@ -358,10 +364,18 @@ function igniculus(options) {
 
             if (Array.isArray(types))
                 dataTypes = types.slice().sort(descendingCompositeOrder);
+
+            else if (types && (types.hasOwnProperty('include') || types.hasOwnProperty('exclude')))
+                dataTypes = refineReservedWords(defaultDataTypes,
+                    Array.isArray(types.include) ? types.include : undefined,
+                    Array.isArray(types.exclude) ? types.exclude : undefined
+                );
+
             else
                 dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
 
-            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+            if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
+                delete rules.dataTypes.casing;
         }
 
         if (rules.standardKeywords) {
@@ -369,10 +383,18 @@ function igniculus(options) {
 
             if (Array.isArray(keywords))
                 standardKeywords = keywords.slice().sort(descendingCompositeOrder);
+
+            else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
+                standardKeywords = refineReservedWords(defaultStandardKeywords,
+                    Array.isArray(keywords.include) ? keywords.include : undefined,
+                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined
+                );
+
             else
                 standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
 
-            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+            if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
+                delete rules.standardKeywords.casing;
         }
 
         if (rules.lesserKeywords) {
@@ -380,10 +402,18 @@ function igniculus(options) {
 
             if (Array.isArray(keywords))
                 lesserKeywords = keywords.slice().sort(descendingCompositeOrder);
+
+            else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
+                lesserKeywords = refineReservedWords(defaultLesserKeywords,
+                    Array.isArray(keywords.include) ? keywords.include : undefined,
+                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined
+                );
+
             else
                 lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
-            if (typeof casing !== 'string' || casing !== 'lowercase' || casing !== 'uppercase') ; // TODO: warning
+            if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
+                delete rules.lesserKeywords.casing;
         }
 
         /* If prefix should replace a given pattern and that pattern is a string,
