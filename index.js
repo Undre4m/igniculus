@@ -78,21 +78,42 @@ const defaultDataTypes = union(sql92.defaultDataTypes, tsql.defaultDataTypes);
 
 const defaultStandardKeywords = ['ACTION', 'ADD', 'AFTER', 'ALTER', 'AUTHORIZATION', 'BEFORE', 'BEGIN', 'BREAK', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'CLOSE', 'COLUMN', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'CURSOR', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'EACH', 'ELSE', 'ELSEIF', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'EXIT', 'FETCH', 'FIRST', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GRANT', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'LIMIT', 'LAST', 'LOOP', 'MERGE', 'MODIFY', 'NEXT', 'NO', 'OFFSET', 'ON', 'OPEN', 'ORDER', 'OUTER', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RELATIVE', 'REPLACE', 'RETURN', 'RETURNS', 'REVOKE', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVE', 'SCHEMA', 'SELECT', 'SET', 'TABLE', 'THEN', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'USING', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH', 'WITHOUT'];
 
-const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'ESCAPE', 'EXISTS', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM', 'TO'];
+const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'ESCAPE', 'EXISTS', 'FALSE', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM', 'TO', 'TRUE'];
 
 let dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
 let standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
 let lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
 const defaults = {
-    comments:               { mode: 'dim', fg: 'white' },
-    constants:              { mode: 'dim', fg: 'red' },
-    delimitedIdentifiers:   { mode: 'dim', fg: 'yellow' },
-    variables:              { mode: 'dim', fg: 'magenta' },
-    dataTypes:              { mode: 'dim', fg: 'green', casing: 'uppercase' },
-    standardKeywords:       { mode: 'dim', fg: 'cyan', casing: 'uppercase' },
-    lesserKeywords:         { mode: 'bold', fg: 'black', casing: 'uppercase' },
-    prefix:                 { replace: /.*?: / }
+    rules: {
+        comments: {
+            style: { mode: ['dim'], fg: 'white' }
+        },
+        constants: {
+            style: { mode: ['dim'], fg: 'red' }
+        },
+        delimitedIdentifiers: {
+            style: { mode: ['dim'], fg: 'yellow' }
+        },
+        variables: {
+            style: { mode: ['dim'], fg: 'magenta' }
+        },
+        dataTypes: {
+            style: { mode: ['dim'], fg: 'green' },
+            casing: 'uppercase'
+        },
+        standardKeywords: {
+            style: { mode: ['dim'], fg: 'cyan' },
+            casing: 'uppercase'
+        },
+        lesserKeywords: {
+            style: { mode: ['bold'], fg: 'black' },
+            casing: 'uppercase'
+        },
+        prefix: {
+            replace: /^.*?: /
+        }
+    }
 };
 
 let runestone;
@@ -211,7 +232,7 @@ function illumine(text) {
     }
 
     if (rules.operators && rules.operators.sequence) {
-        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<)+/g, rules.operators.sequence + '$&' + reset);
+        output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<|::)+/g, rules.operators.sequence + '$&' + reset);
     }
 
     // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
