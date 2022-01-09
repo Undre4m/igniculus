@@ -71,6 +71,24 @@ const statement_b = dedent`SELECT * FROM SalesOrders;
                            QUOTE '"'
                            WITH COLUMN NAMES;`;
 
+const statement_c = dedent`create table HEROES (
+                               id              bigserial primary key,
+                               name            character varying(36) not null check ('' <> name),
+                               aliases         character varying(36)[] not null check ('' <> all(aliases)),
+                               birthyear       smallint not null,
+                               birthplace      integer references PLACES(id),
+                               -- STATS --
+                               nobility        smallint not null default 0,
+                               health          integer not null default 1,
+                               mana            integer not null default 1,
+                               stamina         integer not null default 1,
+                               strength        integer not null default 1,
+                               dexterity       integer not null default 1,
+                               charisma        integer not null default 1,
+                               intelligence    integer not null default 1,
+                               perception      integer not null default 1
+                           );`;
+
 test('nox base', t => {
     const { nox } = igniculus;
 
