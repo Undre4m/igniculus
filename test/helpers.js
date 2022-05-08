@@ -2,7 +2,7 @@
 
 const ava = require('ava');
 const dedent = require('dedent');
-const igniculus = require('..');
+const igniculus = require('../src');
 
 const test = ava.test;
 
