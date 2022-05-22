@@ -1,6 +1,4 @@
-'use strict';
-
-const modes = {
+export const modes = {
     reset:         '\x1b[0m',
     bold:          '\x1b[1m',
     dim:           '\x1b[2m',
@@ -16,7 +14,7 @@ const modes = {
     overline:      '\x1b[53m'
 };
 
-const colors = {
+export const colors = {
     fg: {
         black:     '\x1b[30m',
         red:       '\x1b[31m',
@@ -43,19 +41,16 @@ const colors = {
  * Compares and orders SGR (Select Graphic Rendition) parameters by ascending code
  * @returns {number}
  */
-function ascendingSGR(a, b) {
-    return Math.sign(
-        a.substring(2, a.length - 1) -
-        b.substring(2, b.length - 1)
-    );
-}
+export const ascendingSGR = (a, b) => Math.sign(
+    a.substring(2, a.length - 1) - b.substring(2, b.length - 1)
+);
 
 /**
  * Forge ANSI escape code sequence for text formatting.
  * @param {Object} style - Object which defines formatting for a particular rule.
  * @returns {string}
  */
-function forgeSequence(style) {
+export const forgeSequence = (style) => {
     let mode, bg, fg;
 
     mode = []
@@ -67,15 +62,13 @@ function forgeSequence(style) {
     fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
 
     return mode + bg + fg;
-}
+};
 
 /**
  * Remove all ANSI escape code sequences from text.
  * @param {string} text - Text piece from which to void all formatting.
  * @returns {string}
  */
-function voidFormatting(text) {
+export const voidFormatting = (text) => {
     return text.replace(/\x1b\[\d{1,2}m/g, '');
-}
-
-module.exports = { modes, colors, forgeSequence, voidFormatting };
+};

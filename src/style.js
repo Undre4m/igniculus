@@ -1,6 +1,4 @@
-'use strict';
-
-const { modes, colors } = require('./ansi');
+import { modes, colors } from './ansi';
 
 function getToken(name) {
     if (typeof name !== 'string')
@@ -78,4 +76,4 @@ function newProxy(style) {
         });
 }
 
-module.exports = newProxy();
+export const nox = newProxy();

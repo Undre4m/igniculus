@@ -1,7 +1,5 @@
-'use strict';
-
-const ansi = require('./ansi');
-const proxy = require('./style');
+import * as ansi from './ansi';
+import { nox } from './style';
 
 /* SQL-92 standard data types and keywords
  * http://www.frontbase.com/docs/5.3.html
@@ -119,7 +117,7 @@ const defaults = {
 let runestone;
 
 /**
- * Highlight syntax of SQL-statments and log to terminal.
+ * Highlight syntax of SQL-statements and log to terminal.
  * @param {string|Object} text - String of SQL-statements to highlight.
  */
 function illumine(text) {
@@ -375,7 +373,7 @@ function igniculus(options) {
             if (style) {
                 rules[name].sequence = ansi.forgeSequence(
                     // If using proxy builder pass style parameters as object
-                    style instanceof proxy.constructor ? style.style : style
+                    style instanceof nox.constructor ? style.style : style
                 );
             }
         }
@@ -455,7 +453,7 @@ function igniculus(options) {
             if (style) {
                 own[name].sequence = ansi.forgeSequence(
                     // If using proxy builder pass style parameters as object
-                    style instanceof proxy.constructor ? style.style : style
+                    style instanceof nox.constructor ? style.style : style
                 );
             }
         }
@@ -468,6 +466,5 @@ function igniculus(options) {
     return illumine;
 }
 
-module.exports = igniculus;
-module.exports.log = illumine;
-module.exports.nox = proxy;
+export default igniculus;
+export { illumine as log, nox };
