@@ -9,17 +9,17 @@ function getToken(name) {
     if (modes.hasOwnProperty(lname))
         return ['mode', lname];
 
-    else if (colors.fg.hasOwnProperty(lname))
+    if (colors.fg.hasOwnProperty(lname))
         return ['fg', lname];
 
-    else if (lname.startsWith('_') && colors.bg.hasOwnProperty(lname.replace('_','')))
-        return ['bg', lname.replace('_','')];
+    if (lname.startsWith('_') && colors.bg.hasOwnProperty(lname.replace('_', '')))
+        return ['bg', lname.replace('_', '')];
 
-    else if (lname.startsWith('fg') && colors.fg.hasOwnProperty(lname.replace('fg','')))
-        return ['fg', lname.replace('fg','')];
+    if (lname.startsWith('fg') && colors.fg.hasOwnProperty(lname.replace('fg', '')))
+        return ['fg', lname.replace('fg', '')];
 
-    else if (lname.startsWith('bg') && colors.bg.hasOwnProperty(lname.replace('bg','')))
-        return ['bg', lname.replace('bg','')];
+    if (lname.startsWith('bg') && colors.bg.hasOwnProperty(lname.replace('bg', '')))
+        return ['bg', lname.replace('bg', '')];
 }
 
 function toggle(array, value) {
@@ -33,11 +33,11 @@ function toggle(array, value) {
 
 class Builder {
     constructor(style = {}) {
-        this.style = Object.assign({}, {
+        this.style = {
             mode: style.mode ? style.mode.slice() : [],
             fg: style.fg,
             bg: style.bg
-        });
+        };
     }
 
     mode(mode) {
@@ -57,7 +57,7 @@ class Builder {
 function newProxy(style) {
     return new Proxy(
         new Builder(style), {
-            get: function(target, name) {
+            get(target, name) {
                 if (typeof name !== 'string')
                     return target[name];
 
@@ -73,7 +73,8 @@ function newProxy(style) {
                     return target[name];
                 }
             }
-        });
+        }
+    );
 }
 
 export const nox = newProxy();

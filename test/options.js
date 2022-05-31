@@ -1,12 +1,6 @@
-'use strict';
-
-const ava = require('ava');
-const dedent = require('dedent');
-const igniculus = require('../src');
-
-const { nox } = igniculus;
-
-const test = ava.test;
+import test from 'ava';
+import dedent from 'dedent';
+import igniculus, { nox } from '../src';
 
 const m = {
     reset: '\x1b[0m',
@@ -258,7 +252,7 @@ test('object input', t => {
     };
 
     const input = {
-        toString: () => '/* GENERATED */ ' + statement_b
+        toString: () => `/* GENERATED */ ${statement_b}`
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -279,7 +273,8 @@ test('null input', t => {
 
 test('custom output', t => {
     const options = {
-        output: out => out.split('').reduce((a, c) => a += c.charCodeAt(0), 0)
+        // eslint-disable-next-line no-return-assign, no-param-reassign
+        output: out => out.split('').reduce((a, v) => a += v.charCodeAt(0), 0)
     };
 
     const print = igniculus(options);
@@ -715,7 +710,8 @@ test('postfix', t => {
         rules: {
             postfix: {
                 style: nox.white,
-                text: ' █\n' }
+                text: ' █\n'
+            }
         }
     };
 
@@ -1133,35 +1129,32 @@ test('wrongful options for data types and keywords', t => {
                FrOm sys.schemas
                WhErE schema_id <> principal_id aNd principal_id = @schema_id`;
 
-    t.is(igniculus(
-        Object.assign({
-            rules: {
-                dataTypes: wrongs[0],
-                standardKeywords: wrongs[1],
-                lesserKeywords: wrongs[2]
-            }
-        }, echo)
-    )(statement_f), expected);
+    t.is(igniculus({
+        rules: {
+            dataTypes: wrongs[0],
+            standardKeywords: wrongs[1],
+            lesserKeywords: wrongs[2]
+        },
+        ...echo
+    })(statement_f), expected);
 
-    t.is(igniculus(
-        Object.assign({
-            rules: {
-                dataTypes: wrongs[1],
-                standardKeywords: wrongs[2],
-                lesserKeywords: wrongs[0]
-            }
-        }, echo)
-    )(statement_f), expected);
+    t.is(igniculus({
+        rules: {
+            dataTypes: wrongs[1],
+            standardKeywords: wrongs[2],
+            lesserKeywords: wrongs[0]
+        },
+        ...echo
+    })(statement_f), expected);
 
-    t.is(igniculus(
-        Object.assign({
-            rules: {
-                dataTypes: wrongs[2],
-                standardKeywords: wrongs[0],
-                lesserKeywords: wrongs[1]
-            }
-        }, echo)
-    )(statement_f), expected);
+    t.is(igniculus({
+        rules: {
+            dataTypes: wrongs[2],
+            standardKeywords: wrongs[0],
+            lesserKeywords: wrongs[1]
+        },
+        ...echo
+    })(statement_f), expected);
 });
 
 test('numbers and data types among variables', t => {
@@ -1415,82 +1408,82 @@ test('custom-built rules', t => {
 test('custom-built nyan portrait', t => {
     const options = {
         own: {
-            'cyan': {
+            cyan: {
                 style: nox.dim._blue.blue,
                 regexp: /,+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'black': {
+            black: {
                 style: nox.dim.black,
                 regexp: /'+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'halfblack': {
+            halfblack: {
                 style: nox.bold._black.black,
                 regexp: /:+/g,
                 transform: (v) => '▀'.repeat(v.length)
             },
-            'gray': {
+            gray: {
                 style: nox.bold.black,
                 regexp: /\*+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'white': {
+            white: {
                 style: nox.bold._white.white,
                 regexp: /\?+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'spray': {
+            spray: {
                 style: nox.bold._blue.white,
                 regexp: /\.+/g,
                 transform: (v) => '░'.repeat(v.length)
             },
-            'bread': {
+            bread: {
                 style: nox.bold._red.white,
                 regexp: /@+/g,
                 transform: (v) => '░'.repeat(v.length)
             },
-            'red': {
+            red: {
                 style: nox.bold.red,
                 regexp: />+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'orange': {
+            orange: {
                 style: nox.bold._red.yellow,
                 regexp: /&+/g,
                 transform: (v) => '▒'.repeat(v.length)
             },
-            'yellow': {
+            yellow: {
                 style: nox.bold._yellow.yellow,
                 regexp: /\++/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'green': {
+            green: {
                 style: nox.bold._green.green,
                 regexp: /#+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'blue': {
+            blue: {
                 style: nox.bold._blue.blue,
                 regexp: /=+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'purple': {
+            purple: {
                 style: nox.dim._blue.magenta,
                 regexp: /;+/g,
                 transform: (v) => '▓'.repeat(v.length)
             },
-            'cranberry': {
+            cranberry: {
                 style: nox.bold._black.magenta,
                 regexp: /-+/g,
                 transform: (v) => '▒'.repeat(v.length)
             },
-            'pink': {
+            pink: {
                 style: nox.dim._magenta.magenta,
                 regexp: /\$+/g,
                 transform: (v) => '█'.repeat(v.length)
             },
-            'blush': {
+            blush: {
                 style: nox.bold._red.black,
                 regexp: /%+/g,
                 transform: (v) => '▓'.repeat(v.length)

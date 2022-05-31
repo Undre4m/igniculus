@@ -1,3 +1,9 @@
+/* eslint-disable curly */
+/* eslint-disable function-paren-newline */
+/* eslint-disable no-useless-concat */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable prefer-template */
+
 import * as ansi from './ansi';
 import { nox } from './style';
 
@@ -124,9 +130,9 @@ function illumine(text) {
     const { rules = {}, own = {} } = runestone;
 
     const reset = ansi.modes.reset;
+    const type = typeof text;
 
-    let output,
-        type = typeof text;
+    let output;
 
     // Coerce entry to string primitive capable of being altered or exit.
     if (text && (type === 'string' || (type === 'object' && text.toString)))
@@ -137,14 +143,14 @@ function illumine(text) {
     // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
     let __prefix;
     if (rules.prefix && rules.prefix.replace) {
-        let match = rules.prefix.replace.exec(output);
+        const match = rules.prefix.replace.exec(output);
         if (match) {
             __prefix = match[0];
             output = output.substr(__prefix.length);
         }
     }
 
-    let __archetypes = {};
+    const __archetypes = {};
 
     for (const key of Object.keys(own)) {
         const rule = own[key];
@@ -157,31 +163,31 @@ function illumine(text) {
     }
 
     // Extract delimited identifiers so no subsequent operations alter them. Mark their positions for reinsertion.
-    let __identifiers = output.match(/(\[.*?\]|".*?")/g);
+    const __identifiers = output.match(/(\[.*?\]|".*?")/g);
     if (__identifiers && __identifiers.length) {
         output = output.replace(/(\[.*?\]|".*?")/g, '⇁※↼');
     }
 
     // Extract constants so no subsequent operations alter them. Mark their positions for reinsertion.
-    let __constants = output.match(/('.*?')/g);
+    const __constants = output.match(/('.*?')/g);
     if (__constants && __constants.length) {
         output = output.replace(/('.*?')/g, '⇝※⇜');
     }
 
     // Extract local variables so no subsequent operations alter them. Mark their positions for reinsertion.
-    let __variables = output.match(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g);
+    const __variables = output.match(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g);
     if (__variables && __variables.length) {
         output = output.replace(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g, '↪※↩');
     }
 
     // Extract comment sections so no subsequent operations alter them. Mark their positions for reinsertion.
-    let __comments = output.match(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g);
+    const __comments = output.match(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g);
     if (__comments && __comments.length) {
         output = output.replace(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g, '⥤※⥢');
     }
 
     if (rules.dataTypes && (rules.dataTypes.sequence || rules.dataTypes.casing)) {
-        let regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        const regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
@@ -196,7 +202,7 @@ function illumine(text) {
     }
 
     if (rules.standardKeywords && (rules.standardKeywords.sequence || rules.standardKeywords.casing)) {
-        let regex = new RegExp('\\b' + '(' + standardKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        const regex = new RegExp('\\b' + '(' + standardKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
@@ -211,7 +217,7 @@ function illumine(text) {
     }
 
     if (rules.lesserKeywords && (rules.lesserKeywords.sequence || rules.lesserKeywords.casing)) {
-        let regex = new RegExp('\\b' + '(' + lesserKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+        const regex = new RegExp('\\b' + '(' + lesserKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
         output = output.replace(regex, (match, g1) => {
             let word = g1;
 
@@ -235,7 +241,7 @@ function illumine(text) {
 
     // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
     if (__comments && __comments.length) {
-        for (let i of __comments) {
+        for (const i of __comments) {
             // If comment sections were to be formatted, apply the provided style.
             if (rules.comments && rules.comments.sequence)
                 output = output.replace('⥤※⥢', rules.comments.sequence + 'c†s' + i + 'c‡e' + reset);
@@ -246,7 +252,7 @@ function illumine(text) {
 
     // If local variables were found and extracted, reinsert them on the marked positions.
     if (__variables && __variables.length) {
-        for (let i of __variables) {
+        for (const i of __variables) {
             // If local variables were to be formatted, apply the provided style.
             if (rules.variables && rules.variables.sequence)
                 output = output.replace('↪※↩', rules.variables.sequence + i + reset);
@@ -257,7 +263,7 @@ function illumine(text) {
 
     // If constants were found and extracted, reinsert them on the marked positions.
     if (__constants && __constants.length) {
-        for (let i of __constants) {
+        for (const i of __constants) {
             // If constants were to be formatted, apply the provided style.
             if (rules.constants && rules.constants.sequence)
                 output = output.replace('⇝※⇜', rules.constants.sequence + i + reset);
@@ -268,7 +274,7 @@ function illumine(text) {
 
     // If delimited identifiers were found and extracted, reinsert them on the marked positions.
     if (__identifiers && __identifiers.length) {
-        for (let i of __identifiers) {
+        for (const i of __identifiers) {
             // If delimited identifiers were to be formatted, apply the provided style.
             if (rules.delimitedIdentifiers && rules.delimitedIdentifiers.sequence)
                 output = output.replace('⇁※↼', rules.delimitedIdentifiers.sequence + i + reset);
@@ -282,7 +288,7 @@ function illumine(text) {
 
         // If custom-built archetypes were found and extracted, reinsert them on the marked positions.
         if (__archetypes[key] && __archetypes[key].length) {
-            for (let i of __archetypes[key]) {
+            for (const i of __archetypes[key]) {
                 let re = i;
 
                 if (typeof rule.transform === 'string')
@@ -291,7 +297,7 @@ function illumine(text) {
                     re = rule.transform(i);
 
                 // Prevent back-reference
-                re = re.replace(/\$/g,'$$$');
+                re = re.replace(/\$/g, '$$$');
 
                 // If custom-built archetypes were to be formatted, apply the provided style.
                 if (rule && rule.sequence)
@@ -303,21 +309,19 @@ function illumine(text) {
     }
 
     // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
-    output = output.replace(/('.*?')/g, (match) => {
-        return ansi.voidFormatting(match);
-    });
+    output = output.replace(/('.*?')/g, (match) => ansi.voidFormatting(match));
 
     // Comment sections are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied and remove cordon.
-    output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => {
-        return ansi.voidFormatting(p2);
-    });
+    output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => ansi.voidFormatting(p2));
 
     // If the given prefix was found and a replacement pattern was provided, substitute it.
     if (__prefix && typeof rules.prefix.text === 'string') {
         output = __prefix + output;
-        output = output.replace(__prefix, rules.prefix.sequence ?
-            rules.prefix.sequence + rules.prefix.text + reset :
-            rules.prefix.text
+        output = output.replace(
+            __prefix,
+            rules.prefix.sequence ?
+                rules.prefix.sequence + rules.prefix.text + reset :
+                rules.prefix.text
         );
     }
     // If only the prefix text was provided, append it.
@@ -329,7 +333,7 @@ function illumine(text) {
     }
 
     if (rules.postfix && rules.postfix.text) {
-        output = output + (rules.postfix.sequence ?
+        output += (rules.postfix.sequence ?
             rules.postfix.sequence + rules.postfix.text + reset :
             rules.postfix.text
         );
@@ -358,7 +362,6 @@ const knownRules = [
  * @returns {function} - Syntax highlighter and logging function.
  */
 function igniculus(options) {
-
     /* Draft all format sequences from the provided or default
      * configuration and save them.
      */
@@ -460,7 +463,7 @@ function igniculus(options) {
     }
 
     if (typeof runestone.output !== 'function') {
-        runestone.output = console.log;
+        runestone.output = console.log; // eslint-disable-line no-console
     }
 
     return illumine;

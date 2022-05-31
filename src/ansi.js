@@ -51,15 +51,14 @@ export const ascendingSGR = (a, b) => Math.sign(
  * @returns {string}
  */
 export const forgeSequence = (style) => {
-    let mode, bg, fg;
-
-    mode = []
+    const mode = []
         .concat(style.mode || [])
         .filter(m => modes[m]).map(m => modes[m])
-        .sort(ascendingSGR).join('');
+        .sort(ascendingSGR)
+        .join('');
 
-    bg = (style.bg && colors.bg[style.bg]) ? colors.bg[style.bg] : '';
-    fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
+    const bg = (style.bg && colors.bg[style.bg]) ? colors.bg[style.bg] : '';
+    const fg = (style.fg && colors.fg[style.fg]) ? colors.fg[style.fg] : '';
 
     return mode + bg + fg;
 };
@@ -69,6 +68,4 @@ export const forgeSequence = (style) => {
  * @param {string} text - Text piece from which to void all formatting.
  * @returns {string}
  */
-export const voidFormatting = (text) => {
-    return text.replace(/\x1b\[\d{1,2}m/g, '');
-};
+export const voidFormatting = (text) => text.replace(/\x1b\[\d{1,2}m/g, '');

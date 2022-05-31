@@ -1,10 +1,6 @@
-'use strict';
-
-const ava = require('ava');
-const dedent = require('dedent');
-const igniculus = require('../src');
-
-const test = ava.test;
+import test from 'ava';
+import dedent from 'dedent';
+import igniculus from '../src';
 
 const m = {
     reset: '\x1b[0m',

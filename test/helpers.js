@@ -1,10 +1,6 @@
-'use strict';
-
-const ava = require('ava');
-const dedent = require('dedent');
-const igniculus = require('../src');
-
-const test = ava.test;
+import test from 'ava';
+import dedent from 'dedent';
+import igniculus, { nox } from '../src';
 
 const m = {
     reset: '\x1b[0m',
@@ -90,8 +86,6 @@ const statement_c = dedent`create table HEROES (
                            );`;
 
 test('nox base', t => {
-    const { nox } = igniculus;
-
     const options = {
         rules: {
             comments:             { style: nox },
@@ -111,14 +105,12 @@ test('nox base', t => {
     const print = igniculus(Object.assign(options, echo));
 
     const output = print(statement_a);
-    const expected = '\u0002' + statement_a + '\u0003';
+    const expected = `\u0002${statement_a}\u0003`;
 
     t.is(output, expected);
 });
 
 test('nox simple styles', t => {
-    const { nox } = igniculus;
-
     const options = {
         rules: {
             comments:         { style: nox.italic },
@@ -172,8 +164,6 @@ test('nox simple styles', t => {
 });
 
 test('nox chained styles', t => {
-    const { nox } = igniculus;
-
     const options = {
         rules: {
             comments:         { style: nox.italic.bold.black },
@@ -216,8 +206,6 @@ test('nox chained styles', t => {
 });
 
 test('nox inherited styles', t => {
-    const { nox } = igniculus;
-
     const charcoal = nox.bold.black;
     const ashes = nox.dim.white;
     const bilane = nox.underline.overline;
@@ -266,8 +254,6 @@ test('nox inherited styles', t => {
 });
 
 test('nox short-named and case-insensitive styles with mode toggle and color overwriting', t => {
-    const { nox } = igniculus;
-
     const charcoal = nox.bold.black;
     const ashes = nox.dim.white;
 
@@ -324,8 +310,6 @@ test('nox short-named and case-insensitive styles with mode toggle and color ove
 });
 
 test('nox full-named and case-insensitive inherited styles with mode toggle and color overwriting', t => {
-    const { nox } = igniculus;
-
     const charcoal = nox.bold.fgBlack;
     const ashes = nox.dim.fgWhite;
     const danger = nox.OVERLINE.BLINK.bgYellow.fgRed;
