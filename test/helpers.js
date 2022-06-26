@@ -5,42 +5,42 @@ import dedent from 'dedent';
 import igniculus, { nox } from '../src';
 
 const m = {
-    reset: '\x1b[0m',
-    bold: '\x1b[1m',
-    dim: '\x1b[2m',
-    italic: '\x1b[3m',
-    underline: '\x1b[4m',
-    blink: '\x1b[5m',
-    inverse: '\x1b[7m',
-    hidden: '\x1b[8m',
-    strikethrough: '\x1b[9m',
-    fraktur: '\x1b[20m',
-    framed: '\x1b[51m',
-    encircled: '\x1b[52m',
-    overline: '\x1b[53m',
+  reset: '\x1b[0m',
+  bold: '\x1b[1m',
+  dim: '\x1b[2m',
+  italic: '\x1b[3m',
+  underline: '\x1b[4m',
+  blink: '\x1b[5m',
+  inverse: '\x1b[7m',
+  hidden: '\x1b[8m',
+  strikethrough: '\x1b[9m',
+  fraktur: '\x1b[20m',
+  framed: '\x1b[51m',
+  encircled: '\x1b[52m',
+  overline: '\x1b[53m',
 };
 
 const c = {
-    fg: {
-        black: '\x1b[30m',
-        red: '\x1b[31m',
-        green: '\x1b[32m',
-        yellow: '\x1b[33m',
-        blue: '\x1b[34m',
-        magenta: '\x1b[35m',
-        cyan: '\x1b[36m',
-        white: '\x1b[37m',
-    },
-    bg: {
-        black: '\x1b[40m',
-        red: '\x1b[41m',
-        green: '\x1b[42m',
-        yellow: '\x1b[43m',
-        blue: '\x1b[44m',
-        magenta: '\x1b[45m',
-        cyan: '\x1b[46m',
-        white: '\x1b[47m',
-    },
+  fg: {
+    black: '\x1b[30m',
+    red: '\x1b[31m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+    blue: '\x1b[34m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+    white: '\x1b[37m',
+  },
+  bg: {
+    black: '\x1b[40m',
+    red: '\x1b[41m',
+    green: '\x1b[42m',
+    yellow: '\x1b[43m',
+    blue: '\x1b[44m',
+    magenta: '\x1b[45m',
+    cyan: '\x1b[46m',
+    white: '\x1b[47m',
+  },
 };
 
 const echo = { output: out => out };
@@ -88,62 +88,62 @@ const statement_c = dedent`create table HEROES (
                            );`;
 
 test('nox base', t => {
-    const options = {
-        rules: {
-            comments:             { style: nox },
-            constants:            { style: nox },
-            numbers:              { style: nox },
-            operators:            { style: nox },
-            variables:            { style: nox },
-            delimitedIdentifiers: { style: nox },
-            dataTypes:            { style: nox },
-            standardKeywords:     { style: nox },
-            lesserKeywords:       { style: nox },
-            prefix:               { style: nox, text: '\u0002' },
-            postfix:              { style: nox, text: '\u0003' },
-        },
-    };
+  const options = {
+    rules: {
+      comments:             { style: nox },
+      constants:            { style: nox },
+      numbers:              { style: nox },
+      operators:            { style: nox },
+      variables:            { style: nox },
+      delimitedIdentifiers: { style: nox },
+      dataTypes:            { style: nox },
+      standardKeywords:     { style: nox },
+      lesserKeywords:       { style: nox },
+      prefix:               { style: nox, text: '\u0002' },
+      postfix:              { style: nox, text: '\u0003' },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const expected = `\u0002${statement_a}\u0003`;
+  const output = print(statement_a);
+  const expected = `\u0002${statement_a}\u0003`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
 
 test('nox simple styles', t => {
-    const options = {
-        rules: {
-            comments:         { style: nox.italic },
-            constants:        { style: nox.inverse },
-            numbers:          { style: nox.underline },
-            operators:        { style: nox.magenta },
-            dataTypes:        {
-                style: nox.green,
-                types: { include: ['array', 'inet', 'bytea', 'uuid'] },
-            },
-            standardKeywords: {
-                style: nox.yellow,
-                keywords: { include: ['at', 'returning', 'primary key'] },
-            },
-            lesserKeywords:   {
-                style: nox.cyan,
-                keywords: { include: ['not null'], exclude: ['null'] },
-            },
-        },
-        own: {
-            x__ident:         { style: nox.red, regexp: /\bx__\w+\b/g },
-            escape_format:    { style: nox.inverse, regexp: /E'.*?'/g },
-            no_parens:        { style: nox.hidden, regexp: /\(\)|\)|\(/g, transform: '\u00a0' },
-        },
-    };
+  const options = {
+    rules: {
+      comments:         { style: nox.italic },
+      constants:        { style: nox.inverse },
+      numbers:          { style: nox.underline },
+      operators:        { style: nox.magenta },
+      dataTypes:        {
+        style: nox.green,
+        types: { include: ['array', 'inet', 'bytea', 'uuid'] },
+      },
+      standardKeywords: {
+        style: nox.yellow,
+        keywords: { include: ['at', 'returning', 'primary key'] },
+      },
+      lesserKeywords:   {
+        style: nox.cyan,
+        keywords: { include: ['not null'], exclude: ['null'] },
+      },
+    },
+    own: {
+      x__ident:         { style: nox.red, regexp: /\bx__\w+\b/g },
+      escape_format:    { style: nox.inverse, regexp: /E'.*?'/g },
+      no_parens:        { style: nox.hidden, regexp: /\(\)|\)|\(/g, transform: '\u00a0' },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const nbsp = '\u{a0}';
-    const expected =
+  const output = print(statement_a);
+  const nbsp = '\u{a0}';
+  const expected =
         dedent`${m.italic}---[ xop: 2011.04.28/09.56.21.7856 ; 331B ; 0.0329s ]---${m.reset}
 
                ${m.italic}---$ st_n_erik56.s2 $---${m.reset}
@@ -162,32 +162,32 @@ test('nox simple styles', t => {
                 ${m.inverse}'00000000-0000-0000-0000-000000000000'${m.reset}, ${c.fg.green}array${m.reset}['0100::e056:ffff'::inet], ${m.underline}60606${m.reset}, ${m.inverse}'010101Z'${m.reset}, null, ${m.inverse}E'GTDv4uLF0ufZ2dbGxWWARQ=='${m.reset}, ${m.underline}0${m.reset}
                ${m.hidden + nbsp + m.reset} ${c.fg.yellow}returning${m.reset} ${c.fg.magenta}*${m.reset};`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
 
 test('nox chained styles', t => {
-    const options = {
-        rules: {
-            comments:         { style: nox.italic.bold.black },
-            constants:        { style: nox.inverse.underline.bgblue },
-            numbers:          { style: nox.inverse.underline.bgred },
-            operators:        { style: nox.magenta },
-            dataTypes:        { style: nox.green, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
-            standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: nox.cyan, keywords: ['NOT NULL', 'BETWEEN', 'AND'] },
-        },
-        own: {
-            escape_format:    { style: nox.inverse.underline.bgyellow, regexp: /E'.*?'/g },
-            x__ident:         { style: nox.overline.red, regexp: /\bx__\w+\b/g },
-            no_parens:        { style: nox.dim.white, regexp: /\(\)|\)|\(/g },
-            no_meta:          { regexp: /^---\[.*?\]---\n*/, transform: '' },
-        },
-    };
+  const options = {
+    rules: {
+      comments:         { style: nox.italic.bold.black },
+      constants:        { style: nox.inverse.underline.bgblue },
+      numbers:          { style: nox.inverse.underline.bgred },
+      operators:        { style: nox.magenta },
+      dataTypes:        { style: nox.green, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
+      standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
+      lesserKeywords:   { style: nox.cyan, keywords: ['NOT NULL', 'BETWEEN', 'AND'] },
+    },
+    own: {
+      escape_format:    { style: nox.inverse.underline.bgyellow, regexp: /E'.*?'/g },
+      x__ident:         { style: nox.overline.red, regexp: /\bx__\w+\b/g },
+      no_parens:        { style: nox.dim.white, regexp: /\(\)|\)|\(/g },
+      no_meta:          { regexp: /^---\[.*?\]---\n*/, transform: '' },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const expected =
+  const output = print(statement_a);
+  const expected =
         dedent`${m.bold + m.italic + c.fg.black}---$ st_n_erik56.s2 $---${m.reset}
                ${c.fg.yellow}create${m.reset} ${c.fg.yellow}table${m.reset} ${m.overline + c.fg.red}x__dom${m.reset} ${m.dim + c.fg.white}(${m.reset}
                 dsig ${c.fg.green}uuid${m.reset}         ${c.fg.yellow}primary key${m.reset}
@@ -204,36 +204,36 @@ test('nox chained styles', t => {
                 ${m.underline + m.inverse + c.bg.blue}'00000000-0000-0000-0000-000000000000'${m.reset}, ${c.fg.green}array${m.reset}['0100::e056:ffff'::inet], ${m.underline + m.inverse + c.bg.red}60606${m.reset}, ${m.underline + m.inverse + c.bg.blue}'010101Z'${m.reset}, null, ${m.underline + m.inverse + c.bg.yellow}E'GTDv4uLF0ufZ2dbGxWWARQ=='${m.reset}, ${m.underline + m.inverse + c.bg.red}0${m.reset}
                ${m.dim + c.fg.white})${m.reset} ${c.fg.yellow}returning${m.reset} ${c.fg.magenta}*${m.reset};`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
 
 test('nox inherited styles', t => {
-    const charcoal = nox.bold.black;
-    const ashes = nox.dim.white;
-    const bilane = nox.underline.overline;
+  const charcoal = nox.bold.black;
+  const ashes = nox.dim.white;
+  const bilane = nox.underline.overline;
 
-    const options = {
-        rules: {
-            comments:         { style: charcoal._white.italic.inverse },
-            constants:        { style: bilane.cyan },
-            numbers:          { style: bilane.green },
-            operators:        { style: ashes },
-            dataTypes:        { style: ashes, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
-            standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
-        },
-        own: {
-            meta:             { style: nox.bold._white.black, regexp: /^---\[.*?\]---/ },
-            x__ident:         { style: nox.framed.blink.red, regexp: /\bx__\w+\b/g },
-            escape_format:    { style: bilane.yellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
-        },
-    };
+  const options = {
+    rules: {
+      comments:         { style: charcoal._white.italic.inverse },
+      constants:        { style: bilane.cyan },
+      numbers:          { style: bilane.green },
+      operators:        { style: ashes },
+      dataTypes:        { style: ashes, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
+      standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
+      lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
+    },
+    own: {
+      meta:             { style: nox.bold._white.black, regexp: /^---\[.*?\]---/ },
+      x__ident:         { style: nox.framed.blink.red, regexp: /\bx__\w+\b/g },
+      escape_format:    { style: bilane.yellow, regexp: /E'.*?'/g },
+      nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const expected =
+  const output = print(statement_a);
+  const expected =
         dedent`${m.bold + c.bg.white + c.fg.black}---[ xop: 2011.04.28/09.56.21.7856 ; 331B ; 0.0329s ]---${m.reset}
 
                ${m.bold + m.italic + m.inverse + c.bg.white + c.fg.black}---$ st_n_erik56.s2 $---${m.reset}
@@ -252,44 +252,44 @@ test('nox inherited styles', t => {
                 ${m.underline + m.overline + c.fg.cyan}'00000000-0000-0000-0000-000000000000'${m.reset}${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}array${m.reset}['0100::e056:ffff'::inet]${m.bold + c.fg.black},${m.reset} ${m.underline + m.overline + c.fg.green}60606${m.reset}${m.bold + c.fg.black},${m.reset} ${m.underline + m.overline + c.fg.cyan}'010101Z'${m.reset}${m.bold + c.fg.black},${m.reset} ${m.bold + c.fg.black}null${m.reset}${m.bold + c.fg.black},${m.reset} ${m.underline + m.overline + c.fg.yellow}E'GTDv4uLF0ufZ2dbGxWWARQ=='${m.reset}${m.bold + c.fg.black},${m.reset} ${m.underline + m.overline + c.fg.green}0${m.reset}
                ${m.bold + c.fg.black})${m.reset} ${c.fg.yellow}returning${m.reset} ${m.dim + c.fg.white}*${m.reset}${m.bold + c.fg.black};${m.reset}`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
 
 test('nox short-named and case-insensitive styles with mode toggle and color overwriting', t => {
-    const charcoal = nox.bold.black;
-    const ashes = nox.dim.white;
+  const charcoal = nox.bold.black;
+  const ashes = nox.dim.white;
 
-    const options = {
-        rules: {
-            comments:         { style: nox.iNvErSe.InVeRsE.iNvErSe.black._WHITE.bolD.Italic },
-            constants:        { style: ashes },
-            numbers:          { style: ashes },
-            operators:        { style: ashes },
-            dataTypes:        {
-                style: nox.red,
-                types: { include: ['array', 'inet', 'bytea', 'uuid'] },
-            },
-            standardKeywords: {
-                style: nox.grEEN.YELLow,
-                keywords: { include: ['at', 'returning', 'primary key'] },
-            },
-            lesserKeywords:   {
-                style: charcoal,
-                keywords: { include: ['not null'] },
-            },
-        },
-        own: {
-            meta:             { style: nox.BOLd._white.BLACK, regexp: /^---\[.*?\]---/ },
-            x__ident:         { style: nox.OVERline.BLINK.BLINK.red, regexp: /\bx__\w+\b/g },
-            escape_format:    { style: nox.underLINE.yellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
-        },
-    };
+  const options = {
+    rules: {
+      comments:         { style: nox.iNvErSe.InVeRsE.iNvErSe.black._WHITE.bolD.Italic },
+      constants:        { style: ashes },
+      numbers:          { style: ashes },
+      operators:        { style: ashes },
+      dataTypes:        {
+        style: nox.red,
+        types: { include: ['array', 'inet', 'bytea', 'uuid'] },
+      },
+      standardKeywords: {
+        style: nox.grEEN.YELLow,
+        keywords: { include: ['at', 'returning', 'primary key'] },
+      },
+      lesserKeywords:   {
+        style: charcoal,
+        keywords: { include: ['not null'] },
+      },
+    },
+    own: {
+      meta:             { style: nox.BOLd._white.BLACK, regexp: /^---\[.*?\]---/ },
+      x__ident:         { style: nox.OVERline.BLINK.BLINK.red, regexp: /\bx__\w+\b/g },
+      escape_format:    { style: nox.underLINE.yellow, regexp: /E'.*?'/g },
+      nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const expected =
+  const output = print(statement_a);
+  const expected =
         dedent`${m.bold + c.bg.white + c.fg.black}---[ xop: 2011.04.28/09.56.21.7856 ; 331B ; 0.0329s ]---${m.reset}
 
                ${m.bold + m.italic + m.inverse + c.bg.white + c.fg.black}---$ st_n_erik56.s2 $---${m.reset}
@@ -308,36 +308,36 @@ test('nox short-named and case-insensitive styles with mode toggle and color ove
                 ${m.dim + c.fg.white}'00000000-0000-0000-0000-000000000000'${m.reset}${m.bold + c.fg.black},${m.reset} ${c.fg.red}array${m.reset}['0100::e056:ffff'::inet]${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}60606${m.reset}${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}'010101Z'${m.reset}${m.bold + c.fg.black},${m.reset} ${m.bold + c.fg.black}null${m.reset}${m.bold + c.fg.black},${m.reset} ${m.underline + c.fg.yellow}E'GTDv4uLF0ufZ2dbGxWWARQ=='${m.reset}${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}0${m.reset}
                ${m.bold + c.fg.black})${m.reset} ${c.fg.yellow}returning${m.reset} ${m.dim + c.fg.white}*${m.reset}${m.bold + c.fg.black};${m.reset}`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
 
 test('nox full-named and case-insensitive inherited styles with mode toggle and color overwriting', t => {
-    const charcoal = nox.bold.fgBlack;
-    const ashes = nox.dim.fgWhite;
-    const danger = nox.OVERLINE.BLINK.bgYellow.fgRed;
+  const charcoal = nox.bold.fgBlack;
+  const ashes = nox.dim.fgWhite;
+  const danger = nox.OVERLINE.BLINK.bgYellow.fgRed;
 
-    const options = {
-        rules: {
-            comments:         { style: charcoal.INverse.inVERSE.bgwhite },
-            constants:        { style: ashes },
-            numbers:          { style: ashes },
-            operators:        { style: ashes },
-            dataTypes:        { style: nox.fgRED, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
-            standardKeywords: { style: nox.fgYELLOW, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
-        },
-        own: {
-            meta:             { style: charcoal.bgwhite, regexp: /^---\[.*?\]---/ },
-            x__ident:         { style: danger.overline.encircled.bgblack, regexp: /\bx__\w+\b/g },
-            escape_format:    { style: nox.UNDERline.fgYellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
-        },
-    };
+  const options = {
+    rules: {
+      comments:         { style: charcoal.INverse.inVERSE.bgwhite },
+      constants:        { style: ashes },
+      numbers:          { style: ashes },
+      operators:        { style: ashes },
+      dataTypes:        { style: nox.fgRED, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
+      standardKeywords: { style: nox.fgYELLOW, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
+      lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
+    },
+    own: {
+      meta:             { style: charcoal.bgwhite, regexp: /^---\[.*?\]---/ },
+      x__ident:         { style: danger.overline.encircled.bgblack, regexp: /\bx__\w+\b/g },
+      escape_format:    { style: nox.UNDERline.fgYellow, regexp: /E'.*?'/g },
+      nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+    },
+  };
 
-    const print = igniculus(Object.assign(options, echo));
+  const print = igniculus(Object.assign(options, echo));
 
-    const output = print(statement_a);
-    const expected =
+  const output = print(statement_a);
+  const expected =
         dedent`${m.bold + c.bg.white + c.fg.black}---[ xop: 2011.04.28/09.56.21.7856 ; 331B ; 0.0329s ]---${m.reset}
 
                ${m.bold + c.bg.white + c.fg.black}---$ st_n_erik56.s2 $---${m.reset}
@@ -356,5 +356,5 @@ test('nox full-named and case-insensitive inherited styles with mode toggle and 
                 ${m.dim + c.fg.white}'00000000-0000-0000-0000-000000000000'${m.reset}${m.bold + c.fg.black},${m.reset} ${c.fg.red}array${m.reset}['0100::e056:ffff'::inet]${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}60606${m.reset}${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}'010101Z'${m.reset}${m.bold + c.fg.black},${m.reset} ${m.bold + c.fg.black}null${m.reset}${m.bold + c.fg.black},${m.reset} ${m.underline + c.fg.yellow}E'GTDv4uLF0ufZ2dbGxWWARQ=='${m.reset}${m.bold + c.fg.black},${m.reset} ${m.dim + c.fg.white}0${m.reset}
                ${m.bold + c.fg.black})${m.reset} ${c.fg.yellow}returning${m.reset} ${m.dim + c.fg.white}*${m.reset}${m.bold + c.fg.black};${m.reset}`;
 
-    t.is(output, expected);
+  t.is(output, expected);
 });
