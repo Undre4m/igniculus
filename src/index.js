@@ -4,54 +4,13 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable prefer-template */
 
-import * as ansi from './ansi';
+import { modes, forgeSequence, voidFormatting } from './ansi';
+import { defaultConfig } from './default';
+import { base } from './lang';
 import { nox } from './style';
-
-/* SQL-92 standard data types and keywords
- * http://www.frontbase.com/docs/5.3.html
- */
-const sql92 = {
-  defaultDataTypes: ['SMALLINT', 'INTEGER', 'INT', 'NUMERIC', 'DECIMAL', 'DEC', 'FLOAT', 'REAL', 'DOUBLE PRECISION', 'CHARACTER', 'CHAR', 'NCHAR', 'VARCHAR', 'BIT', 'DATE', 'TIME', 'TIMESTAMP', 'INTERVAL', 'NATIONAL', 'VARYING', 'TIME ZONE'],
-};
-
-/* Oracle data types
- * https://docs.oracle.com/en/database/oracle/oracle-database/18/sqlrf/Data-Types.html#GUID-7B72E154-677A-4342-A1EA-C74C1EA928E6
- */
-const oracle = {
-  defaultDataTypes: ['VARCHAR2', 'NVARCHAR2', 'NUMBER', 'FLOAT', 'LONG', 'DATE', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'TIMESTAMP', 'INTERVAL', 'RAW', 'ROWID', 'UROWID', 'CHAR', 'NCHAR', 'CLOB', 'NCLOB', 'BLOB', 'BFILE', 'BYTE', 'LOCAL', 'TIME ZONE'],
-};
-
-/* T-SQL data types and keywords
- * https://docs.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql?view=sql-server-2017
- */
-const tsql = {
-  defaultDataTypes: ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE', 'GEOMETRY', 'GEOGRAPHY', 'UNIQUEIDENTIFIER', 'XML'],
-};
-
-/* PostgreSQL data types and keywords
- * https://www.postgresql.org/docs/10/static/datatype.html
- */
-const postgresql = {
-  defaultDataTypes: ['SMALLINT', 'INTEGER', 'BIGINT', 'DECIMAL', 'NUMERIC', 'REAL', 'DOUBLE PRECISION', 'SMALLSERIAL', 'SERIAL', 'BIGSERIAL', 'MONEY', 'CHAR', 'CHARACTER', 'VARCHAR', 'TEXT', 'BYTEA', 'TIMESTAMP', 'TIMESTAMPTZ', 'DATE', 'TIME', 'INTERVAL', 'BOOLEAN', 'ENUM', 'POINT', 'LINE', 'LSEG', 'BOX', 'PATH', 'POLYGON', 'CIRCLE', 'CIDR', 'INET', 'MACADDR', 'MACADDR8', 'BIT', 'UUID', 'XML', 'JSON', 'JSONB', 'TSQUERY', 'TSVECTOR', 'INT4RANGE', 'INT8RANGE', 'NUMRANGE', 'TSRANGE', 'TSTZRANGE', 'DATERANGE', 'ARRAY', 'TIME ZONE'],
-};
-
-/* MariaDB data types and keywords
- * https://mariadb.com/kb/en/library/data-types
- */
-const mariadb = {
-  defaultDataTypes: ['TINYINT', 'BOOLEAN', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT', 'DECIMAL', 'DEC', 'NUMERIC', 'FIXED', 'FLOAT', 'DOUBLE', 'DOUBLE PRECISION', 'REAL', 'BIT', 'CHAR', 'VARCHAR', 'BINARY', 'CHAR BYTE', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT', 'JSON', 'ENUM', 'SET', 'ROW', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'YEAR', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY'],
-};
+import { union } from './util';
 
 const { hasOwnProperty } = Object.prototype;
-
-/**
- * Creates an array of unique values
- * @param {...Array} [arrays]
- * @returns {Array}
- */
-function union(...arrays) {
-  return [...new Set([].concat(...arrays))];
-}
 
 /**
  * Compares and orders keywords by descending amount of individual words
@@ -80,47 +39,9 @@ function refineReservedWords(array = [], include = [], exclude = []) {
   );
 }
 
-const defaultDataTypes = union(sql92.defaultDataTypes, tsql.defaultDataTypes);
-
-const defaultStandardKeywords = ['ACTION', 'ADD', 'AFTER', 'ALTER', 'AUTHORIZATION', 'BEFORE', 'BEGIN', 'BREAK', 'BY', 'CASCADE', 'CASE', 'CHECK', 'CHECKPOINT', 'CLOSE', 'COLUMN', 'COMMIT', 'CONSTRAINT', 'CONTINUE', 'CREATE', 'CROSS', 'CURSOR', 'DATABASE', 'DECLARE', 'DEFAULT', 'DELETE', 'DISTINCT', 'DROP', 'EACH', 'ELSE', 'ELSEIF', 'END', 'EXCEPT', 'EXEC', 'EXECUTE', 'EXIT', 'FETCH', 'FIRST', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'FUNCTION', 'GO', 'GRANT', 'GROUP', 'HAVING', 'IDENTITY', 'IF', 'INDEX', 'INNER', 'INSERT', 'INTERSECT', 'INTO', 'JOIN', 'KEY', 'LEFT', 'LIMIT', 'LAST', 'LOOP', 'MERGE', 'MODIFY', 'NEXT', 'NO', 'OFFSET', 'ON', 'OPEN', 'ORDER', 'OUTER', 'PRIMARY', 'PROC', 'PROCEDURE', 'REFERENCES', 'RELATIVE', 'REPLACE', 'RETURN', 'RETURNS', 'REVOKE', 'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVE', 'SCHEMA', 'SELECT', 'SET', 'TABLE', 'THEN', 'TOP', 'TRAN', 'TRANSACTION', 'TRIGGER', 'TRUNCATE', 'UNION', 'UNIQUE', 'UPDATE', 'USE', 'USING', 'VALUES', 'VIEW', 'WHEN', 'WHERE', 'WHILE', 'WITH', 'WITHOUT'];
-
-const defaultLesserKeywords = ['ALL', 'AND', 'ANY', 'AS', 'ASC', 'AVG', 'BETWEEN', 'COLLATE', 'COUNT', 'DESC', 'ESCAPE', 'EXISTS', 'FALSE', 'IN', 'IS', 'LIKE', 'MAX', 'MIN', 'NOT', 'NULL', 'OR', 'SOME', 'SUM', 'TO', 'TRUE'];
-
-let dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
-let standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
-let lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
-
-const defaults = {
-  rules: {
-    comments: {
-      style: { mode: ['dim'], fg: 'white' },
-    },
-    constants: {
-      style: { mode: ['dim'], fg: 'red' },
-    },
-    delimitedIdentifiers: {
-      style: { mode: ['dim'], fg: 'yellow' },
-    },
-    variables: {
-      style: { mode: ['dim'], fg: 'magenta' },
-    },
-    dataTypes: {
-      style: { mode: ['dim'], fg: 'green' },
-      casing: 'uppercase',
-    },
-    standardKeywords: {
-      style: { mode: ['dim'], fg: 'cyan' },
-      casing: 'uppercase',
-    },
-    lesserKeywords: {
-      style: { mode: ['bold'], fg: 'black' },
-      casing: 'uppercase',
-    },
-    prefix: {
-      replace: /^.*?: /,
-    },
-  },
-};
+let dataTypes = base.defaultDataTypes.slice().sort(descendingCompositeOrder);
+let standardKeywords = base.defaultStandardKeywords.slice().sort(descendingCompositeOrder);
+let lesserKeywords = base.defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
 let runestone;
 
@@ -131,7 +52,7 @@ let runestone;
 function illumine(text) {
   const { rules = {}, own = {} } = runestone;
 
-  const reset = ansi.modes.reset;
+  const reset = modes.reset;
   const type = typeof text;
 
   let output;
@@ -311,10 +232,10 @@ function illumine(text) {
   }
 
   // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
-  output = output.replace(/('.*?')/g, (match) => ansi.voidFormatting(match));
+  output = output.replace(/('.*?')/g, (match) => voidFormatting(match));
 
   // Comment sections are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied and remove cordon.
-  output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => ansi.voidFormatting(p2));
+  output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => voidFormatting(p2));
 
   // If the given prefix was found and a replacement pattern was provided, substitute it.
   if (__prefix && typeof rules.prefix.text === 'string') {
@@ -360,14 +281,12 @@ const knownRules = [
 
 /**
  * Create logger.
- * @param {any} [options] - Custom format rules.
+ * @param {any} [config] - Custom format rules.
  * @returns {function} - Syntax highlighter and logging function.
  */
-function igniculus(options) {
-  /* Draft all format sequences from the provided or default
-   * configuration and save them.
-   */
-  runestone = options || defaults;
+function igniculus(config = defaultConfig) {
+  // Draft all format sequences from the provided or default configuration and save them
+  runestone = { ...config };
 
   const { rules, own } = runestone;
 
@@ -376,7 +295,7 @@ function igniculus(options) {
       const style = rules[name].style;
 
       if (style) {
-        rules[name].sequence = ansi.forgeSequence(
+        rules[name].sequence = forgeSequence(
           // If using proxy builder pass style parameters as object
           style instanceof nox.constructor ? style.style : style,
         );
@@ -390,13 +309,13 @@ function igniculus(options) {
         dataTypes = types.slice().sort(descendingCompositeOrder);
 
       else if (types && (hasOwnProperty.call(types, 'include') || hasOwnProperty.call(types, 'exclude')))
-        dataTypes = refineReservedWords(defaultDataTypes,
+        dataTypes = refineReservedWords(base.defaultDataTypes,
           Array.isArray(types.include) ? types.include : undefined,
           Array.isArray(types.exclude) ? types.exclude : undefined,
         );
 
       else
-        dataTypes = defaultDataTypes.slice().sort(descendingCompositeOrder);
+        dataTypes = base.defaultDataTypes.slice().sort(descendingCompositeOrder);
 
       if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
         delete rules.dataTypes.casing;
@@ -409,13 +328,13 @@ function igniculus(options) {
         standardKeywords = keywords.slice().sort(descendingCompositeOrder);
 
       else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
-        standardKeywords = refineReservedWords(defaultStandardKeywords,
+        standardKeywords = refineReservedWords(base.defaultStandardKeywords,
           Array.isArray(keywords.include) ? keywords.include : undefined,
           Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
         );
 
       else
-        standardKeywords = defaultStandardKeywords.slice().sort(descendingCompositeOrder);
+        standardKeywords = base.defaultStandardKeywords.slice().sort(descendingCompositeOrder);
 
       if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
         delete rules.standardKeywords.casing;
@@ -428,13 +347,13 @@ function igniculus(options) {
         lesserKeywords = keywords.slice().sort(descendingCompositeOrder);
 
       else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
-        lesserKeywords = refineReservedWords(defaultLesserKeywords,
+        lesserKeywords = refineReservedWords(base.defaultLesserKeywords,
           Array.isArray(keywords.include) ? keywords.include : undefined,
           Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
         );
 
       else
-        lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder);
+        lesserKeywords = base.defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
       if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
         delete rules.lesserKeywords.casing;
@@ -456,7 +375,7 @@ function igniculus(options) {
       const style = own[name].style;
 
       if (style) {
-        own[name].sequence = ansi.forgeSequence(
+        own[name].sequence = forgeSequence(
           // If using proxy builder pass style parameters as object
           style instanceof nox.constructor ? style.style : style,
         );
