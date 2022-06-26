@@ -21,7 +21,6 @@ module.exports = {
     // Possible Problems
     'no-control-regex': 'off',
     'no-debugger': 'error',
-    'no-prototype-builtins': 'off', // @todo update and auto-fix
     'no-unused-vars': ['warn', {
       args: 'after-used',
       ignoreRestSiblings: true,

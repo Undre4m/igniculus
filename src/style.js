@@ -6,19 +6,19 @@ function getToken(name) {
 
   const lname = name.toLowerCase();
 
-  if (modes.hasOwnProperty(lname))
+  if (Object.prototype.hasOwnProperty.call(modes, lname))
     return ['mode', lname];
 
-  if (colors.fg.hasOwnProperty(lname))
+  if (Object.prototype.hasOwnProperty.call(colors.fg, lname))
     return ['fg', lname];
 
-  if (lname.startsWith('_') && colors.bg.hasOwnProperty(lname.replace('_', '')))
+  if (lname.startsWith('_') && Object.prototype.hasOwnProperty.call(colors.bg, lname.replace('_', '')))
     return ['bg', lname.replace('_', '')];
 
-  if (lname.startsWith('fg') && colors.fg.hasOwnProperty(lname.replace('fg', '')))
+  if (lname.startsWith('fg') && Object.prototype.hasOwnProperty.call(colors.fg, lname.replace('fg', '')))
     return ['fg', lname.replace('fg', '')];
 
-  if (lname.startsWith('bg') && colors.bg.hasOwnProperty(lname.replace('bg', '')))
+  if (lname.startsWith('bg') && Object.prototype.hasOwnProperty.call(colors.bg, lname.replace('bg', '')))
     return ['bg', lname.replace('bg', '')];
 }
 

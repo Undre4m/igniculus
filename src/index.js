@@ -42,6 +42,8 @@ const mariadb = {
   defaultDataTypes: ['TINYINT', 'BOOLEAN', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT', 'DECIMAL', 'DEC', 'NUMERIC', 'FIXED', 'FLOAT', 'DOUBLE', 'DOUBLE PRECISION', 'REAL', 'BIT', 'CHAR', 'VARCHAR', 'BINARY', 'CHAR BYTE', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT', 'JSON', 'ENUM', 'SET', 'ROW', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'YEAR', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY'],
 };
 
+const { hasOwnProperty } = Object.prototype;
+
 /**
  * Creates an array of unique values
  * @param {...Array} [arrays]
@@ -387,7 +389,7 @@ function igniculus(options) {
       if (Array.isArray(types))
         dataTypes = types.slice().sort(descendingCompositeOrder);
 
-      else if (types && (types.hasOwnProperty('include') || types.hasOwnProperty('exclude')))
+      else if (types && (hasOwnProperty.call(types, 'include') || hasOwnProperty.call(types, 'exclude')))
         dataTypes = refineReservedWords(defaultDataTypes,
           Array.isArray(types.include) ? types.include : undefined,
           Array.isArray(types.exclude) ? types.exclude : undefined,
@@ -406,7 +408,7 @@ function igniculus(options) {
       if (Array.isArray(keywords))
         standardKeywords = keywords.slice().sort(descendingCompositeOrder);
 
-      else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
+      else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
         standardKeywords = refineReservedWords(defaultStandardKeywords,
           Array.isArray(keywords.include) ? keywords.include : undefined,
           Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
@@ -425,7 +427,7 @@ function igniculus(options) {
       if (Array.isArray(keywords))
         lesserKeywords = keywords.slice().sort(descendingCompositeOrder);
 
-      else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
+      else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
         lesserKeywords = refineReservedWords(defaultLesserKeywords,
           Array.isArray(keywords.include) ? keywords.include : undefined,
           Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
