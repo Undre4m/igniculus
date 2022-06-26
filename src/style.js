@@ -36,7 +36,7 @@ class Builder {
         this.style = {
             mode: style.mode ? style.mode.slice() : [],
             fg: style.fg,
-            bg: style.bg
+            bg: style.bg,
         };
     }
 
@@ -72,8 +72,8 @@ function newProxy(style) {
                 else {
                     return target[name];
                 }
-            }
-        }
+            },
+        },
     );
 }
 

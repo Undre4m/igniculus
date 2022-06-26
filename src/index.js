@@ -11,35 +11,35 @@ import { nox } from './style';
  * http://www.frontbase.com/docs/5.3.html
  */
 const sql92 = {
-    defaultDataTypes: ['SMALLINT', 'INTEGER', 'INT', 'NUMERIC', 'DECIMAL', 'DEC', 'FLOAT', 'REAL', 'DOUBLE PRECISION', 'CHARACTER', 'CHAR', 'NCHAR', 'VARCHAR', 'BIT', 'DATE', 'TIME', 'TIMESTAMP', 'INTERVAL', 'NATIONAL', 'VARYING', 'TIME ZONE']
+    defaultDataTypes: ['SMALLINT', 'INTEGER', 'INT', 'NUMERIC', 'DECIMAL', 'DEC', 'FLOAT', 'REAL', 'DOUBLE PRECISION', 'CHARACTER', 'CHAR', 'NCHAR', 'VARCHAR', 'BIT', 'DATE', 'TIME', 'TIMESTAMP', 'INTERVAL', 'NATIONAL', 'VARYING', 'TIME ZONE'],
 };
 
 /* Oracle data types
  * https://docs.oracle.com/en/database/oracle/oracle-database/18/sqlrf/Data-Types.html#GUID-7B72E154-677A-4342-A1EA-C74C1EA928E6
  */
 const oracle = {
-    defaultDataTypes: ['VARCHAR2', 'NVARCHAR2', 'NUMBER', 'FLOAT', 'LONG', 'DATE', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'TIMESTAMP', 'INTERVAL', 'RAW', 'ROWID', 'UROWID', 'CHAR', 'NCHAR', 'CLOB', 'NCLOB', 'BLOB', 'BFILE', 'BYTE', 'LOCAL', 'TIME ZONE']
+    defaultDataTypes: ['VARCHAR2', 'NVARCHAR2', 'NUMBER', 'FLOAT', 'LONG', 'DATE', 'BINARY_FLOAT', 'BINARY_DOUBLE', 'TIMESTAMP', 'INTERVAL', 'RAW', 'ROWID', 'UROWID', 'CHAR', 'NCHAR', 'CLOB', 'NCLOB', 'BLOB', 'BFILE', 'BYTE', 'LOCAL', 'TIME ZONE'],
 };
 
 /* T-SQL data types and keywords
  * https://docs.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql?view=sql-server-2017
  */
 const tsql = {
-    defaultDataTypes: ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE', 'GEOMETRY', 'GEOGRAPHY', 'UNIQUEIDENTIFIER', 'XML']
+    defaultDataTypes: ['BIGINT', 'NUMERIC', 'BIT', 'SMALLINT', 'DECIMAL', 'SMALLMONEY', 'INT', 'TINYINT', 'MONEY', 'FLOAT', 'REAL', 'DATE', 'DATETIMEOFFSET', 'DATETIME2', 'SMALLDATETIME', 'DATETIME', 'TIME', 'CHAR', 'VARCHAR', 'TEXT', 'NCHAR', 'NVARCHAR', 'NTEXT', 'BINARY', 'VARBINARY', 'IMAGE', 'GEOMETRY', 'GEOGRAPHY', 'UNIQUEIDENTIFIER', 'XML'],
 };
 
 /* PostgreSQL data types and keywords
  * https://www.postgresql.org/docs/10/static/datatype.html
  */
 const postgresql = {
-    defaultDataTypes: ['SMALLINT', 'INTEGER', 'BIGINT', 'DECIMAL', 'NUMERIC', 'REAL', 'DOUBLE PRECISION', 'SMALLSERIAL', 'SERIAL', 'BIGSERIAL', 'MONEY', 'CHAR', 'CHARACTER', 'VARCHAR', 'TEXT', 'BYTEA', 'TIMESTAMP', 'TIMESTAMPTZ', 'DATE', 'TIME', 'INTERVAL', 'BOOLEAN', 'ENUM', 'POINT', 'LINE', 'LSEG', 'BOX', 'PATH', 'POLYGON', 'CIRCLE', 'CIDR', 'INET', 'MACADDR', 'MACADDR8', 'BIT', 'UUID', 'XML', 'JSON', 'JSONB', 'TSQUERY', 'TSVECTOR', 'INT4RANGE', 'INT8RANGE', 'NUMRANGE', 'TSRANGE', 'TSTZRANGE', 'DATERANGE', 'ARRAY', 'TIME ZONE']
+    defaultDataTypes: ['SMALLINT', 'INTEGER', 'BIGINT', 'DECIMAL', 'NUMERIC', 'REAL', 'DOUBLE PRECISION', 'SMALLSERIAL', 'SERIAL', 'BIGSERIAL', 'MONEY', 'CHAR', 'CHARACTER', 'VARCHAR', 'TEXT', 'BYTEA', 'TIMESTAMP', 'TIMESTAMPTZ', 'DATE', 'TIME', 'INTERVAL', 'BOOLEAN', 'ENUM', 'POINT', 'LINE', 'LSEG', 'BOX', 'PATH', 'POLYGON', 'CIRCLE', 'CIDR', 'INET', 'MACADDR', 'MACADDR8', 'BIT', 'UUID', 'XML', 'JSON', 'JSONB', 'TSQUERY', 'TSVECTOR', 'INT4RANGE', 'INT8RANGE', 'NUMRANGE', 'TSRANGE', 'TSTZRANGE', 'DATERANGE', 'ARRAY', 'TIME ZONE'],
 };
 
 /* MariaDB data types and keywords
  * https://mariadb.com/kb/en/library/data-types
  */
 const mariadb = {
-    defaultDataTypes: ['TINYINT', 'BOOLEAN', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT', 'DECIMAL', 'DEC', 'NUMERIC', 'FIXED', 'FLOAT', 'DOUBLE', 'DOUBLE PRECISION', 'REAL', 'BIT', 'CHAR', 'VARCHAR', 'BINARY', 'CHAR BYTE', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT', 'JSON', 'ENUM', 'SET', 'ROW', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'YEAR', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY']
+    defaultDataTypes: ['TINYINT', 'BOOLEAN', 'SMALLINT', 'MEDIUMINT', 'INT', 'INTEGER', 'BIGINT', 'DECIMAL', 'DEC', 'NUMERIC', 'FIXED', 'FLOAT', 'DOUBLE', 'DOUBLE PRECISION', 'REAL', 'BIT', 'CHAR', 'VARCHAR', 'BINARY', 'CHAR BYTE', 'VARBINARY', 'TINYBLOB', 'BLOB', 'MEDIUMBLOB', 'LONGBLOB', 'TINYTEXT', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT', 'JSON', 'ENUM', 'SET', 'ROW', 'DATE', 'TIME', 'DATETIME', 'TIMESTAMP', 'YEAR', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY'],
 };
 
 /**
@@ -74,7 +74,7 @@ function refineReservedWords(array = [], include = [], exclude = []) {
         array
             .concat(inc)
             .filter(rw => !exc.includes(rw))
-            .sort(descendingCompositeOrder)
+            .sort(descendingCompositeOrder),
     );
 }
 
@@ -91,33 +91,33 @@ let lesserKeywords = defaultLesserKeywords.slice().sort(descendingCompositeOrder
 const defaults = {
     rules: {
         comments: {
-            style: { mode: ['dim'], fg: 'white' }
+            style: { mode: ['dim'], fg: 'white' },
         },
         constants: {
-            style: { mode: ['dim'], fg: 'red' }
+            style: { mode: ['dim'], fg: 'red' },
         },
         delimitedIdentifiers: {
-            style: { mode: ['dim'], fg: 'yellow' }
+            style: { mode: ['dim'], fg: 'yellow' },
         },
         variables: {
-            style: { mode: ['dim'], fg: 'magenta' }
+            style: { mode: ['dim'], fg: 'magenta' },
         },
         dataTypes: {
             style: { mode: ['dim'], fg: 'green' },
-            casing: 'uppercase'
+            casing: 'uppercase',
         },
         standardKeywords: {
             style: { mode: ['dim'], fg: 'cyan' },
-            casing: 'uppercase'
+            casing: 'uppercase',
         },
         lesserKeywords: {
             style: { mode: ['bold'], fg: 'black' },
-            casing: 'uppercase'
+            casing: 'uppercase',
         },
         prefix: {
-            replace: /^.*?: /
-        }
-    }
+            replace: /^.*?: /,
+        },
+    },
 };
 
 let runestone;
@@ -321,7 +321,7 @@ function illumine(text) {
             __prefix,
             rules.prefix.sequence ?
                 rules.prefix.sequence + rules.prefix.text + reset :
-                rules.prefix.text
+                rules.prefix.text,
         );
     }
     // If only the prefix text was provided, append it.
@@ -353,7 +353,7 @@ const knownRules = [
     'standardKeywords',
     'lesserKeywords',
     'prefix',
-    'postfix'
+    'postfix',
 ];
 
 /**
@@ -376,7 +376,7 @@ function igniculus(options) {
             if (style) {
                 rules[name].sequence = ansi.forgeSequence(
                     // If using proxy builder pass style parameters as object
-                    style instanceof nox.constructor ? style.style : style
+                    style instanceof nox.constructor ? style.style : style,
                 );
             }
         }
@@ -390,7 +390,7 @@ function igniculus(options) {
             else if (types && (types.hasOwnProperty('include') || types.hasOwnProperty('exclude')))
                 dataTypes = refineReservedWords(defaultDataTypes,
                     Array.isArray(types.include) ? types.include : undefined,
-                    Array.isArray(types.exclude) ? types.exclude : undefined
+                    Array.isArray(types.exclude) ? types.exclude : undefined,
                 );
 
             else
@@ -409,7 +409,7 @@ function igniculus(options) {
             else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
                 standardKeywords = refineReservedWords(defaultStandardKeywords,
                     Array.isArray(keywords.include) ? keywords.include : undefined,
-                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined
+                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
                 );
 
             else
@@ -428,7 +428,7 @@ function igniculus(options) {
             else if (keywords && (keywords.hasOwnProperty('include') || keywords.hasOwnProperty('exclude')))
                 lesserKeywords = refineReservedWords(defaultLesserKeywords,
                     Array.isArray(keywords.include) ? keywords.include : undefined,
-                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined
+                    Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
                 );
 
             else
@@ -456,7 +456,7 @@ function igniculus(options) {
             if (style) {
                 own[name].sequence = ansi.forgeSequence(
                     // If using proxy builder pass style parameters as object
-                    style instanceof nox.constructor ? style.style : style
+                    style instanceof nox.constructor ? style.style : style,
                 );
             }
         }

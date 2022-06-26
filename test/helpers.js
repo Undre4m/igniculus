@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 import test from 'ava';
 import dedent from 'dedent';
 import igniculus, { nox } from '../src';
@@ -15,7 +17,7 @@ const m = {
     fraktur: '\x1b[20m',
     framed: '\x1b[51m',
     encircled: '\x1b[52m',
-    overline: '\x1b[53m'
+    overline: '\x1b[53m',
 };
 
 const c = {
@@ -27,7 +29,7 @@ const c = {
         blue: '\x1b[34m',
         magenta: '\x1b[35m',
         cyan: '\x1b[36m',
-        white: '\x1b[37m'
+        white: '\x1b[37m',
     },
     bg: {
         black: '\x1b[40m',
@@ -37,8 +39,8 @@ const c = {
         blue: '\x1b[44m',
         magenta: '\x1b[45m',
         cyan: '\x1b[46m',
-        white: '\x1b[47m'
-    }
+        white: '\x1b[47m',
+    },
 };
 
 const echo = { output: out => out };
@@ -98,8 +100,8 @@ test('nox base', t => {
             standardKeywords:     { style: nox },
             lesserKeywords:       { style: nox },
             prefix:               { style: nox, text: '\u0002' },
-            postfix:              { style: nox, text: '\u0003' }
-        }
+            postfix:              { style: nox, text: '\u0003' },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -119,22 +121,22 @@ test('nox simple styles', t => {
             operators:        { style: nox.magenta },
             dataTypes:        {
                 style: nox.green,
-                types: { include: ['array', 'inet', 'bytea', 'uuid'] }
+                types: { include: ['array', 'inet', 'bytea', 'uuid'] },
             },
             standardKeywords: {
                 style: nox.yellow,
-                keywords: { include: ['at', 'returning', 'primary key'] }
+                keywords: { include: ['at', 'returning', 'primary key'] },
             },
             lesserKeywords:   {
                 style: nox.cyan,
-                keywords: { include: ['not null'], exclude: ['null'] }
-            }
+                keywords: { include: ['not null'], exclude: ['null'] },
+            },
         },
         own: {
             x__ident:         { style: nox.red, regexp: /\bx__\w+\b/g },
             escape_format:    { style: nox.inverse, regexp: /E'.*?'/g },
-            no_parens:        { style: nox.hidden, regexp: /\(\)|\)|\(/g, transform: '\u00a0' }
-        }
+            no_parens:        { style: nox.hidden, regexp: /\(\)|\)|\(/g, transform: '\u00a0' },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -172,14 +174,14 @@ test('nox chained styles', t => {
             operators:        { style: nox.magenta },
             dataTypes:        { style: nox.green, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
             standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: nox.cyan, keywords: ['NOT NULL', 'BETWEEN', 'AND'] }
+            lesserKeywords:   { style: nox.cyan, keywords: ['NOT NULL', 'BETWEEN', 'AND'] },
         },
         own: {
             escape_format:    { style: nox.inverse.underline.bgyellow, regexp: /E'.*?'/g },
             x__ident:         { style: nox.overline.red, regexp: /\bx__\w+\b/g },
             no_parens:        { style: nox.dim.white, regexp: /\(\)|\)|\(/g },
-            no_meta:          { regexp: /^---\[.*?\]---\n*/, transform: '' }
-        }
+            no_meta:          { regexp: /^---\[.*?\]---\n*/, transform: '' },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -218,14 +220,14 @@ test('nox inherited styles', t => {
             operators:        { style: ashes },
             dataTypes:        { style: ashes, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
             standardKeywords: { style: nox.yellow, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] }
+            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
         },
         own: {
             meta:             { style: nox.bold._white.black, regexp: /^---\[.*?\]---/ },
             x__ident:         { style: nox.framed.blink.red, regexp: /\bx__\w+\b/g },
             escape_format:    { style: bilane.yellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g }
-        }
+            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -265,23 +267,23 @@ test('nox short-named and case-insensitive styles with mode toggle and color ove
             operators:        { style: ashes },
             dataTypes:        {
                 style: nox.red,
-                types: { include: ['array', 'inet', 'bytea', 'uuid'] }
+                types: { include: ['array', 'inet', 'bytea', 'uuid'] },
             },
             standardKeywords: {
                 style: nox.grEEN.YELLow,
-                keywords: { include: ['at', 'returning', 'primary key'] }
+                keywords: { include: ['at', 'returning', 'primary key'] },
             },
             lesserKeywords:   {
                 style: charcoal,
-                keywords: { include: ['not null'] }
-            }
+                keywords: { include: ['not null'] },
+            },
         },
         own: {
             meta:             { style: nox.BOLd._white.BLACK, regexp: /^---\[.*?\]---/ },
             x__ident:         { style: nox.OVERline.BLINK.BLINK.red, regexp: /\bx__\w+\b/g },
             escape_format:    { style: nox.underLINE.yellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g }
-        }
+            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -322,14 +324,14 @@ test('nox full-named and case-insensitive inherited styles with mode toggle and 
             operators:        { style: ashes },
             dataTypes:        { style: nox.fgRED, types: ['SMALLINT', 'INT', 'ARRAY', 'BYTEA', 'TIMESTAMP', 'INET', 'UUID', 'TIME ZONE'] },
             standardKeywords: { style: nox.fgYELLOW, keywords: ['CREATE', 'TABLE', 'INSERT', 'INTO', 'VALUES', 'PRIMARY KEY', 'CHECK', 'DEFAULT', 'AT', 'RETURNING'] },
-            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] }
+            lesserKeywords:   { style: charcoal, keywords: ['NULL', 'NOT NULL', 'BETWEEN', 'AND'] },
         },
         own: {
             meta:             { style: charcoal.bgwhite, regexp: /^---\[.*?\]---/ },
             x__ident:         { style: danger.overline.encircled.bgblack, regexp: /\bx__\w+\b/g },
             escape_format:    { style: nox.UNDERline.fgYellow, regexp: /E'.*?'/g },
-            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g }
-        }
+            nv_symbols:       { style: charcoal, regexp: /\(\)|\)|\(|,|;/g },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));

@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 import test from 'ava';
 import dedent from 'dedent';
 import igniculus from '../src';
@@ -11,7 +13,7 @@ const m = {
     blink: '\x1b[5m',
     inverse: '\x1b[7m',
     hidden: '\x1b[8m',
-    strikethrough: '\x1b[9m'
+    strikethrough: '\x1b[9m',
 };
 
 const c = {
@@ -23,7 +25,7 @@ const c = {
         blue: '\x1b[34m',
         magenta: '\x1b[35m',
         cyan: '\x1b[36m',
-        white: '\x1b[37m'
+        white: '\x1b[37m',
     },
     bg: {
         black: '\x1b[40m',
@@ -33,8 +35,8 @@ const c = {
         blue: '\x1b[44m',
         magenta: '\x1b[45m',
         cyan: '\x1b[46m',
-        white: '\x1b[47m'
-    }
+        white: '\x1b[47m',
+    },
 };
 
 const echo = { output: out => out };
@@ -222,37 +224,37 @@ test('object input', t => {
     const options = {
         rules: {
             comments: {
-                style: { mode: 'dim', fg: 'white' }
+                style: { mode: 'dim', fg: 'white' },
             },
             constants: {
-                style: { mode: 'dim', fg: 'red' }
+                style: { mode: 'dim', fg: 'red' },
             },
             delimitedIdentifiers: {
-                style: { mode: 'dim', fg: 'yellow' }
+                style: { mode: 'dim', fg: 'yellow' },
             },
             variables: {
-                style: { mode: 'dim', fg: 'magenta' }
+                style: { mode: 'dim', fg: 'magenta' },
             },
             dataTypes: {
                 style: { mode: 'dim', fg: 'green' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             standardKeywords: {
                 style: { mode: 'dim', fg: 'cyan' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             prefix: {
-                replace: /.*?: /
-            }
-        }
+                replace: /.*?: /,
+            },
+        },
     };
 
     const input = {
-        toString: () => `/* GENERATED */ ${statement_b}`
+        toString: () => `/* GENERATED */ ${statement_b}`,
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -274,7 +276,7 @@ test('null input', t => {
 test('custom output', t => {
     const options = {
         // eslint-disable-next-line no-return-assign, no-param-reassign
-        output: out => out.split('').reduce((a, v) => a += v.charCodeAt(0), 0)
+        output: out => out.split('').reduce((a, v) => a += v.charCodeAt(0), 0),
     };
 
     const print = igniculus(options);
@@ -289,21 +291,21 @@ test('comments', t => {
     const options = {
         rules: {
             comments: {
-                style: { mode: 'bold', fg: 'black' }
+                style: { mode: 'bold', fg: 'black' },
             },
             constants: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             dataTypes: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             standardKeywords: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             lesserKeywords: {
-                style: { fg: 'blue' }
-            }
-        }
+                style: { fg: 'blue' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -333,21 +335,21 @@ test('not comments', t => {
     const options = {
         rules: {
             comments: {
-                style: { mode: 'bold', fg: 'black' }
+                style: { mode: 'bold', fg: 'black' },
             },
             constants: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             dataTypes: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             standardKeywords: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             lesserKeywords: {
-                style: { fg: 'blue' }
-            }
-        }
+                style: { fg: 'blue' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -381,27 +383,27 @@ test('no comment style', t => {
     const options = {
         rules: {
             numbers: {
-                style: { mode: 'italic' }
+                style: { mode: 'italic' },
             },
             constants: {
-                style: { fg: 'yellow' }
+                style: { fg: 'yellow' },
             },
             delimitedIdentifiers: {
-                style: { bg: 'yellow', fg: 'black' }
+                style: { bg: 'yellow', fg: 'black' },
             },
             operators: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             dataTypes: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             standardKeywords: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             lesserKeywords: {
-                style: { fg: 'blue' }
-            }
-        }
+                style: { fg: 'blue' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -431,9 +433,9 @@ test('constants', t => {
     const options = {
         rules: {
             constants: {
-                style: { fg: 'red' }
-            }
-        }
+                style: { fg: 'red' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -462,9 +464,9 @@ test('numbers', t => {
     const options = {
         rules: {
             numbers: {
-                style: { fg: 'blue' }
-            }
-        }
+                style: { fg: 'blue' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -493,9 +495,9 @@ test('operators', t => {
     const options = {
         rules: {
             operators: {
-                style: { fg: 'black' }
-            }
-        }
+                style: { fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -524,9 +526,9 @@ test('delimitedIdentifiers', t => {
     const options = {
         rules: {
             delimitedIdentifiers: {
-                style: { fg: 'yellow' }
-            }
-        }
+                style: { fg: 'yellow' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -555,9 +557,9 @@ test('variables', t => {
     const options = {
         rules: {
             variables: {
-                style: { fg: 'magenta' }
-            }
-        }
+                style: { fg: 'magenta' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -598,9 +600,9 @@ test('dataTypes', t => {
     const options = {
         rules: {
             dataTypes: {
-                style: { fg: 'green' }
-            }
-        }
+                style: { fg: 'green' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -629,9 +631,9 @@ test('standardKeywords', t => {
     const options = {
         rules: {
             standardKeywords: {
-                style: { fg: 'cyan' }
-            }
-        }
+                style: { fg: 'cyan' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -660,9 +662,9 @@ test('lesserKeywords', t => {
     const options = {
         rules: {
             lesserKeywords: {
-                style: { fg: 'magenta' }
-            }
-        }
+                style: { fg: 'magenta' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -692,9 +694,9 @@ test('prefix', t => {
         rules: {
             prefix: {
                 style: { fg: 'white' },
-                text: '(query) '
-            }
-        }
+                text: '(query) ',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -710,9 +712,9 @@ test('postfix', t => {
         rules: {
             postfix: {
                 style: { fg: 'white' },
-                text: ' █\n'
-            }
-        }
+                text: ' █\n',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -727,15 +729,15 @@ test('data types and keywords', t => {
     const options = {
         rules: {
             dataTypes: {
-                style: { mode: 'dim', fg: 'green' }
+                style: { mode: 'dim', fg: 'green' },
             },
             standardKeywords: {
-                style: { mode: 'dim', fg: 'cyan' }
+                style: { mode: 'dim', fg: 'cyan' },
             },
             lesserKeywords: {
-                style: { mode: 'bold', fg: 'black' }
-            }
-        }
+                style: { mode: 'bold', fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -761,15 +763,15 @@ test('data types and keywords without case', t => {
     const options = {
         rules: {
             dataTypes: {
-                style: { mode: 'dim', fg: 'green' }
+                style: { mode: 'dim', fg: 'green' },
             },
             standardKeywords: {
-                style: { mode: 'dim', fg: 'cyan' }
+                style: { mode: 'dim', fg: 'cyan' },
             },
             lesserKeywords: {
-                style: { mode: 'bold', fg: 'black' }
-            }
-        }
+                style: { mode: 'bold', fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -791,17 +793,17 @@ test('lowercase data types and keywords', t => {
         rules: {
             dataTypes: {
                 style: { mode: 'dim', fg: 'green' },
-                casing: 'lowercase'
+                casing: 'lowercase',
             },
             standardKeywords: {
                 style: { mode: 'dim', fg: 'cyan' },
-                casing: 'lowercase'
+                casing: 'lowercase',
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                casing: 'lowercase'
-            }
-        }
+                casing: 'lowercase',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -823,17 +825,17 @@ test('uppercase data types and keywords', t => {
         rules: {
             dataTypes: {
                 style: { mode: 'dim', fg: 'green' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             standardKeywords: {
                 style: { mode: 'dim', fg: 'cyan' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                casing: 'uppercase'
-            }
-        }
+                casing: 'uppercase',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -855,8 +857,8 @@ test('styleless lower and uppercase data types and keywords', t => {
         rules: {
             dataTypes:        { casing: 'uppercase' },
             standardKeywords: { casing: 'lowercase' },
-            lesserKeywords:   { casing: 'lowercase' }
-        }
+            lesserKeywords:   { casing: 'lowercase' },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -877,21 +879,21 @@ test('uppercase keywords and compound sql-92 data types', t => {
     const options = {
         rules: {
             numbers: {
-                style: { mode: 'dim', fg: 'white' }
+                style: { mode: 'dim', fg: 'white' },
             },
             dataTypes: {
                 style: { mode: 'dim', fg: 'yellow' },
-                casing: 'lowercase'
+                casing: 'lowercase',
             },
             standardKeywords: {
                 style: { mode: 'dim', fg: 'red' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             lesserKeywords: {
                 style: { mode: 'dim', fg: 'blue' },
-                casing: 'lowercase'
-            }
-        }
+                casing: 'lowercase',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -917,21 +919,21 @@ test('data types and keywords among constant and identifiers', t => {
     const options = {
         rules: {
             constants: {
-                style: { mode: 'dim', fg: 'red' }
+                style: { mode: 'dim', fg: 'red' },
             },
             delimitedIdentifiers: {
-                style: { mode: 'dim', fg: 'yellow' }
+                style: { mode: 'dim', fg: 'yellow' },
             },
             dataTypes: {
-                style: { mode: 'dim', fg: 'green' }
+                style: { mode: 'dim', fg: 'green' },
             },
             standardKeywords: {
-                style: { mode: 'dim', fg: 'cyan' }
+                style: { mode: 'dim', fg: 'cyan' },
             },
             lesserKeywords: {
-                style: { mode: 'bold', fg: 'black' }
-            }
-        }
+                style: { mode: 'bold', fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -958,17 +960,17 @@ test('custom data types and keywords', t => {
         rules: {
             dataTypes: {
                 style: { mode: 'dim', fg: 'green' },
-                types: ['GEOMETRY', 'POINT', 'JSON']
+                types: ['GEOMETRY', 'POINT', 'JSON'],
             },
             standardKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH']
+                keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH'],
             },
             lesserKeywords: {
                 style: { mode: 'dim', fg: 'red' },
-                keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY']
-            }
-        }
+                keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY'],
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -997,23 +999,23 @@ test('custom included and excluded data types and keywords', t => {
                 style: { mode: ['bold', 'underline'], fg: 'magenta' },
                 types: {
                     include: ['JSON', 'JSON_QUERY', 'FOR JSON PATH', 'STX', 'STY', 'FORMAT'],
-                    exclude: ['FORMAT']
-                }
+                    exclude: ['FORMAT'],
+                },
             },
             standardKeywords: {
                 style: { mode: ['bold'], fg: 'yellow' },
                 keywords: {
-                    exclude: ['ON']
-                }
+                    exclude: ['ON'],
+                },
             },
             lesserKeywords: {
                 style: { mode: ['bold'], fg: 'blue' },
                 casing: 'lowercase',
                 keywords: {
-                    include: ['ON']
-                }
-            }
-        }
+                    include: ['ON'],
+                },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1039,24 +1041,24 @@ test('custom data types and keywords among constant and identifiers', t => {
     const options = {
         rules: {
             constants: {
-                style: { mode: 'inverse', bg: 'black', fg: 'red' }
+                style: { mode: 'inverse', bg: 'black', fg: 'red' },
             },
             delimitedIdentifiers: {
-                style: { mode: 'italic', bg: 'yellow', fg: 'black' }
+                style: { mode: 'italic', bg: 'yellow', fg: 'black' },
             },
             dataTypes: {
                 style: { mode: 'dim', fg: 'green' },
-                types: ['GEOMETRY', 'POINT', 'JSON']
+                types: ['GEOMETRY', 'POINT', 'JSON'],
             },
             standardKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH']
+                keywords: ['SELECT', 'FROM', 'INNER', 'JOIN', 'ON', 'WHERE', 'AS', 'FOR', 'PATH'],
             },
             lesserKeywords: {
                 style: { mode: 'dim', fg: 'red' },
-                keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY']
-            }
-        }
+                keywords: ['FORMAT', 'FORMATMESSAGE', 'STX', 'STY', 'FEATURE', 'QUERY'],
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1083,17 +1085,17 @@ test('colliding data types and keywords', t => {
         rules: {
             dataTypes: {
                 style: { fg: 'magenta' },
-                types: ['DATE', 'DB']
+                types: ['DATE', 'DB'],
             },
             standardKeywords: {
                 style: { mode: 'hidden', bg: 'black', fg: 'black' },
-                keywords: ['SELECT', 'CREATE', 'FROM', 'WHERE', 'USER', 'MASTER', 'DATE']
+                keywords: ['SELECT', 'CREATE', 'FROM', 'WHERE', 'USER', 'MASTER', 'DATE'],
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                keywords: ['CONVERT', 'AS', 'MASTER']
-            }
-        }
+                keywords: ['CONVERT', 'AS', 'MASTER'],
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1110,15 +1112,15 @@ test('colliding data types and keywords', t => {
 test('wrongful options for data types and keywords', t => {
     const wrongs = [{
         types: null,
-        casing: null
+        casing: null,
     }, {
         types: {},
         keywords: {},
-        casing: 'low'
+        casing: 'low',
     }, {
         types: { include: NaN, exclude: '' },
         keywords: { include: 0, exclude: 1 },
-        casing: ''
+        casing: '',
     }];
 
     const expected =
@@ -1133,27 +1135,27 @@ test('wrongful options for data types and keywords', t => {
         rules: {
             dataTypes: wrongs[0],
             standardKeywords: wrongs[1],
-            lesserKeywords: wrongs[2]
+            lesserKeywords: wrongs[2],
         },
-        ...echo
+        ...echo,
     })(statement_f), expected);
 
     t.is(igniculus({
         rules: {
             dataTypes: wrongs[1],
             standardKeywords: wrongs[2],
-            lesserKeywords: wrongs[0]
+            lesserKeywords: wrongs[0],
         },
-        ...echo
+        ...echo,
     })(statement_f), expected);
 
     t.is(igniculus({
         rules: {
             dataTypes: wrongs[2],
             standardKeywords: wrongs[0],
-            lesserKeywords: wrongs[1]
+            lesserKeywords: wrongs[1],
         },
-        ...echo
+        ...echo,
     })(statement_f), expected);
 });
 
@@ -1161,26 +1163,26 @@ test('numbers and data types among variables', t => {
     const options = {
         rules: {
             numbers: {
-                style: { mode: 'italic' }
+                style: { mode: 'italic' },
             },
             constants: {
-                style: { mode: 'dim', fg: 'white' }
+                style: { mode: 'dim', fg: 'white' },
             },
             variables: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             dataTypes: {
                 style: { fg: 'blue' },
                 types: ['char', 'varchar', 'decimal', 'uid'],
-                casing: 'lowercase'
+                casing: 'lowercase',
             },
             standardKeywords: {
-                style: { fg: 'yellow' }
+                style: { fg: 'yellow' },
             },
             lesserKeywords: {
-                style: { mode: 'bold', fg: 'black' }
-            }
-        }
+                style: { mode: 'bold', fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1202,24 +1204,24 @@ test('extended latin variables, constants and identifiers', t => {
     const options = {
         rules: {
             numbers: {
-                style: { mode: 'italic' }
+                style: { mode: 'italic' },
             },
             constants: {
-                style: { mode: 'dim', fg: 'white' }
+                style: { mode: 'dim', fg: 'white' },
             },
             delimitedIdentifiers: {
-                style: { fg: 'blue' }
+                style: { fg: 'blue' },
             },
             variables: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             standardKeywords: {
-                style: { fg: 'yellow' }
+                style: { fg: 'yellow' },
             },
             lesserKeywords: {
-                style: { mode: 'bold', fg: 'black' }
-            }
-        }
+                style: { mode: 'bold', fg: 'black' },
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1244,9 +1246,9 @@ test('prefix string replace', t => {
         rules: {
             prefix: {
                 text: '',
-                replace: 'SELECT CURRENT'
-            }
-        }
+                replace: 'SELECT CURRENT',
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1261,24 +1263,24 @@ test('prefix regexp replace', t => {
     const options = {
         rules: {
             constants: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             dataTypes: {
-                style: { fg: 'magenta' }
+                style: { fg: 'magenta' },
             },
             standardKeywords: {
-                style: { mode: 'bold', fg: 'black' }
+                style: { mode: 'bold', fg: 'black' },
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                keywords: ['DEALLOCATE', 'CURSOR', 'OPEN', 'CLOSE', 'FOR', 'FETCH', 'NEXT', 'BACKUP', 'TO', 'DISK', 'NOT', 'IN']
+                keywords: ['DEALLOCATE', 'CURSOR', 'OPEN', 'CLOSE', 'FOR', 'FETCH', 'NEXT', 'BACKUP', 'TO', 'DISK', 'NOT', 'IN'],
             },
             prefix: {
                 style: { fg: 'red' },
                 text: '$&',
-                replace: /[\s\S]*\('monitor', 'index', 'library'\)/
-            }
-        }
+                replace: /[\s\S]*\('monitor', 'index', 'library'\)/,
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1319,22 +1321,22 @@ test('prefix remove', t => {
     const options = {
         rules: {
             constants: {
-                style: { fg: 'red' }
+                style: { fg: 'red' },
             },
             operators: {
-                style: { fg: 'yellow' }
+                style: { fg: 'yellow' },
             },
             standardKeywords: {
-                style: { mode: 'bold', fg: 'black' }
+                style: { mode: 'bold', fg: 'black' },
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'black' },
-                keywords: ['DEALLOCATE', 'CURSOR', 'OPEN', 'CLOSE', 'FOR', 'FETCH', 'NEXT', 'BACKUP', 'TO', 'DISK', 'NOT', 'IN']
+                keywords: ['DEALLOCATE', 'CURSOR', 'OPEN', 'CLOSE', 'FOR', 'FETCH', 'NEXT', 'BACKUP', 'TO', 'DISK', 'NOT', 'IN'],
             },
             prefix: {
-                replace: /[\s\S]*\('monitor', 'index', 'library'\)\n\n/
-            }
-        }
+                replace: /[\s\S]*\('monitor', 'index', 'library'\)\n\n/,
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1362,38 +1364,38 @@ test('custom-built rules', t => {
     const options = {
         rules: {
             constants: {
-                style: { mode: 'bold', fg: 'red' }
+                style: { mode: 'bold', fg: 'red' },
             },
             delimitedIdentifiers: {
-                style: { mode: 'bold', fg: 'cyan' }
+                style: { mode: 'bold', fg: 'cyan' },
             },
             standardKeywords: {
                 style: { fg: 'blue' },
-                casing: 'uppercase'
+                casing: 'uppercase',
             },
             lesserKeywords: {
                 style: { mode: 'bold', fg: 'red' },
-                casing: 'uppercase'
-            }
+                casing: 'uppercase',
+            },
         },
         own: {
             _: {
                 regexp: /$/,
-                transform: null
+                transform: null,
             },
             nop: {
-                regexp: /\u0000/
+                regexp: /\u0000/,
             },
             comments: {
                 regexp: /(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)[\r\n]*/g,
-                transform: ''
+                transform: '',
             },
             uuidv4s: {
                 style: { mode: 'bold', fg: 'black' },
                 regexp: /'[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}'/gi,
-                transform: (uuid) => uuid.replace(/\w{1}/g, 'x')
-            }
-        }
+                transform: (uuid) => uuid.replace(/\w{1}/g, 'x'),
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));
@@ -1411,84 +1413,84 @@ test('custom-built nyan portrait', t => {
             cyan: {
                 style: { mode: 'dim', bg: 'blue', fg: 'blue' },
                 regexp: /,+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             black: {
                 style: { mode: 'dim', fg: 'black' },
                 regexp: /'+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             halfblack: {
                 style: { mode: 'bold', bg: 'black', fg: 'black' },
                 regexp: /:+/g,
-                transform: (v) => '▀'.repeat(v.length)
+                transform: (v) => '▀'.repeat(v.length),
             },
             gray: {
                 style: { mode: 'bold', fg: 'black' },
                 regexp: /\*+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             white: {
                 style: { mode: 'bold', bg: 'white', fg: 'white' },
                 regexp: /\?+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             spray: {
                 style: { mode: 'bold', bg: 'blue', fg: 'white' },
                 regexp: /\.+/g,
-                transform: (v) => '░'.repeat(v.length)
+                transform: (v) => '░'.repeat(v.length),
             },
             bread: {
                 style: { mode: 'bold', bg: 'red', fg: 'white' },
                 regexp: /@+/g,
-                transform: (v) => '░'.repeat(v.length)
+                transform: (v) => '░'.repeat(v.length),
             },
             red: {
                 style: { mode: 'bold', fg: 'red' },
                 regexp: />+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             orange: {
                 style: { mode: 'bold', bg: 'red', fg: 'yellow' },
                 regexp: /&+/g,
-                transform: (v) => '▒'.repeat(v.length)
+                transform: (v) => '▒'.repeat(v.length),
             },
             yellow: {
                 style: { mode: 'bold', bg: 'yellow', fg: 'yellow' },
                 regexp: /\++/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             green: {
                 style: { mode: 'bold', bg: 'green', fg: 'green' },
                 regexp: /#+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             blue: {
                 style: { mode: 'bold', bg: 'blue', fg: 'blue' },
                 regexp: /=+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             purple: {
                 style: { mode: 'dim', bg: 'blue', fg: 'magenta' },
                 regexp: /;+/g,
-                transform: (v) => '▓'.repeat(v.length)
+                transform: (v) => '▓'.repeat(v.length),
             },
             cranberry: {
                 style: { mode: 'bold', bg: 'black', fg: 'magenta' },
                 regexp: /-+/g,
-                transform: (v) => '▒'.repeat(v.length)
+                transform: (v) => '▒'.repeat(v.length),
             },
             pink: {
                 style: { mode: 'dim', bg: 'magenta', fg: 'magenta' },
                 regexp: /\$+/g,
-                transform: (v) => '█'.repeat(v.length)
+                transform: (v) => '█'.repeat(v.length),
             },
             blush: {
                 style: { mode: 'bold', bg: 'red', fg: 'black' },
                 regexp: /%+/g,
-                transform: (v) => '▓'.repeat(v.length)
-            }
-        }
+                transform: (v) => '▓'.repeat(v.length),
+            },
+        },
     };
 
     const print = igniculus(Object.assign(options, echo));

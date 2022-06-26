@@ -3,18 +3,18 @@ module.exports = {
     env: {
         browser: false,
         node: true,
-        es2022: true
+        es2022: true,
     },
     extends: [
         'airbnb-base',
-        'plugin:ava/recommended'
+        'plugin:ava/recommended',
     ],
     parserOptions: {
         ecmaVersion: 13,
-        sourceType: 'module'
+        sourceType: 'module',
     },
     plugins: [
-        'ava'
+        'ava',
     ],
     rules: {
         // Possible Problems
@@ -23,13 +23,13 @@ module.exports = {
         'no-prototype-builtins': 'off', // @todo update and auto-fix
         'no-unused-vars': ['warn', {
             args: 'after-used',
-            ignoreRestSiblings: true
+            ignoreRestSiblings: true,
         }],
 
         // Suggestions
         'camelcase': 'off',
         'capitalized-comments': ['error', 'always', {
-            'ignoreInlineComments': true
+            'ignoreInlineComments': true,
         }],
         'consistent-return': ['off'],
         'curly': ['error', 'multi-or-nest', 'consistent'],
@@ -40,10 +40,7 @@ module.exports = {
         'spaced-comment': ['error', 'always'],
 
         // Layout & Formatting
-        // 'arrow-parens': ['error', 'as-needed', { 'requireForBlockBody': true }],
         'arrow-parens': ['off'],
-        'comma-dangle': ['error', 'never'], // @todo update and auto-fix
-        // 'eol-last': ['error', 'never'], // @todo update and auto-fix
         'function-paren-newline': ['error', 'consistent'],
         'indent': ['error', 4], // @todo update and auto-fix
         'key-spacing': 'off',
@@ -59,12 +56,12 @@ module.exports = {
         'no-restricted-syntax': 'off',
         'no-underscore-dangle': 'off',
         'quotes': ['error', 'single', {
-            allowTemplateLiterals: true
+            allowTemplateLiterals: true,
         }],
 
         // ECMAScript 6
         'no-confusing-arrow': ['error', {
-            allowParens: true
+            allowParens: true,
         }],
 
         // Import Plugin
@@ -72,9 +69,9 @@ module.exports = {
             /* Ignore resolver errors for unsupported exports-only dependencies.
              * @see https://github.com/import-js/eslint-plugin-import/issues/2352
              */
-            ignore: ['ava']
+            ignore: ['ava'],
         }],
         'import/prefer-default-export': 'off',
-        'import/no-default-export': 'error'
-    }
+        'import/no-default-export': 'error',
+    },
 };

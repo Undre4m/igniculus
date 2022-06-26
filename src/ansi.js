@@ -11,7 +11,7 @@ export const modes = {
     fraktur:       '\x1b[20m',
     framed:        '\x1b[51m',
     encircled:     '\x1b[52m',
-    overline:      '\x1b[53m'
+    overline:      '\x1b[53m',
 };
 
 export const colors = {
@@ -23,7 +23,7 @@ export const colors = {
         blue:      '\x1b[34m',
         magenta:   '\x1b[35m',
         cyan:      '\x1b[36m',
-        white:     '\x1b[37m'
+        white:     '\x1b[37m',
     },
     bg: {
         black:     '\x1b[40m',
@@ -33,8 +33,8 @@ export const colors = {
         blue:      '\x1b[44m',
         magenta:   '\x1b[45m',
         cyan:      '\x1b[46m',
-        white:     '\x1b[47m'
-    }
+        white:     '\x1b[47m',
+    },
 };
 
 /**
@@ -42,7 +42,7 @@ export const colors = {
  * @returns {number}
  */
 export const ascendingSGR = (a, b) => Math.sign(
-    a.substring(2, a.length - 1) - b.substring(2, b.length - 1)
+    a.substring(2, a.length - 1) - b.substring(2, b.length - 1),
 );
 
 /**
