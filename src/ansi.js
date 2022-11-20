@@ -46,8 +46,8 @@ export const ascendingSGR = (a, b) => Math.sign(
 );
 
 /**
- * Forge ANSI escape code sequence for text formatting.
- * @param {Object} style - Object which defines formatting for a particular rule.
+ * Forge ANSI escape code sequence for text formatting
+ * @param {Object} style - Object which defines formatting for a particular rule
  * @returns {string}
  */
 export const forgeSequence = (style) => {
@@ -64,8 +64,8 @@ export const forgeSequence = (style) => {
 };
 
 /**
- * Remove all ANSI escape code sequences from text.
- * @param {string} text - Text piece from which to void all formatting.
+ * Remove all ANSI escape code sequences from text
+ * @param {string} text - Text piece from which to void all formatting
  * @returns {string}
  */
 export const voidFormatting = (text) => text.replace(/\x1b\[\d{1,2}m/g, '');

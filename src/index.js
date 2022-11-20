@@ -4,50 +4,16 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable prefer-template */
 
-import { modes, forgeSequence, voidFormatting } from './ansi';
+import { modes, voidFormatting } from './ansi';
+import { craftRunestone } from './config';
 import { defaultConfig } from './default';
-import { base } from './lang';
 import { nox } from './style';
-import { union } from './util';
-
-const { hasOwnProperty } = Object.prototype;
-
-/**
- * Compares and orders keywords by descending amount of individual words
- * @returns {number}
- */
-function descendingCompositeOrder(v, nv) {
-  return (nv.match(/\S+/g) || []).length - (v.match(/\S+/g) || []).length;
-}
-
-/**
- * Creates, refines and streamlines an array of reserved words
- * @param {string[]} [array=[]] - The base array of reserved words
- * @param {string[]} [include=[]] - Reserved words that should be contained in the resulting array
- * @param {string[]} [exclude=[]] - Reserved words that should not be contained in the resulting array
- * @returns {string[]}
- */
-function refineReservedWords(array = [], include = [], exclude = []) {
-  const inc = include.map(rw => rw.toUpperCase());
-  const exc = exclude.map(rw => rw.toUpperCase());
-
-  return union(
-    array
-      .concat(inc)
-      .filter(rw => !exc.includes(rw))
-      .sort(descendingCompositeOrder),
-  );
-}
-
-let dataTypes = base.defaultDataTypes.slice().sort(descendingCompositeOrder);
-let standardKeywords = base.defaultStandardKeywords.slice().sort(descendingCompositeOrder);
-let lesserKeywords = base.defaultLesserKeywords.slice().sort(descendingCompositeOrder);
 
 let runestone;
 
 /**
- * Highlight syntax of SQL-statements and log to terminal.
- * @param {string|Object} text - String of SQL-statements to highlight.
+ * Highlight syntax of SQL-statements and log to terminal
+ * @param {string|Object} text - String of SQL-statements to highlight
  */
 function illumine(text) {
   const { rules = {}, own = {} } = runestone;
@@ -110,7 +76,7 @@ function illumine(text) {
   }
 
   if (rules.dataTypes && (rules.dataTypes.sequence || rules.dataTypes.casing)) {
-    const regex = new RegExp('\\b' + '(' + dataTypes.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = new RegExp('\\b' + '(' + rules.dataTypes.types.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -125,7 +91,7 @@ function illumine(text) {
   }
 
   if (rules.standardKeywords && (rules.standardKeywords.sequence || rules.standardKeywords.casing)) {
-    const regex = new RegExp('\\b' + '(' + standardKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = new RegExp('\\b' + '(' + rules.standardKeywords.keywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -140,7 +106,7 @@ function illumine(text) {
   }
 
   if (rules.lesserKeywords && (rules.lesserKeywords.sequence || rules.lesserKeywords.casing)) {
-    const regex = new RegExp('\\b' + '(' + lesserKeywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = new RegExp('\\b' + '(' + rules.lesserKeywords.keywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -280,112 +246,13 @@ const knownRules = [
 ];
 
 /**
- * Create logger.
- * @param {any} [config] - Custom format rules.
- * @returns {function} - Syntax highlighter and logging function.
+ * Create logger
+ * @param {any} [config] - Custom format rules
+ * @returns {function} - Syntax highlighter and logging function
+ * @todo return new instance instead
  */
 function igniculus(config = defaultConfig) {
-  // Draft all format sequences from the provided or default configuration and save them
-  runestone = { ...config };
-
-  const { rules, own } = runestone;
-
-  if (rules) {
-    for (const name of Object.keys(rules)) {
-      const style = rules[name].style;
-
-      if (style) {
-        rules[name].sequence = forgeSequence(
-          // If using proxy builder pass style parameters as object
-          style instanceof nox.constructor ? style.style : style,
-        );
-      }
-    }
-
-    if (rules.dataTypes) {
-      const { types, casing } = rules.dataTypes;
-
-      if (Array.isArray(types))
-        dataTypes = types.slice().sort(descendingCompositeOrder);
-
-      else if (types && (hasOwnProperty.call(types, 'include') || hasOwnProperty.call(types, 'exclude')))
-        dataTypes = refineReservedWords(base.defaultDataTypes,
-          Array.isArray(types.include) ? types.include : undefined,
-          Array.isArray(types.exclude) ? types.exclude : undefined,
-        );
-
-      else
-        dataTypes = base.defaultDataTypes.slice().sort(descendingCompositeOrder);
-
-      if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
-        delete rules.dataTypes.casing;
-    }
-
-    if (rules.standardKeywords) {
-      const { keywords, casing } = rules.standardKeywords;
-
-      if (Array.isArray(keywords))
-        standardKeywords = keywords.slice().sort(descendingCompositeOrder);
-
-      else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
-        standardKeywords = refineReservedWords(base.defaultStandardKeywords,
-          Array.isArray(keywords.include) ? keywords.include : undefined,
-          Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
-        );
-
-      else
-        standardKeywords = base.defaultStandardKeywords.slice().sort(descendingCompositeOrder);
-
-      if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
-        delete rules.standardKeywords.casing;
-    }
-
-    if (rules.lesserKeywords) {
-      const { keywords, casing } = rules.lesserKeywords;
-
-      if (Array.isArray(keywords))
-        lesserKeywords = keywords.slice().sort(descendingCompositeOrder);
-
-      else if (keywords && (hasOwnProperty.call(keywords, 'include') || hasOwnProperty.call(keywords, 'exclude')))
-        lesserKeywords = refineReservedWords(base.defaultLesserKeywords,
-          Array.isArray(keywords.include) ? keywords.include : undefined,
-          Array.isArray(keywords.exclude) ? keywords.exclude : undefined,
-        );
-
-      else
-        lesserKeywords = base.defaultLesserKeywords.slice().sort(descendingCompositeOrder);
-
-      if (typeof casing !== 'string' || (casing !== 'lowercase' && casing !== 'uppercase'))
-        delete rules.lesserKeywords.casing;
-    }
-
-    /* If prefix should replace a given pattern and that pattern is a string,
-     * escape it so it can be passed to the RegExp constructor.
-     */
-    if (rules.prefix) {
-      if (rules.prefix.replace && typeof rules.prefix.replace === 'string') {
-        rules.prefix.replace = rules.prefix.replace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-        rules.prefix.replace = new RegExp('^' + rules.prefix.replace, 'i');
-      }
-    }
-  }
-
-  if (own) {
-    for (const name of Object.keys(own)) {
-      const style = own[name].style;
-
-      if (style) {
-        own[name].sequence = forgeSequence(
-          // If using proxy builder pass style parameters as object
-          style instanceof nox.constructor ? style.style : style,
-        );
-      }
-    }
-  }
-
-  if (typeof runestone.output !== 'function') {
-    runestone.output = console.log; // eslint-disable-line no-console
-  }
+  runestone = craftRunestone(config);
 
   return illumine;
 }
