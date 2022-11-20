@@ -57,7 +57,7 @@ function illumine(text) {
 
   let output;
 
-  // Coerce entry to string primitive capable of being altered or exit.
+  // Coerce entry to string primitive capable of being altered on exit.
   if (text && (type === 'string' || (type === 'object' && text.toString)))
     output = type === 'string' ? text : text.toString();
   else
