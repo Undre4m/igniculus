@@ -31,8 +31,8 @@ function illumine(text) {
 
   // If a given prefix should be replaced or removed, extract it before any subsequent highlights taint it.
   let __prefix;
-  if (rules.prefix && rules.prefix.replace) {
-    const match = rules.prefix.replace.exec(output);
+  if (rules.prefix && rules.prefix.regexp) {
+    const match = rules.prefix.regexp.exec(output);
     if (match) {
       __prefix = match[0];
       output = output.substr(__prefix.length);
@@ -52,31 +52,31 @@ function illumine(text) {
   }
 
   // Extract delimited identifiers so no subsequent operations alter them. Mark their positions for reinsertion.
-  const __identifiers = output.match(/(\[.*?\]|".*?")/g);
+  const __identifiers = output.match(rules.delimitedIdentifiers.regexp);
   if (__identifiers && __identifiers.length) {
-    output = output.replace(/(\[.*?\]|".*?")/g, '⇁※↼');
+    output = output.replace(rules.delimitedIdentifiers.regexp, '⇁※↼');
   }
 
   // Extract constants so no subsequent operations alter them. Mark their positions for reinsertion.
-  const __constants = output.match(/('.*?')/g);
+  const __constants = output.match(rules.constants.regexp);
   if (__constants && __constants.length) {
-    output = output.replace(/('.*?')/g, '⇝※⇜');
+    output = output.replace(rules.constants.regexp, '⇝※⇜');
   }
 
   // Extract local variables so no subsequent operations alter them. Mark their positions for reinsertion.
-  const __variables = output.match(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g);
+  const __variables = output.match(rules.variables.regexp);
   if (__variables && __variables.length) {
-    output = output.replace(/(\B@[@#$_\w\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u0100-\u017f\u0180-\u024f]*)/g, '↪※↩');
+    output = output.replace(rules.variables.regexp, '↪※↩');
   }
 
   // Extract comment sections so no subsequent operations alter them. Mark their positions for reinsertion.
-  const __comments = output.match(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g);
+  const __comments = output.match(rules.comments.regexp);
   if (__comments && __comments.length) {
-    output = output.replace(/(-{2}.*)|(\/\*(.|[\r\n])*?\*\/)/g, '⥤※⥢');
+    output = output.replace(rules.comments.regexp, '⥤※⥢');
   }
 
   if (rules.dataTypes && (rules.dataTypes.sequence || rules.dataTypes.casing)) {
-    const regex = new RegExp('\\b' + '(' + rules.dataTypes.types.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = rules.dataTypes.regexp;
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -91,7 +91,7 @@ function illumine(text) {
   }
 
   if (rules.standardKeywords && (rules.standardKeywords.sequence || rules.standardKeywords.casing)) {
-    const regex = new RegExp('\\b' + '(' + rules.standardKeywords.keywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = rules.standardKeywords.regexp;
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -106,7 +106,7 @@ function illumine(text) {
   }
 
   if (rules.lesserKeywords && (rules.lesserKeywords.sequence || rules.lesserKeywords.casing)) {
-    const regex = new RegExp('\\b' + '(' + rules.lesserKeywords.keywords.join('|') + ')' + '\\b' + '(?![\'"\\]])', 'gi');
+    const regex = rules.lesserKeywords.regexp;
     output = output.replace(regex, (match, g1) => {
       let word = g1;
 
@@ -121,11 +121,11 @@ function illumine(text) {
   }
 
   if (rules.numbers && rules.numbers.sequence) {
-    output = output.replace(/((\d+\.{1}){0,1}(\d+)(?![a-z\x1b]))(?!\d)/gi, rules.numbers.sequence + '$1' + reset);
+    output = output.replace(rules.numbers.regexp, rules.numbers.sequence + '$1' + reset);
   }
 
   if (rules.operators && rules.operators.sequence) {
-    output = output.replace(/(\+|-|\*|\/|%|&|\||\^|=|>|<|::)+/g, rules.operators.sequence + '$&' + reset);
+    output = output.replace(rules.operators.regexp, rules.operators.sequence + '$&' + reset);
   }
 
   // If comment sections were found and extracted, reinsert them on the marked positions and cordon off the area for reference.
@@ -198,7 +198,7 @@ function illumine(text) {
   }
 
   // Constants are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied.
-  output = output.replace(/('.*?')/g, (match) => voidFormatting(match));
+  output = output.replace(rules.constants.regexp, (match) => voidFormatting(match));
 
   // Comment sections are to be formatted as a whole and no other format should exist inside them. Void any that could have been applied and remove cordon.
   output = output.replace(/(c†s)((-{2}.*)|(\/\*(.|[\r\n])*?\*\/))(c‡e)/g, (match, p1, p2) => voidFormatting(p2));
@@ -214,7 +214,7 @@ function illumine(text) {
     );
   }
   // If only the prefix text was provided, append it.
-  else if (rules.prefix && rules.prefix.text && !rules.prefix.replace) {
+  else if (rules.prefix && rules.prefix.text && !rules.prefix.regexp) {
     output = (rules.prefix.sequence ?
       rules.prefix.sequence + rules.prefix.text + reset :
       rules.prefix.text
